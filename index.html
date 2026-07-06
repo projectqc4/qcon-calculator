@@ -1,0 +1,834 @@
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+							<style>
+								body {
+									background-color: white; /* Ensure the iframe has a white background */
+								}
+
+								
+							</style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qcon - โปรแกรมคำนวนวัสดุผนัง</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: #333;
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 15px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
+            padding: 30px;
+        }
+        .header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            padding: 40px 30px; 
+            text-align: center;
+            border-radius: 12px;
+            margin-bottom: 35px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        .header h1 { 
+            font-size: 2.8em; 
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        .method-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+        .method-btn {
+            padding: 14px 30px;
+            border: none;
+            background: #f5f5f5;
+            color: #666;
+            cursor: pointer;
+            font-size: 1.05em;
+            font-weight: 600;
+            border-radius: 8px 8px 0 0;
+            transition: 0.2s;
+        }
+        .method-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .section { 
+            margin-bottom: 28px; 
+            background: #f8fafb;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+        .section-title { 
+            font-size: 1.25em; 
+            font-weight: 700; 
+            color: #667eea;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #667eea;
+        }
+        .form-row { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 18px; 
+        }
+        label { 
+            font-weight: 600; 
+            display: block;
+            margin-bottom: 6px;
+            color: #2c3e50;
+            font-size: 0.95em;
+        }
+        input, select { 
+            width: 100%; 
+            padding: 11px 14px; 
+            border: 2px solid #ddd; 
+            border-radius: 7px;
+            font-size: 0.98em;
+            transition: 0.2s;
+        }
+        input:focus, select:focus { 
+            outline: none; 
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+        .radio-group, .checkbox-group { 
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin: 12px 0;
+        }
+        .radio-item, .checkbox-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            padding: 8px;
+            border-radius: 6px;
+        }
+        input[type="radio"], input[type="checkbox"] { 
+            width: auto;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        button { 
+            padding: 13px 28px; 
+            font-size: 1em; 
+            font-weight: 600; 
+            border: none; 
+            border-radius: 7px; 
+            cursor: pointer;
+            margin: 6px 6px 6px 0;
+            transition: 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .btn-calc { 
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+        }
+        .btn-reset { 
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+        }
+        .btn-add {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            width: 100%;
+        }
+        .results { 
+            display: none; 
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border: 3px solid #28a745;
+            border-radius: 12px; 
+            padding: 30px; 
+            margin-top: 25px;
+        }
+        .results.show { 
+            display: block;
+        }
+        .results-title {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #155724;
+            margin-bottom: 20px;
+        }
+        .result-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 18px; 
+        }
+        .result-card { 
+            background: white;
+            border: 3px solid #28a745;
+            border-radius: 10px; 
+            padding: 20px; 
+            text-align: center;
+        }
+        .result-card .label { 
+            font-size: 0.95em; 
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .result-card .value { 
+            font-size: 2.5em; 
+            font-weight: 700; 
+            color: #27ae60;
+        }
+        .result-card .unit { 
+            font-size: 0.85em; 
+            color: #999;
+            margin-top: 8px;
+        }
+        .result-card .note {
+            font-size: 0.8em;
+            color: #555;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+        .truck-section {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 3px solid #ff9800;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 25px;
+        }
+        .truck-section .section-title {
+            color: #e65100;
+            border-bottom: 2px solid #ff9800;
+        }
+        .truck-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 18px;
+            margin: 18px 0;
+        }
+        .truck-result {
+            background: white;
+            border: 3px solid #ff9800;
+            border-radius: 10px;
+            padding: 24px;
+            margin-top: 18px;
+            display: none;
+        }
+        .truck-result.show {
+            display: block;
+        }
+        .truck-info {
+            background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);
+            color: white;
+            padding: 18px;
+            border-radius: 8px;
+            margin: 12px 0;
+            font-weight: 600;
+        }
+        .truck-detail {
+            background: #f5f5f5;
+            padding: 14px;
+            margin: 12px 0;
+            border-radius: 7px;
+            border-left: 5px solid #ff9800;
+        }
+        .truck-needed {
+            background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 100%);
+            border-left-color: #e74c3c;
+            font-weight: 700;
+            padding: 16px;
+        }
+        .truck-needed strong {
+            color: #e74c3c;
+            font-size: 1.5em;
+        }
+        .wall-item, .opening-item { 
+            background: white; 
+            border: 2px solid #3498db; 
+            border-radius: 8px; 
+            padding: 18px; 
+            margin-bottom: 14px;
+        }
+        .opening-item {
+            border-color: #e74c3c;
+        }
+        .wall-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 14px;
+        }
+        .wall-header h3 { 
+            color: #2980b9;
+            font-size: 1.1em;
+        }
+        .opening-item .wall-header h3 {
+            color: #e74c3c;
+        }
+        .btn-remove { 
+            background: #e74c3c;
+            color: white; 
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        .wall-area, .opening-area { 
+            background: #f0f8f5;
+            padding: 12px; 
+            border-radius: 6px; 
+            font-weight: 700; 
+            color: #27ae60; 
+            text-align: center; 
+            margin-top: 12px;
+            border: 2px solid #27ae60;
+        }
+        .opening-area {
+            background: #ffe8e8;
+            color: #e74c3c;
+            border-color: #e74c3c;
+        }
+        .summary-box { 
+            background: #34495e;
+            color: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin: 18px 0;
+        }
+        .summary-row { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 12px 0; 
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+        .summary-row span:last-child {
+            font-weight: 700;
+            color: #ffd700;
+        }
+        .method-content {
+            display: none;
+        }
+        .method-content.active {
+            display: block;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-size: 0.95em;
+            color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🔧 Qcon</h1>
+        <p>ระบบคำนวนวัสดุก่อสร้างอิฐมวลเบา ปูนก่อ ปูนฉาบ Metal strap และรถบรรทุก</p>
+    </div>
+
+    <div class="method-tabs">
+        <button class="method-btn active" onclick="switchMethod(1)">📐 วิธีที่ 1: ป้อนพื้นที่รวม</button>
+        <button class="method-btn" onclick="switchMethod(2)">📏 วิธีที่ 2: ป้อนมิติแต่ละด้าน</button>
+    </div>
+
+    <!-- METHOD 1 -->
+    <div id="method1" class="method-content active">
+        <div class="section">
+            <div class="section-title">📐 ป้อนข้อมูลพื้นที่ผนัง</div>
+            <div class="form-row">
+                <div>
+                    <label for="area1">พื้นที่ผนังทั้งหมด (ตร.ม.):</label>
+                    <input type="number" id="area1" step="0.01" min="0" placeholder="เช่น 100" oninput="calc1()">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📏 ความหนาผนัง</div>
+            <div class="radio-group">
+                <div class="radio-item"><input type="radio" id="t1" name="thick1" value="7.5" oninput="calc1()"><label for="t1">7.5 ซม</label></div>
+                <div class="radio-item"><input type="radio" id="t2" name="thick1" value="10" oninput="calc1()"><label for="t2">10 ซม</label></div>
+                <div class="radio-item"><input type="radio" id="t3" name="thick1" value="12.5" oninput="calc1()"><label for="t3">12.5 ซม</label></div>
+                <div class="radio-item"><input type="radio" id="t4" name="thick1" value="15" checked oninput="calc1()"><label for="t4">15 ซม</label></div>
+                <div class="radio-item"><input type="radio" id="t5" name="thick1" value="17.5" oninput="calc1()"><label for="t5">17.5 ซม</label></div>
+                <div class="radio-item"><input type="radio" id="t6" name="thick1" value="20" oninput="calc1()"><label for="t6">20 ซม</label></div>
+                <div class="radio-item"><input type="radio" id="t7" name="thick1" value="25" oninput="calc1()"><label for="t7">25 ซม</label></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">✅ เลือกสินค้า</div>
+            <div class="checkbox-group">
+                <div class="checkbox-item"><input type="checkbox" id="b1" checked oninput="calc1()"><label for="b1">🧱 อิฐมวลเบา</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="m1" checked oninput="calc1()"><label for="m1">🛠️ ปูนก่อ</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="pl1" checked oninput="calc1()"><label for="pl1">🎨 ปูนฉาบ</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="ms1" checked oninput="calc1()"><label for="ms1">🔗 Metal strap</label></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🎨 ตัวเลือกปูนฉาบ</div>
+            <div class="checkbox-group">
+                <div class="checkbox-item"><input type="checkbox" id="p1" checked oninput="calc1()"><label for="p1">ฉาบปูนเต็มผนัง (ฉาบ 2 ด้าน)</label></div>
+            </div>
+            <div class="radio-group">
+                <div class="radio-item"><input type="radio" id="pthick1a" name="pthick1" value="1" checked oninput="calc1()"><label for="pthick1a">1.00 ซม (ได้ 2.3 ตร.ม./ถุง)</label></div>
+                <div class="radio-item"><input type="radio" id="pthick1b" name="pthick1" value="1.25" oninput="calc1()"><label for="pthick1b">1.25 ซม (ได้ 2.0 ตร.ม./ถุง)</label></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">⚙️ ส่วนเผื่อวัสดุ (%)</div>
+            <div class="form-row">
+                <div>
+                    <label for="ba1">อิฐ (%):</label>
+                    <select id="ba1" oninput="calc1()">
+                        <option value="0">0%</option>
+                        <option value="3">3%</option>
+                        <option value="5" selected>5% (แนะนำ)</option>
+                        <option value="10">10%</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="ma1">ปูนก่อ (%):</label>
+                    <select id="ma1" oninput="calc1()">
+                        <option value="0">0%</option>
+                        <option value="3" selected>3% (แนะนำ)</option>
+                        <option value="5">5%</option>
+                        <option value="10">10%</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="pa1">ปูนฉาบ (%):</label>
+                    <select id="pa1" oninput="calc1()">
+                        <option value="0">0%</option>
+                        <option value="3">3%</option>
+                        <option value="5" selected>5% (แนะนำ)</option>
+                        <option value="10">10%</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="msa1">Metal strap (%):</label>
+                    <select id="msa1" oninput="calc1()">
+                        <option value="0">0%</option>
+                        <option value="3" selected>3% (แนะนำ)</option>
+                        <option value="5">5%</option>
+                        <option value="10">10%</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-calc" onclick="calc1()">🔢 คำนวนวัสดุ</button>
+        <button class="btn-reset" onclick="reset1()">🔄 ล้างข้อมูล</button>
+
+        <div class="results" id="res1"></div>
+
+        <div class="truck-section" id="truck1" style="display:none;">
+            <div class="section-title">🚚 คำนวนรถบรรทุก</div>
+            <div class="truck-controls">
+                <div>
+                    <label for="g1Type">ประเภท:</label>
+                    <select id="g1Type" onchange="calcTruck1()">
+                        <option value="g2">G2</option>
+                        <option value="g4">G4</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="g1Truck">ประเภทรถ:</label>
+                    <select id="g1Truck" onchange="calcTruck1()">
+                        <option value="6">รถ 6 ล้อ</option>
+                        <option value="trailer">รถเทรลเลอร์</option>
+                    </select>
+                </div>
+            </div>
+            <div class="truck-result" id="truckRes1"></div>
+        </div>
+    </div>
+
+    <!-- METHOD 2 -->
+    <div id="method2" class="method-content">
+        <div class="section">
+            <div class="section-title">📏 ความหนาผนัง</div>
+            <div class="radio-group">
+                <div class="radio-item"><input type="radio" id="t21" name="thick2" value="7.5" oninput="calc2()"><label for="t21">7.5 ซม</label></div>
+                <div class="radio-item"><input type="radio" id="t22" name="thick2" value="10" oninput="calc2()"><label for="t22">10 ซม</label></div>
+                <div class="radio-item"><input type="radio" id="t23" name="thick2" value="12.5" oninput="calc2()"><label for="t23">12.5 ซม</label></div>
+                <div class="radio-item"><input type="radio" id="t24" name="thick2" value="15" checked oninput="calc2()"><label for="t24">15 ซม</label></div>
+                <div class="radio-item"><input type="radio" id="t25" name="thick2" value="17.5" oninput="calc2()"><label for="t25\">17.5 ซม</label></div>
+                <div class="radio-item"><input type="radio" id="t26" name="thick2" value="20" oninput="calc2()"><label for="t26">20 ซม</label></div>
+                <div class="radio-item"><input type="radio" id="t27" name="thick2" value="25" oninput="calc2()"><label for="t27">25 ซม</label></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">✅ เลือกสินค้า</div>
+            <div class="checkbox-group">
+                <div class="checkbox-item"><input type="checkbox" id="b2" checked oninput="calc2()"><label for="b2">🧱 อิฐมวลเบา</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="m2" checked oninput="calc2()"><label for="m2">🛠️ ปูนก่อ</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="pl2" checked oninput="calc2()"><label for="pl2">🎨 ปูนฉาบ</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="ms2" checked oninput="calc2()"><label for="ms2">🔗 Metal strap</label></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🎨 ตัวเลือกปูนฉาบ</div>
+            <div class="checkbox-group">
+                <div class="checkbox-item"><input type="checkbox" id="p2" checked oninput="calc2()"><label for="p2">ฉาบปูนเต็มผนัง (ฉาบ 2 ด้าน)</label></div>
+            </div>
+            <div class="radio-group">
+                <div class="radio-item"><input type="radio" id="pthick2a" name="pthick2" value="1" checked oninput="calc2()"><label for="pthick2a">1.00 ซม (ได้ 2.3 ตร.ม./ถุง)</label></div>
+                <div class="radio-item"><input type="radio" id="pthick2b" name="pthick2" value="1.25" oninput="calc2()"><label for="pthick2b">1.25 ซม (ได้ 2.0 ตร.ม./ถุง)</label></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🧱 ข้อมูลผนัง</div>
+            <div id="walls"></div>
+            <button class="btn-add" onclick="addWall()">➕ เพิ่มผนัง</button>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🪟 ข้อมูลช่องเปิด (หลังมุก/ประตู)</div>
+            <div id="openings"></div>
+            <button class="btn-add" onclick="addOpening()">➕ เพิ่มช่องเปิด</button>
+        </div>
+
+        <div class="summary-box">
+            <div class="summary-row">
+                <span>📐 พื้นที่ผนังรวม:</span>
+                <span id="total">0.00 ตร.ม.</span>
+            </div>
+            <div class="summary-row">
+                <span>🪟 พื้นที่ช่องเปิดหักลบ:</span>
+                <span id="totalOpening">0.00 ตร.ม.</span>
+            </div>
+            <div class="summary-row" style="border-top: 2px solid rgba(255,255,255,0.5); padding-top: 14px; margin-top: 14px;">
+                <span style="font-weight: 700; font-size: 1.1em;">📊 พื้นที่สุทธิ:</span>
+                <span id="netArea" style="font-weight: 700; font-size: 1.1em;">0.00 ตร.ม.</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">⚙️ ส่วนเผื่อวัสดุ (%)</div>
+            <div class="form-row">
+                <div>
+                    <label for="ba2">อิฐ (%):</label>
+                    <select id="ba2" oninput="calc2()">
+                        <option value="0">0%</option>
+                        <option value="3">3%</option>
+                        <option value="5" selected>5% (แนะนำ)</option>
+                        <option value="10">10%</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="ma2">ปูนก่อ (%):</label>
+                    <select id="ma2" oninput="calc2()">
+                        <option value="0">0%</option>
+                        <option value="3" selected>3% (แนะนำ)</option>
+                        <option value="5">5%</option>
+                        <option value="10">10%</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="pa2">ปูนฉาบ (%):</label>
+                    <select id="pa2" oninput="calc2()">
+                        <option value="0">0%</option>
+                        <option value="3">3%</option>
+                        <option value="5" selected>5% (แนะนำ)</option>
+                        <option value="10">10%</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="msa2">Metal strap (%):</label>
+                    <select id="msa2" oninput="calc2()">
+                        <option value="0">0%</option>
+                        <option value="3" selected>3% (แนะนำ)</option>
+                        <option value="5">5%</option>
+                        <option value="10">10%</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-calc" onclick="calc2()">🔢 คำนวนวัสดุ</button>
+        <button class="btn-reset" onclick="reset2()">🔄 ล้างข้อมูล</button>
+
+        <div class="results" id="res2"></div>
+
+        <div class="truck-section" id="truck2" style="display:none;">
+            <div class="section-title">🚚 คำนวนรถบรรทุก</div>
+            <div class="truck-controls">
+                <div>
+                    <label for="g2Type">ประเภท:</label>
+                    <select id="g2Type" onchange="calcTruck2()">
+                        <option value="g2">G2</option>
+                        <option value="g4">G4</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="g2Truck">ประเภทรถ:</label>
+                    <select id="g2Truck" onchange="calcTruck2()">
+                        <option value="6">รถ 6 ล้อ</option>
+                        <option value="trailer">รถเทรลเลอร์</option>
+                    </select>
+                </div>
+            </div>
+            <div class="truck-result" id="truckRes2"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const RATES = { '7.5': 20, '10': 17, '12.5': 14, '15': 12.5, '17.5': 9.5, '20': 10, '25': 5.5 };
+const PALLET = { '7.5': 200, '10': 150, '12.5': 120, '15': 100, '17.5': 80, '20': 70, '25': 60 };
+let wallId = 0, openingId = 0, lastBrick1 = 0, lastBrick2 = 0;
+
+function switchMethod(m) {
+    document.querySelectorAll('.method-content').forEach(e => e.classList.remove('active'));
+    document.querySelectorAll('.method-btn').forEach(e => e.classList.remove('active'));
+    document.getElementById('method' + m).classList.add('active');
+    event.target.classList.add('active');
+}
+
+function calc1() {
+    const a = parseFloat(document.getElementById('area1').value) || 0;
+    if (a <= 0) { 
+        document.getElementById('res1').classList.remove('show');
+        document.getElementById('truck1').style.display = 'none';
+        return; 
+    }
+    const t = document.querySelector('input[name="thick1"]:checked').value;
+    const p = document.getElementById('p1').checked;
+    const pt = document.querySelector('input[name="pthick1"]:checked').value;
+    const r = calc(a, t, p, pt, 
+        parseInt(document.getElementById('ba1').value),
+        parseInt(document.getElementById('ma1').value),
+        parseInt(document.getElementById('pa1').value),
+        parseInt(document.getElementById('msa1').value),
+        document.getElementById('b1').checked,
+        document.getElementById('m1').checked,
+        document.getElementById('pl1').checked,
+        document.getElementById('ms1').checked);
+    lastBrick1 = r.b || 0;
+    show('res1', r, a, t, pt);
+    if (r.b > 0) {
+        document.getElementById('truck1').style.display = 'block';
+        calcTruck1();
+    }
+}
+
+function calc2() {
+    const a = getTotal();
+    const o = getOpening();
+    const n = a - o;
+    if (a <= 0) { 
+        document.getElementById('res2').classList.remove('show');
+        document.getElementById('truck2').style.display = 'none';
+        return; 
+    }
+    const t = document.querySelector('input[name="thick2"]:checked').value;
+    const p = document.getElementById('p2').checked;
+    const pt = document.querySelector('input[name="pthick2"]:checked').value;
+    const r = calc(n, t, p, pt,
+        parseInt(document.getElementById('ba2').value),
+        parseInt(document.getElementById('ma2').value),
+        parseInt(document.getElementById('pa2').value),
+        parseInt(document.getElementById('msa2').value),
+        document.getElementById('b2').checked,
+        document.getElementById('m2').checked,
+        document.getElementById('pl2').checked,
+        document.getElementById('ms2').checked);
+    lastBrick2 = r.b || 0;
+    show('res2', r, n, t, pt);
+    if (r.b > 0) {
+        document.getElementById('truck2').style.display = 'block';
+        calcTruck2();
+    }
+}
+
+function calc(a, t, p, pt, ba, ma, pa, msa, bc, mc, pc, msc) {
+    const r = {};
+    
+    // อิฐ: 1 ตร.ม. ต้องใช้ประมาณ 8.33 ก้อน
+    if (bc) r.b = Math.ceil(a * 8.33 * (1 + ba / 100));
+    
+    // ปูนก่อ: คำนวนจากจำนวนอิฐ (150 กรัมต่อก้อน)
+    if (mc) {
+        const brickCount = r.b || (a * 8.33);
+        const mortarKg = brickCount * 0.15;
+        r.m = Math.ceil((mortarKg / 50) * (1 + ma / 100));
+    }
+    
+    // ปูนฉาบ: ปรับตามข้อมูลจริง
+    // 1 ซม. = 2.3 ตร.ม./ถุง, 1.25 ซม. = 2.0 ตร.ม./ถุง
+    if (p && pc) {
+        const coverage = pt === '1' ? 2.3 : 2.0;
+        const totalPlasterArea = a * 2;
+        r.p = Math.ceil((totalPlasterArea / coverage) * (1 + pa / 100));
+        r.pt = pt;
+    }
+    
+    // Metal strap: 2 ชิ้นต่อตร.ม.
+    if (msc) r.ms = Math.ceil(a * 2 * (1 + msa / 100));
+    
+    return r;
+}
+
+function show(id, r, a, t, pt) {
+    let h = '<div class="results-title">✅ ผลการคำนวน</div>';
+    h += '<div class="info-box">📋 พื้นที่ผนัง: ' + a.toFixed(2) + ' ตร.ม. | ความหนา: ' + t + ' ซม.</div>';
+    h += '<div class="result-grid">';
+    
+    if (r.b) h += `<div class="result-card"><div class="label">🧱 อิฐมวลเบา</div><div class="value">${r.b}</div><div class="unit">ก้อน</div></div>`;
+    if (r.m) h += `<div class="result-card"><div class="label">🛠️ ปูนก่อ</div><div class="value">${r.m}</div><div class="unit">ถุง (50 กก.)</div></div>`;
+    if (r.p) h += `<div class="result-card"><div class="label">🎨 ปูนฉาบ</div><div class="value">${r.p}</div><div class="unit">ถุง (50 กก.)</div><div class="note">ฉาบหนา ${r.pt} ซม. (ได้ ${r.pt === '1' ? '2.3' : '2.0'} ตร.ม./ถุง)</div></div>`;
+    if (r.ms) h += `<div class="result-card"><div class="label">🔗 Metal strap</div><div class="value">${r.ms}</div><div class="unit">ชิ้น</div></div>`;
+    
+    h += '</div>';
+    document.getElementById(id).innerHTML = h;
+    document.getElementById(id).classList.add('show');
+}
+
+function calcTruck1() {
+    if (lastBrick1 <= 0) return;
+    const t = document.querySelector('input[name="thick1"]:checked').value;
+    truck('truckRes1', lastBrick1, document.getElementById('g1Type').value, document.getElementById('g1Truck').value, t);
+}
+
+function calcTruck2() {
+    if (lastBrick2 <= 0) return;
+    const t = document.querySelector('input[name="thick2"]:checked').value;
+    truck('truckRes2', lastBrick2, document.getElementById('g2Type').value, document.getElementById('g2Truck').value, t);
+}
+
+function truck(id, b, ty, tr, t) {
+    const pp = PALLET[t];
+    const pn = Math.ceil(b / pp);
+    const tc = tr === '6' ? 6 : (ty === 'g2' ? 22 : 20);
+    const tn = Math.ceil(pn / tc);
+    let h = `<div class="truck-info">🚚 ประเภท: ${ty.toUpperCase()} | ${tr === '6' ? 'รถ 6 ล้อ' : 'รถเทรลเลอร์'} | ความหนา: ${t} ซม.</div>`;
+    h += `<div class="truck-detail">📦 จำนวนอิฐ: <strong>${b}</strong> ก้อน</div>`;
+    h += `<div class="truck-detail">📋 จำนวนพาเลท: <strong>${pn}</strong> พาเลท (${pp} ก้อน/พาเลท)</div>`;
+    h += `<div class="truck-detail truck-needed">🚚 จำนวนรถที่ต้องการ: <strong>${tn}</strong> คัน</div>`;
+    document.getElementById(id).innerHTML = h;
+    document.getElementById(id).classList.add('show');
+}
+
+function addWall() {
+    const h = `<div class="wall-item" id="wall${++wallId}">
+        <div class="wall-header"><h3>ผนัง ${wallId}</h3><button class="btn-remove" onclick="delWall(${wallId})">ลบ</button></div>
+        <div class="form-row">
+            <div><label>กว้าง (ม.):</label><input type="number" class="wall-width" step="0.01" min="0" placeholder="เช่น 5" onchange="calc2()"></div>
+            <div><label>สูง (ม.):</label><input type="number" class="wall-height" step="0.01" min="0" placeholder="เช่น 3" onchange="calc2()"></div>
+        </div>
+        <div class="wall-area">0.00 ตร.ม.</div>
+    </div>`;
+    document.getElementById('walls').insertAdjacentHTML('beforeend', h);
+    calc2();
+}
+
+function addOpening() {
+    const h = `<div class="opening-item" id="opening${++openingId}">
+        <div class="wall-header"><h3>ช่องเปิด ${openingId}</h3><button class="btn-remove" onclick="delOpening(${openingId})">ลบ</button></div>
+        <div class="form-row">
+            <div><label>กว้าง (ม.):</label><input type="number" class="opening-width" step="0.01" min="0" placeholder="เช่น 1" onchange="calc2()"></div>
+            <div><label>สูง (ม.):</label><input type="number" class="opening-height" step="0.01" min="0" placeholder="เช่น 2" onchange="calc2()"></div>
+            <div><label>จำนวน:</label><input type="number" class="opening-qty" step="1" min="0" value="1" placeholder="เช่น 1" onchange="calc2()"></div>
+        </div>
+        <div class="opening-area">0.00 ตร.ม.</div>
+    </div>`;
+    document.getElementById('openings').insertAdjacentHTML('beforeend', h);
+    calc2();
+}
+
+function delWall(id) { document.getElementById('wall' + id).remove(); calc2(); }
+function delOpening(id) { document.getElementById('opening' + id).remove(); calc2(); }
+
+function getTotal() {
+    let t = 0;
+    document.querySelectorAll('.wall-item').forEach(w => {
+        const a = (parseFloat(w.querySelector('.wall-width').value) || 0) * (parseFloat(w.querySelector('.wall-height').value) || 0);
+        w.querySelector('.wall-area').textContent = a.toFixed(2) + ' ตร.ม.';
+        t += a;
+    });
+    document.getElementById('total').textContent = t.toFixed(2) + ' ตร.ม.';
+    return t;
+}
+
+function getOpening() {
+    let t = 0;
+    document.querySelectorAll('.opening-item').forEach(o => {
+        const a = (parseFloat(o.querySelector('.opening-width').value) || 0) * 
+                    (parseFloat(o.querySelector('.opening-height').value) || 0) * 
+                    (parseFloat(o.querySelector('.opening-qty').value) || 0);
+        o.querySelector('.opening-area').textContent = a.toFixed(2) + ' ตร.ม.';
+        t += a;
+    });
+    const n = getTotal() - t;
+    document.getElementById('totalOpening').textContent = t.toFixed(2) + ' ตร.ม.';
+    document.getElementById('netArea').textContent = n.toFixed(2) + ' ตร.ม.';
+    return t;
+}
+
+function reset1() { 
+    document.getElementById('area1').value = '';
+    document.getElementById('res1').classList.remove('show');
+    document.getElementById('truck1').style.display = 'none';
+    lastBrick1 = 0;
+}
+
+function reset2() { 
+    document.getElementById('walls').innerHTML = '';
+    document.getElementById('openings').innerHTML = '';
+    document.getElementById('total').textContent = '0.00 ตร.ม.';
+    document.getElementById('totalOpening').textContent = '0.00 ตร.ม.';
+    document.getElementById('netArea').textContent = '0.00 ตร.ม.';
+    document.getElementById('res2').classList.remove('show');
+    document.getElementById('truck2').style.display = 'none';
+    wallId = 0;
+    openingId = 0;
+    lastBrick2 = 0;
+}
+</script>
+</body>
+</html>
+
+							<script>
+                            	
+							</script>
+                        </body>
+                        </html>
+                    
