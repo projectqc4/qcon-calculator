@@ -19,334 +19,521 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Qcon - โปรแกรมคำนวนวัสดุผนัง</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', 'Helvetica Neue', sans-serif; 
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
             padding: 20px;
             color: #333;
-            min-height: 100vh;
         }
+        
         .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            background: white; 
-            border-radius: 15px; 
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
-            padding: 30px;
+            max-width: 1400px; 
+            margin: 0 auto;
         }
+        
         .header { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
             color: white; 
-            padding: 40px 30px; 
+            padding: 60px 40px; 
             text-align: center;
-            border-radius: 12px;
-            margin-bottom: 35px;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(0, 212, 255, 0.3);
+            position: relative;
+            overflow: hidden;
         }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
         .header h1 { 
-            font-size: 2.8em; 
-            margin-bottom: 10px;
-            font-weight: 700;
+            font-size: 3.5em; 
+            margin-bottom: 15px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
+        
         .header p {
-            font-size: 1.1em;
+            font-size: 1.2em;
             opacity: 0.95;
+            font-weight: 300;
+            letter-spacing: 0.5px;
         }
+        
         .method-tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            border-bottom: 3px solid #e0e0e0;
+            gap: 15px;
+            margin-bottom: 40px;
             flex-wrap: wrap;
         }
+        
         .method-btn {
-            padding: 14px 30px;
-            border: none;
-            background: #f5f5f5;
-            color: #666;
+            flex: 1;
+            min-width: 250px;
+            padding: 18px 30px;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.08);
+            color: white;
             cursor: pointer;
             font-size: 1.05em;
             font-weight: 600;
-            border-radius: 8px 8px 0 0;
-            transition: 0.2s;
+            border-radius: 12px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
         }
+        
+        .method-btn:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-3px);
+        }
+        
         .method-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            border-color: white;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
         }
+        
         .section { 
-            margin-bottom: 28px; 
-            background: #f8fafb;
-            padding: 25px;
-            border-radius: 10px;
-            border-left: 5px solid #667eea;
+            margin-bottom: 32px; 
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border-top: 5px solid #00d4ff;
+            transition: all 0.3s ease;
         }
+        
+        .section:hover {
+            box-shadow: 0 12px 48px rgba(0,0,0,0.15);
+        }
+        
         .section-title { 
-            font-size: 1.25em; 
+            font-size: 1.4em; 
             font-weight: 700; 
-            color: #667eea;
-            margin-bottom: 18px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #667eea;
+            color: #1a1a2e;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f0f0f0;
         }
+        
+        .section-title i {
+            font-size: 1.3em;
+            color: #00d4ff;
+        }
+        
         .form-row { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-            gap: 18px; 
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 24px; 
         }
+        
         label { 
             font-weight: 600; 
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 10px;
             color: #2c3e50;
             font-size: 0.95em;
+            letter-spacing: 0.3px;
         }
+        
         input, select { 
             width: 100%; 
-            padding: 11px 14px; 
-            border: 2px solid #ddd; 
-            border-radius: 7px;
+            padding: 14px 18px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 10px;
             font-size: 0.98em;
-            transition: 0.2s;
+            transition: all 0.3s ease;
+            background: #fafafa;
         }
+        
         input:focus, select:focus { 
             outline: none; 
-            border-color: #667eea;
-            background: #f0f3ff;
+            border-color: #00d4ff;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.1);
         }
+        
         .radio-group, .checkbox-group { 
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 12px;
-            margin: 12px 0;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin: 16px 0;
         }
+        
         .radio-item, .checkbox-item { 
             display: flex; 
             align-items: center; 
-            gap: 8px;
-            padding: 8px;
-            border-radius: 6px;
-        }
-        input[type="radio"], input[type="checkbox"] { 
-            width: auto;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
             cursor: pointer;
-            accent-color: #667eea;
         }
+        
+        .radio-item:hover, .checkbox-item:hover {
+            background: #f0f7ff;
+            border-color: #00d4ff;
+        }
+        
+        input[type="radio"], input[type="checkbox"] { 
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #00d4ff;
+        }
+        
         button { 
-            padding: 13px 28px; 
+            padding: 14px 32px; 
             font-size: 1em; 
             font-weight: 600; 
             border: none; 
-            border-radius: 7px; 
+            border-radius: 10px; 
             cursor: pointer;
-            margin: 6px 6px 6px 0;
-            transition: 0.2s;
+            margin: 8px 8px 8px 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.5px;
         }
+        
         button:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
+        
+        button:active {
+            transform: translateY(-1px);
+        }
+        
         .btn-calc { 
-            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
             color: white;
         }
+        
         .btn-reset { 
             background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
             color: white;
         }
+        
         .btn-add {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
             color: white;
             width: 100%;
         }
+        
         .results { 
             display: none; 
             background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            border: 3px solid #28a745;
-            border-radius: 12px; 
-            padding: 30px; 
-            margin-top: 25px;
+            border: none;
+            border-radius: 16px; 
+            padding: 35px; 
+            margin-top: 30px;
+            box-shadow: 0 12px 40px rgba(40, 167, 69, 0.2);
+            animation: slideIn 0.5s ease;
         }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         .results.show { 
             display: block;
         }
+        
         .results-title {
-            font-size: 1.6em;
-            font-weight: 700;
+            font-size: 1.8em;
+            font-weight: 800;
             color: #155724;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
+        
+        .results-title i {
+            font-size: 1.5em;
+        }
+        
         .result-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-            gap: 18px; 
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 20px; 
         }
+        
         .result-card { 
             background: white;
-            border: 3px solid #28a745;
-            border-radius: 10px; 
-            padding: 20px; 
+            border: none;
+            border-radius: 14px; 
+            padding: 28px; 
             text-align: center;
+            box-shadow: 0 8px 24px rgba(40, 167, 69, 0.15);
+            transition: all 0.3s ease;
+            border-left: 5px solid #28a745;
         }
+        
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(40, 167, 69, 0.25);
+        }
+        
         .result-card .label { 
             font-size: 0.95em; 
             color: #666;
-            margin-bottom: 10px;
+            margin-bottom: 14px;
             font-weight: 600;
         }
+        
         .result-card .value { 
-            font-size: 2.5em; 
-            font-weight: 700; 
+            font-size: 2.8em; 
+            font-weight: 800; 
             color: #27ae60;
+            margin: 12px 0;
         }
+        
         .result-card .unit { 
             font-size: 0.85em; 
             color: #999;
-            margin-top: 8px;
+            margin-top: 12px;
+            font-weight: 500;
         }
+        
         .result-card .note {
             font-size: 0.8em;
             color: #555;
-            margin-top: 10px;
-            padding-top: 10px;
+            margin-top: 14px;
+            padding-top: 12px;
             border-top: 1px solid #eee;
+            line-height: 1.5;
         }
+        
         .truck-section {
             background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            border: 3px solid #ff9800;
-            border-radius: 12px;
-            padding: 30px;
-            margin-top: 25px;
+            border: none;
+            border-radius: 16px;
+            padding: 35px;
+            margin-top: 30px;
+            box-shadow: 0 12px 40px rgba(255, 152, 0, 0.2);
         }
+        
         .truck-section .section-title {
             color: #e65100;
-            border-bottom: 2px solid #ff9800;
+            border-bottom: 2px solid #ffe082;
         }
+        
         .truck-controls {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 18px;
-            margin: 18px 0;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin: 24px 0;
         }
+        
         .truck-result {
             background: white;
-            border: 3px solid #ff9800;
-            border-radius: 10px;
-            padding: 24px;
-            margin-top: 18px;
+            border: none;
+            border-radius: 14px;
+            padding: 28px;
+            margin-top: 20px;
             display: none;
+            box-shadow: 0 8px 24px rgba(255, 152, 0, 0.15);
         }
+        
         .truck-result.show {
             display: block;
+            animation: slideIn 0.5s ease;
         }
+        
         .truck-info {
             background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);
             color: white;
-            padding: 18px;
-            border-radius: 8px;
-            margin: 12px 0;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 16px 0;
             font-weight: 600;
+            box-shadow: 0 8px 20px rgba(230, 81, 0, 0.3);
         }
+        
         .truck-detail {
             background: #f5f5f5;
-            padding: 14px;
-            margin: 12px 0;
-            border-radius: 7px;
+            padding: 16px;
+            margin: 14px 0;
+            border-radius: 10px;
             border-left: 5px solid #ff9800;
+            font-weight: 500;
         }
+        
         .truck-needed {
             background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 100%);
             border-left-color: #e74c3c;
             font-weight: 700;
-            padding: 16px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.2);
         }
+        
         .truck-needed strong {
             color: #e74c3c;
-            font-size: 1.5em;
+            font-size: 1.6em;
         }
+        
         .wall-item, .opening-item { 
             background: white; 
-            border: 2px solid #3498db; 
-            border-radius: 8px; 
-            padding: 18px; 
-            margin-bottom: 14px;
+            border: 2px solid #00d4ff;
+            border-radius: 12px; 
+            padding: 22px; 
+            margin-bottom: 18px;
+            transition: all 0.3s ease;
         }
+        
+        .wall-item:hover, .opening-item:hover {
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.15);
+        }
+        
         .opening-item {
             border-color: #e74c3c;
         }
+        
         .wall-header { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            margin-bottom: 14px;
+            margin-bottom: 16px;
         }
+        
         .wall-header h3 { 
             color: #2980b9;
-            font-size: 1.1em;
+            font-size: 1.15em;
+            font-weight: 700;
         }
+        
         .opening-item .wall-header h3 {
             color: #e74c3c;
         }
+        
         .btn-remove { 
-            background: #e74c3c;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white; 
-            padding: 8px 14px;
+            padding: 8px 16px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 0.9em;
             font-weight: 600;
+            transition: all 0.3s ease;
         }
+        
+        .btn-remove:hover {
+            transform: scale(1.05);
+        }
+        
         .wall-area, .opening-area { 
             background: #f0f8f5;
-            padding: 12px; 
-            border-radius: 6px; 
+            padding: 14px; 
+            border-radius: 10px; 
             font-weight: 700; 
             color: #27ae60; 
             text-align: center; 
-            margin-top: 12px;
+            margin-top: 16px;
             border: 2px solid #27ae60;
         }
+        
         .opening-area {
             background: #ffe8e8;
             color: #e74c3c;
             border-color: #e74c3c;
         }
+        
         .summary-box { 
-            background: #34495e;
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
             color: white; 
-            padding: 20px; 
-            border-radius: 10px; 
-            margin: 18px 0;
+            padding: 28px; 
+            border-radius: 14px; 
+            margin: 24px 0;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
         }
+        
         .summary-row { 
             display: flex; 
             justify-content: space-between; 
-            padding: 12px 0; 
-            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding: 14px 0; 
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            align-items: center;
         }
+        
         .summary-row:last-child {
             border-bottom: none;
         }
+        
         .summary-row span:last-child {
             font-weight: 700;
             color: #ffd700;
+            font-size: 1.1em;
         }
+        
         .method-content {
             display: none;
         }
+        
         .method-content.active {
             display: block;
+            animation: fadeIn 0.5s ease;
         }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
         .info-box {
-            background: #e3f2fd;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
             border-left: 5px solid #2196f3;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 5px;
-            font-size: 0.95em;
+            padding: 18px;
+            margin: 18px 0;
+            border-radius: 10px;
+            font-size: 0.98em;
             color: #1565c0;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.1);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .button-group button {
+            flex: 1;
+            min-width: 140px;
         }
     </style>
 </head>
@@ -354,29 +541,31 @@
 
 <div class="container">
     <div class="header">
-        <h1>🔧 Qcon</h1>
-        <p>ระบบคำนวนวัสดุก่อสร้างอิฐมวลเบา ปูนก่อ ปูนฉาบ Metal strap และรถบรรทุก</p>
+        <div class="header-content">
+            <h1><i class="fas fa-hammer"></i> QCON</h1>
+            <p>ระบบคำนวนวัสดุก่อสร้างอิฐมวลเบา ปูนก่อ ปูนฉาบ Metal strap และรถบรรทุก</p>
+        </div>
     </div>
 
     <div class="method-tabs">
-        <button class="method-btn active" onclick="switchMethod(1)">📐 วิธีที่ 1: ป้อนพื้นที่รวม</button>
-        <button class="method-btn" onclick="switchMethod(2)">📏 วิธีที่ 2: ป้อนมิติแต่ละด้าน</button>
+        <button class="method-btn active" onclick="switchMethod(1)"><i class="fas fa-ruler"></i> วิธีที่ 1: ป้อนพื้นที่รวม</button>
+        <button class="method-btn" onclick="switchMethod(2)"><i class="fas fa-tape"></i> วิธีที่ 2: ป้อนมิติแต่ละด้าน</button>
     </div>
 
     <!-- METHOD 1 -->
     <div id="method1" class="method-content active">
         <div class="section">
-            <div class="section-title">📐 ป้อนข้อมูลพื้นที่ผนัง</div>
+            <div class="section-title"><i class="fas fa-chart-area"></i> ป้อนข้อมูลพื้นที่ผนัง</div>
             <div class="form-row">
                 <div>
-                    <label for="area1">พื้นที่ผนังทั้งหมด (ตร.ม.):</label>
+                    <label for="area1"><i class="fas fa-square"></i> พื้นที่ผนังทั้งหมด (ตร.ม.):</label>
                     <input type="number" id="area1" step="0.01" min="0" placeholder="เช่น 100" oninput="calc1()">
                 </div>
             </div>
         </div>
 
         <div class="section">
-            <div class="section-title">📏 ความหนาผนัง</div>
+            <div class="section-title"><i class="fas fa-arrows-alt-h"></i> ความหนาผนัง</div>
             <div class="radio-group">
                 <div class="radio-item"><input type="radio" id="t1" name="thick1" value="7.5" oninput="calc1()"><label for="t1">7.5 ซม</label></div>
                 <div class="radio-item"><input type="radio" id="t2" name="thick1" value="10" oninput="calc1()"><label for="t2">10 ซม</label></div>
@@ -389,7 +578,7 @@
         </div>
 
         <div class="section">
-            <div class="section-title">✅ เลือกสินค้า</div>
+            <div class="section-title"><i class="fas fa-check-circle"></i> เลือกสินค้า</div>
             <div class="checkbox-group">
                 <div class="checkbox-item"><input type="checkbox" id="b1" checked oninput="calc1()"><label for="b1">🧱 อิฐมวลเบา</label></div>
                 <div class="checkbox-item"><input type="checkbox" id="m1" checked oninput="calc1()"><label for="m1">🛠️ ปูนก่อ</label></div>
@@ -399,7 +588,7 @@
         </div>
 
         <div class="section">
-            <div class="section-title">🎨 ตัวเลือกปูนฉาบ</div>
+            <div class="section-title"><i class="fas fa-paint-roller"></i> ตัวเลือกปูนฉาบ</div>
             <div class="checkbox-group">
                 <div class="checkbox-item"><input type="checkbox" id="p1" checked oninput="calc1()"><label for="p1">ฉาบปูนเต็มผนัง (ฉาบ 2 ด้าน)</label></div>
             </div>
@@ -410,7 +599,7 @@
         </div>
 
         <div class="section">
-            <div class="section-title">⚙️ ส่วนเผื่อวัสดุ (%)</div>
+            <div class="section-title"><i class="fas fa-sliders-h"></i> ส่วนเผื่อวัสดุ (%)</div>
             <div class="form-row">
                 <div>
                     <label for="ba1">อิฐ (%):</label>
@@ -451,23 +640,25 @@
             </div>
         </div>
 
-        <button class="btn-calc" onclick="calc1()">🔢 คำนวนวัสดุ</button>
-        <button class="btn-reset" onclick="reset1()">🔄 ล้างข้อมูล</button>
+        <div class="button-group">
+            <button class="btn-calc" onclick="calc1()"><i class="fas fa-calculator"></i> คำนวนวัสดุ</button>
+            <button class="btn-reset" onclick="reset1()"><i class="fas fa-redo"></i> ล้างข้อมูล</button>
+        </div>
 
         <div class="results" id="res1"></div>
 
         <div class="truck-section" id="truck1" style="display:none;">
-            <div class="section-title">🚚 คำนวนรถบรรทุก</div>
+            <div class="section-title"><i class="fas fa-truck"></i> คำนวนรถบรรทุก</div>
             <div class="truck-controls">
                 <div>
-                    <label for="g1Type">ประเภท:</label>
+                    <label for="g1Type"><i class="fas fa-tag"></i> ประเภท:</label>
                     <select id="g1Type" onchange="calcTruck1()">
                         <option value="g2">G2</option>
                         <option value="g4">G4</option>
                     </select>
                 </div>
                 <div>
-                    <label for="g1Truck">ประเภทรถ:</label>
+                    <label for="g1Truck"><i class="fas fa-car"></i> ประเภทรถ:</label>
                     <select id="g1Truck" onchange="calcTruck1()">
                         <option value="6">รถ 6 ล้อ</option>
                         <option value="trailer">รถเทรลเลอร์</option>
@@ -481,20 +672,20 @@
     <!-- METHOD 2 -->
     <div id="method2" class="method-content">
         <div class="section">
-            <div class="section-title">📏 ความหนาผนัง</div>
+            <div class="section-title"><i class="fas fa-arrows-alt-h"></i> ความหนาผนัง</div>
             <div class="radio-group">
                 <div class="radio-item"><input type="radio" id="t21" name="thick2" value="7.5" oninput="calc2()"><label for="t21">7.5 ซม</label></div>
                 <div class="radio-item"><input type="radio" id="t22" name="thick2" value="10" oninput="calc2()"><label for="t22">10 ซม</label></div>
                 <div class="radio-item"><input type="radio" id="t23" name="thick2" value="12.5" oninput="calc2()"><label for="t23">12.5 ซม</label></div>
                 <div class="radio-item"><input type="radio" id="t24" name="thick2" value="15" checked oninput="calc2()"><label for="t24">15 ซม</label></div>
-                <div class="radio-item"><input type="radio" id="t25" name="thick2" value="17.5" oninput="calc2()"><label for="t25\">17.5 ซม</label></div>
+                <div class="radio-item"><input type="radio" id="t25" name="thick2" value="17.5" oninput="calc2()"><label for="t25">17.5 ซม</label></div>
                 <div class="radio-item"><input type="radio" id="t26" name="thick2" value="20" oninput="calc2()"><label for="t26">20 ซม</label></div>
                 <div class="radio-item"><input type="radio" id="t27" name="thick2" value="25" oninput="calc2()"><label for="t27">25 ซม</label></div>
             </div>
         </div>
 
         <div class="section">
-            <div class="section-title">✅ เลือกสินค้า</div>
+            <div class="section-title"><i class="fas fa-check-circle"></i> เลือกสินค้า</div>
             <div class="checkbox-group">
                 <div class="checkbox-item"><input type="checkbox" id="b2" checked oninput="calc2()"><label for="b2">🧱 อิฐมวลเบา</label></div>
                 <div class="checkbox-item"><input type="checkbox" id="m2" checked oninput="calc2()"><label for="m2">🛠️ ปูนก่อ</label></div>
@@ -504,7 +695,7 @@
         </div>
 
         <div class="section">
-            <div class="section-title">🎨 ตัวเลือกปูนฉาบ</div>
+            <div class="section-title"><i class="fas fa-paint-roller"></i> ตัวเลือกปูนฉาบ</div>
             <div class="checkbox-group">
                 <div class="checkbox-item"><input type="checkbox" id="p2" checked oninput="calc2()"><label for="p2">ฉาบปูนเต็มผนัง (ฉาบ 2 ด้าน)</label></div>
             </div>
@@ -515,34 +706,34 @@
         </div>
 
         <div class="section">
-            <div class="section-title">🧱 ข้อมูลผนัง</div>
+            <div class="section-title"><i class="fas fa-cube"></i> ข้อมูลผนัง</div>
             <div id="walls"></div>
-            <button class="btn-add" onclick="addWall()">➕ เพิ่มผนัง</button>
+            <button class="btn-add" onclick="addWall()"><i class="fas fa-plus"></i> เพิ่มผนัง</button>
         </div>
 
         <div class="section">
-            <div class="section-title">🪟 ข้อมูลช่องเปิด (หลังมุก/ประตู)</div>
+            <div class="section-title"><i class="fas fa-door-open"></i> ข้อมูลช่องเปิด (หลังมุก/ประตู)</div>
             <div id="openings"></div>
-            <button class="btn-add" onclick="addOpening()">➕ เพิ่มช่องเปิด</button>
+            <button class="btn-add" onclick="addOpening()"><i class="fas fa-plus"></i> เพิ่มช่องเปิด</button>
         </div>
 
         <div class="summary-box">
             <div class="summary-row">
-                <span>📐 พื้นที่ผนังรวม:</span>
+                <span><i class="fas fa-chart-area"></i> พื้นที่ผนังรวม:</span>
                 <span id="total">0.00 ตร.ม.</span>
             </div>
             <div class="summary-row">
-                <span>🪟 พื้นที่ช่องเปิดหักลบ:</span>
+                <span><i class="fas fa-door-open"></i> พื้นที่ช่องเปิดหักลบ:</span>
                 <span id="totalOpening">0.00 ตร.ม.</span>
             </div>
-            <div class="summary-row" style="border-top: 2px solid rgba(255,255,255,0.5); padding-top: 14px; margin-top: 14px;">
-                <span style="font-weight: 700; font-size: 1.1em;">📊 พื้นที่สุทธิ:</span>
-                <span id="netArea" style="font-weight: 700; font-size: 1.1em;">0.00 ตร.ม.</span>
+            <div class="summary-row" style="border-top: 2px solid rgba(255,255,255,0.3); padding-top: 16px; margin-top: 16px; font-size: 1.15em;">
+                <span><i class="fas fa-calculator"></i> พื้นที่สุทธิ:</span>
+                <span id="netArea">0.00 ตร.ม.</span>
             </div>
         </div>
 
         <div class="section">
-            <div class="section-title">⚙️ ส่วนเผื่อวัสดุ (%)</div>
+            <div class="section-title"><i class="fas fa-sliders-h"></i> ส่วนเผื่อวัสดุ (%)</div>
             <div class="form-row">
                 <div>
                     <label for="ba2">อิฐ (%):</label>
@@ -583,23 +774,25 @@
             </div>
         </div>
 
-        <button class="btn-calc" onclick="calc2()">🔢 คำนวนวัสดุ</button>
-        <button class="btn-reset" onclick="reset2()">🔄 ล้างข้อมูล</button>
+        <div class="button-group">
+            <button class="btn-calc" onclick="calc2()"><i class="fas fa-calculator"></i> คำนวนวัสดุ</button>
+            <button class="btn-reset" onclick="reset2()"><i class="fas fa-redo"></i> ล้างข้อมูล</button>
+        </div>
 
         <div class="results" id="res2"></div>
 
         <div class="truck-section" id="truck2" style="display:none;">
-            <div class="section-title">🚚 คำนวนรถบรรทุก</div>
+            <div class="section-title"><i class="fas fa-truck"></i> คำนวนรถบรรทุก</div>
             <div class="truck-controls">
                 <div>
-                    <label for="g2Type">ประเภท:</label>
+                    <label for="g2Type"><i class="fas fa-tag"></i> ประเภท:</label>
                     <select id="g2Type" onchange="calcTruck2()">
                         <option value="g2">G2</option>
                         <option value="g4">G4</option>
                     </select>
                 </div>
                 <div>
-                    <label for="g2Truck">ประเภทรถ:</label>
+                    <label for="g2Truck"><i class="fas fa-car"></i> ประเภทรถ:</label>
                     <select id="g2Truck" onchange="calcTruck2()">
                         <option value="6">รถ 6 ล้อ</option>
                         <option value="trailer">รถเทรลเลอร์</option>
@@ -612,7 +805,6 @@
 </div>
 
 <script>
-const RATES = { '7.5': 20, '10': 17, '12.5': 14, '15': 12.5, '17.5': 9.5, '20': 10, '25': 5.5 };
 const PALLET = { '7.5': 200, '10': 150, '12.5': 120, '15': 100, '17.5': 80, '20': 70, '25': 60 };
 let wallId = 0, openingId = 0, lastBrick1 = 0, lastBrick2 = 0;
 
@@ -620,7 +812,7 @@ function switchMethod(m) {
     document.querySelectorAll('.method-content').forEach(e => e.classList.remove('active'));
     document.querySelectorAll('.method-btn').forEach(e => e.classList.remove('active'));
     document.getElementById('method' + m).classList.add('active');
-    event.target.classList.add('active');
+    event.target.closest('.method-btn').classList.add('active');
 }
 
 function calc1() {
@@ -681,41 +873,31 @@ function calc2() {
 
 function calc(a, t, p, pt, ba, ma, pa, msa, bc, mc, pc, msc) {
     const r = {};
-    
-    // อิฐ: 1 ตร.ม. ต้องใช้ประมาณ 8.33 ก้อน
     if (bc) r.b = Math.ceil(a * 8.33 * (1 + ba / 100));
-    
-    // ปูนก่อ: คำนวนจากจำนวนอิฐ (150 กรัมต่อก้อน)
     if (mc) {
         const brickCount = r.b || (a * 8.33);
         const mortarKg = brickCount * 0.15;
         r.m = Math.ceil((mortarKg / 50) * (1 + ma / 100));
     }
-    
-    // ปูนฉาบ: ปรับตามข้อมูลจริง
-    // 1 ซม. = 2.3 ตร.ม./ถุง, 1.25 ซม. = 2.0 ตร.ม./ถุง
     if (p && pc) {
         const coverage = pt === '1' ? 2.3 : 2.0;
         const totalPlasterArea = a * 2;
         r.p = Math.ceil((totalPlasterArea / coverage) * (1 + pa / 100));
         r.pt = pt;
     }
-    
-    // Metal strap: 2 ชิ้นต่อตร.ม.
     if (msc) r.ms = Math.ceil(a * 2 * (1 + msa / 100));
-    
     return r;
 }
 
 function show(id, r, a, t, pt) {
-    let h = '<div class="results-title">✅ ผลการคำนวน</div>';
-    h += '<div class="info-box">📋 พื้นที่ผนัง: ' + a.toFixed(2) + ' ตร.ม. | ความหนา: ' + t + ' ซม.</div>';
+    let h = '<div class="results-title"><i class="fas fa-check-circle"></i> ผลการคำนวน</div>';
+    h += '<div class="info-box"><i class="fas fa-info-circle"></i> พื้นที่ผนัง: <strong>' + a.toFixed(2) + ' ตร.ม.</strong> | ความหนา: <strong>' + t + ' ซม.</strong></div>';
     h += '<div class="result-grid">';
     
-    if (r.b) h += `<div class="result-card"><div class="label">🧱 อิฐมวลเบา</div><div class="value">${r.b}</div><div class="unit">ก้อน</div></div>`;
-    if (r.m) h += `<div class="result-card"><div class="label">🛠️ ปูนก่อ</div><div class="value">${r.m}</div><div class="unit">ถุง (50 กก.)</div></div>`;
-    if (r.p) h += `<div class="result-card"><div class="label">🎨 ปูนฉาบ</div><div class="value">${r.p}</div><div class="unit">ถุง (50 กก.)</div><div class="note">ฉาบหนา ${r.pt} ซม. (ได้ ${r.pt === '1' ? '2.3' : '2.0'} ตร.ม./ถุง)</div></div>`;
-    if (r.ms) h += `<div class="result-card"><div class="label">🔗 Metal strap</div><div class="value">${r.ms}</div><div class="unit">ชิ้น</div></div>`;
+    if (r.b) h += `<div class="result-card"><div class="label"><i class="fas fa-cube"></i> อิฐมวลเบา</div><div class="value">${r.b}</div><div class="unit">ก้อน</div></div>`;
+    if (r.m) h += `<div class="result-card"><div class="label"><i class="fas fa-mortar-pestle"></i> ปูนก่อ</div><div class="value">${r.m}</div><div class="unit">ถุง (50 กก.)</div></div>`;
+    if (r.p) h += `<div class="result-card"><div class="label"><i class="fas fa-paint-roller"></i> ปูนฉาบ</div><div class="value">${r.p}</div><div class="unit">ถุง (50 กก.)</div><div class="note">ฉาบหนา ${r.pt} ซม. (ได้ ${r.pt === '1' ? '2.3' : '2.0'} ตร.ม./ถุง)</div></div>`;
+    if (r.ms) h += `<div class="result-card"><div class="label"><i class="fas fa-link"></i> Metal strap</div><div class="value">${r.ms}</div><div class="unit">ชิ้น</div></div>`;
     
     h += '</div>';
     document.getElementById(id).innerHTML = h;
@@ -739,22 +921,22 @@ function truck(id, b, ty, tr, t) {
     const pn = Math.ceil(b / pp);
     const tc = tr === '6' ? 6 : (ty === 'g2' ? 22 : 20);
     const tn = Math.ceil(pn / tc);
-    let h = `<div class="truck-info">🚚 ประเภท: ${ty.toUpperCase()} | ${tr === '6' ? 'รถ 6 ล้อ' : 'รถเทรลเลอร์'} | ความหนา: ${t} ซม.</div>`;
-    h += `<div class="truck-detail">📦 จำนวนอิฐ: <strong>${b}</strong> ก้อน</div>`;
-    h += `<div class="truck-detail">📋 จำนวนพาเลท: <strong>${pn}</strong> พาเลท (${pp} ก้อน/พาเลท)</div>`;
-    h += `<div class="truck-detail truck-needed">🚚 จำนวนรถที่ต้องการ: <strong>${tn}</strong> คัน</div>`;
+    let h = `<div class="truck-info"><i class="fas fa-truck"></i> ประเภท: <strong>${ty.toUpperCase()}</strong> | ${tr === '6' ? 'รถ 6 ล้อ' : 'รถเทรลเลอร์'} | ความหนา: <strong>${t} ซม.</strong></div>`;
+    h += `<div class="truck-detail"><i class="fas fa-cube"></i> จำนวนอิฐ: <strong>${b}</strong> ก้อน</div>`;
+    h += `<div class="truck-detail"><i class="fas fa-palette"></i> จำนวนพาเลท: <strong>${pn}</strong> พาเลท (${pp} ก้อน/พาเลท)</div>`;
+    h += `<div class="truck-needed"><i class="fas fa-exclamation-circle"></i> จำนวนรถที่ต้องการ: <strong>${tn}</strong> คัน</div>`;
     document.getElementById(id).innerHTML = h;
     document.getElementById(id).classList.add('show');
 }
 
 function addWall() {
     const h = `<div class="wall-item" id="wall${++wallId}">
-        <div class="wall-header"><h3>ผนัง ${wallId}</h3><button class="btn-remove" onclick="delWall(${wallId})">ลบ</button></div>
+        <div class="wall-header"><h3><i class="fas fa-cube"></i> ผนัง ${wallId}</h3><button class="btn-remove" onclick="delWall(${wallId})"><i class="fas fa-trash"></i> ลบ</button></div>
         <div class="form-row">
-            <div><label>กว้าง (ม.):</label><input type="number" class="wall-width" step="0.01" min="0" placeholder="เช่น 5" onchange="calc2()"></div>
-            <div><label>สูง (ม.):</label><input type="number" class="wall-height" step="0.01" min="0" placeholder="เช่น 3" onchange="calc2()"></div>
+            <div><label><i class="fas fa-arrows-alt-h"></i> กว้าง (ม.):</label><input type="number" class="wall-width" step="0.01" min="0" placeholder="เช่น 5" onchange="calc2()"></div>
+            <div><label><i class="fas fa-arrows-alt-v"></i> สูง (ม.):</label><input type="number" class="wall-height" step="0.01" min="0" placeholder="เช่น 3" onchange="calc2()"></div>
         </div>
-        <div class="wall-area">0.00 ตร.ม.</div>
+        <div class="wall-area"><i class="fas fa-chart-area"></i> 0.00 ตร.ม.</div>
     </div>`;
     document.getElementById('walls').insertAdjacentHTML('beforeend', h);
     calc2();
@@ -762,13 +944,13 @@ function addWall() {
 
 function addOpening() {
     const h = `<div class="opening-item" id="opening${++openingId}">
-        <div class="wall-header"><h3>ช่องเปิด ${openingId}</h3><button class="btn-remove" onclick="delOpening(${openingId})">ลบ</button></div>
+        <div class="wall-header"><h3><i class="fas fa-door-open"></i> ช่องเปิด ${openingId}</h3><button class="btn-remove" onclick="delOpening(${openingId})"><i class="fas fa-trash"></i> ลบ</button></div>
         <div class="form-row">
-            <div><label>กว้าง (ม.):</label><input type="number" class="opening-width" step="0.01" min="0" placeholder="เช่น 1" onchange="calc2()"></div>
-            <div><label>สูง (ม.):</label><input type="number" class="opening-height" step="0.01" min="0" placeholder="เช่น 2" onchange="calc2()"></div>
-            <div><label>จำนวน:</label><input type="number" class="opening-qty" step="1" min="0" value="1" placeholder="เช่น 1" onchange="calc2()"></div>
+            <div><label><i class="fas fa-arrows-alt-h"></i> กว้าง (ม.):</label><input type="number" class="opening-width" step="0.01" min="0" placeholder="เช่น 1" onchange="calc2()"></div>
+            <div><label><i class="fas fa-arrows-alt-v"></i> สูง (ม.):</label><input type="number" class="opening-height" step="0.01" min="0" placeholder="เช่น 2" onchange="calc2()"></div>
+            <div><label><i class="fas fa-list-ol"></i> จำนวน:</label><input type="number" class="opening-qty" step="1" min="0" value="1" placeholder="เช่น 1" onchange="calc2()"></div>
         </div>
-        <div class="opening-area">0.00 ตร.ม.</div>
+        <div class="opening-area"><i class="fas fa-chart-area"></i> 0.00 ตร.ม.</div>
     </div>`;
     document.getElementById('openings').insertAdjacentHTML('beforeend', h);
     calc2();
