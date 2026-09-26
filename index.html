@@ -18,992 +18,1546 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Qcon - โปรแกรมคำนวนวัสดุผนัง</title>
+    <title>Q-CON Pro Wall & Lintel Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            font-family: 'Segoe UI', 'Helvetica Neue', sans-serif; 
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: #333;
+        :root {
+            --primary: #ff6b00;
+            --primary-hover: #e05e00;
+            --primary-light: #fff7ed;
+            --primary-border: #fed7aa;
+            --dark: #1e293b;
+            --gray-sub: #64748b;
+            --border-color: #e2e8f0;
+            --white: #ffffff;
+            --success: #16a34a;
+            --success-bg: #f0fdf4;
+            --warning: #d97706;
+            --warning-bg: #fffbeb;
+            --danger: #dc2626;
+            --danger-bg: #fef2f2;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
         }
-        
-        .container { 
-            max-width: 1400px; 
-            margin: 0 auto;
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
+        body { background-color: #fbfbfd; color: var(--dark); min-height: 100vh; padding: 25px 16px; }
+        .container { max-width: 1240px; margin: 0 auto; }
+
+        /* Login Gate Screen */
+        #loginGateScreen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(135deg, #fff7ed 0%, #f1f5f9 100%);
+            display: flex; align-items: center; justify-content: center; z-index: 10000;
         }
-        
-        .header { 
-            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
-            color: white; 
-            padding: 60px 40px; 
-            text-align: center;
-            border-radius: 20px;
-            margin-bottom: 40px;
-            box-shadow: 0 20px 60px rgba(0, 212, 255, 0.3);
+
+        .login-box {
+            background: #ffffff; padding: 36px 32px; border-radius: var(--radius-lg);
+            width: 95%; max-width: 440px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color); text-align: center;
+        }
+
+        .login-brand-icon {
+            width: 64px; height: 64px; background: var(--primary); color: #fff;
+            border-radius: 16px; display: inline-flex; align-items: center; justify-content: center;
+            font-size: 30px; margin-bottom: 16px; box-shadow: 0 8px 20px rgba(255, 107, 0, 0.3);
+        }
+
+        .app-header {
+            background: var(--white); border: 1px solid var(--border-color); border-radius: var(--radius-lg);
+            padding: 20px 26px; margin-bottom: 20px; display: flex; align-items: center;
+            justify-content: space-between; box-shadow: var(--shadow); position: relative;
+        }
+
+        .app-header::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: var(--primary);
+        }
+
+        .brand-title { display: flex; align-items: center; gap: 14px; }
+        .brand-icon {
+            width: 48px; height: 48px; background: var(--primary); color: var(--white);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 22px; box-shadow: 0 6px 16px rgba(255, 107, 0, 0.28);
+        }
+
+        .user-panel { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .user-badge {
+            background: #f1f5f9; padding: 7px 14px; border-radius: 30px;
+            font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 8px;
+        }
+
+        .card {
+            background: var(--white); border: 1px solid var(--border-color);
+            border-radius: var(--radius-md); padding: 22px; margin-bottom: 18px; box-shadow: var(--shadow);
+        }
+
+        .card-title {
+            font-size: 1.12rem; font-weight: 600; color: var(--dark);
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9;
+        }
+
+        .grid-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+        label { font-size: 0.86rem; font-weight: 500; color: #475569; display: block; margin-bottom: 5px; }
+        label.required::after { content: " *"; color: var(--danger); font-weight: bold; }
+
+        input, select {
+            width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-sm); font-size: 0.92rem; outline: none; transition: all 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.12);
+        }
+
+        input.input-error { border-color: var(--danger) !important; background-color: #fffaf0; }
+
+        /* กล่องครอบช่องรหัสผ่านและปุ่มสลับแสดง/ซ่อนเพื่อรองรับการเปลี่ยนภาษา */
+        .password-wrapper {
             position: relative;
-            overflow: hidden;
-        }
-        
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
-        }
-        
-        .header-content {
-            position: relative;
-            z-index: 1;
-        }
-        
-        .header h1 { 
-            font-size: 3.5em; 
-            margin-bottom: 15px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.95;
-            font-weight: 300;
-            letter-spacing: 0.5px;
-        }
-        
-        .method-tabs {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 40px;
-            flex-wrap: wrap;
-        }
-        
-        .method-btn {
-            flex: 1;
-            min-width: 250px;
-            padding: 18px 30px;
-            border: 2px solid rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.08);
-            color: white;
-            cursor: pointer;
-            font-size: 1.05em;
-            font-weight: 600;
-            border-radius: 12px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-        }
-        
-        .method-btn:hover {
-            background: rgba(255,255,255,0.15);
-            border-color: rgba(255,255,255,0.5);
-            transform: translateY(-3px);
-        }
-        
-        .method-btn.active {
-            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
-            border-color: white;
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
-        }
-        
-        .section { 
-            margin-bottom: 32px; 
-            background: white;
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            border-top: 5px solid #00d4ff;
-            transition: all 0.3s ease;
-        }
-        
-        .section:hover {
-            box-shadow: 0 12px 48px rgba(0,0,0,0.15);
-        }
-        
-        .section-title { 
-            font-size: 1.4em; 
-            font-weight: 700; 
-            color: #1a1a2e;
-            margin-bottom: 24px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        
-        .section-title i {
-            font-size: 1.3em;
-            color: #00d4ff;
-        }
-        
-        .form-row { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
-            gap: 24px; 
-        }
-        
-        label { 
-            font-weight: 600; 
-            display: block;
-            margin-bottom: 10px;
-            color: #2c3e50;
-            font-size: 0.95em;
-            letter-spacing: 0.3px;
-        }
-        
-        input, select { 
-            width: 100%; 
-            padding: 14px 18px; 
-            border: 2px solid #e0e0e0; 
-            border-radius: 10px;
-            font-size: 0.98em;
-            transition: all 0.3s ease;
-            background: #fafafa;
-        }
-        
-        input:focus, select:focus { 
-            outline: none; 
-            border-color: #00d4ff;
-            background: #fff;
-            box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.1);
-        }
-        
-        .radio-group, .checkbox-group { 
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 14px;
-            margin: 16px 0;
-        }
-        
-        .radio-item, .checkbox-item { 
-            display: flex; 
-            align-items: center; 
-            gap: 10px;
-            padding: 12px 14px;
-            border-radius: 10px;
-            background: #f8f9fa;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .radio-item:hover, .checkbox-item:hover {
-            background: #f0f7ff;
-            border-color: #00d4ff;
-        }
-        
-        input[type="radio"], input[type="checkbox"] { 
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            accent-color: #00d4ff;
-        }
-        
-        button { 
-            padding: 14px 32px; 
-            font-size: 1em; 
-            font-weight: 600; 
-            border: none; 
-            border-radius: 10px; 
-            cursor: pointer;
-            margin: 8px 8px 8px 0;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            letter-spacing: 0.5px;
-        }
-        
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-        
-        button:active {
-            transform: translateY(-1px);
-        }
-        
-        .btn-calc { 
-            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
-            color: white;
-        }
-        
-        .btn-reset { 
-            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
-            color: white;
-        }
-        
-        .btn-add {
-            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
-            color: white;
             width: 100%;
         }
-        
-        .results { 
-            display: none; 
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+
+        .password-wrapper input {
+            padding-right: 44px;
+        }
+
+        .toggle-password-btn {
+            position: absolute;
+            right: 8px;
+            background: transparent;
             border: none;
-            border-radius: 16px; 
-            padding: 35px; 
-            margin-top: 30px;
-            box-shadow: 0 12px 40px rgba(40, 167, 69, 0.2);
-            animation: slideIn 0.5s ease;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .results.show { 
-            display: block;
-        }
-        
-        .results-title {
-            font-size: 1.8em;
-            font-weight: 800;
-            color: #155724;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .results-title i {
-            font-size: 1.5em;
-        }
-        
-        .result-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
-            gap: 20px; 
-        }
-        
-        .result-card { 
-            background: white;
-            border: none;
-            border-radius: 14px; 
-            padding: 28px; 
-            text-align: center;
-            box-shadow: 0 8px 24px rgba(40, 167, 69, 0.15);
-            transition: all 0.3s ease;
-            border-left: 5px solid #28a745;
-        }
-        
-        .result-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 35px rgba(40, 167, 69, 0.25);
-        }
-        
-        .result-card .label { 
-            font-size: 0.95em; 
-            color: #666;
-            margin-bottom: 14px;
-            font-weight: 600;
-        }
-        
-        .result-card .value { 
-            font-size: 2.8em; 
-            font-weight: 800; 
-            color: #27ae60;
-            margin: 12px 0;
-        }
-        
-        .result-card .unit { 
-            font-size: 0.85em; 
-            color: #999;
-            margin-top: 12px;
-            font-weight: 500;
-        }
-        
-        .result-card .note {
-            font-size: 0.8em;
-            color: #555;
-            margin-top: 14px;
-            padding-top: 12px;
-            border-top: 1px solid #eee;
-            line-height: 1.5;
-        }
-        
-        .truck-section {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            border: none;
-            border-radius: 16px;
-            padding: 35px;
-            margin-top: 30px;
-            box-shadow: 0 12px 40px rgba(255, 152, 0, 0.2);
-        }
-        
-        .truck-section .section-title {
-            color: #e65100;
-            border-bottom: 2px solid #ffe082;
-        }
-        
-        .truck-controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-            margin: 24px 0;
-        }
-        
-        .truck-result {
-            background: white;
-            border: none;
-            border-radius: 14px;
-            padding: 28px;
-            margin-top: 20px;
-            display: none;
-            box-shadow: 0 8px 24px rgba(255, 152, 0, 0.15);
-        }
-        
-        .truck-result.show {
-            display: block;
-            animation: slideIn 0.5s ease;
-        }
-        
-        .truck-info {
-            background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin: 16px 0;
-            font-weight: 600;
-            box-shadow: 0 8px 20px rgba(230, 81, 0, 0.3);
-        }
-        
-        .truck-detail {
-            background: #f5f5f5;
-            padding: 16px;
-            margin: 14px 0;
-            border-radius: 10px;
-            border-left: 5px solid #ff9800;
-            font-weight: 500;
-        }
-        
-        .truck-needed {
-            background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 100%);
-            border-left-color: #e74c3c;
-            font-weight: 700;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.2);
-        }
-        
-        .truck-needed strong {
-            color: #e74c3c;
-            font-size: 1.6em;
-        }
-        
-        .wall-item, .opening-item { 
-            background: white; 
-            border: 2px solid #00d4ff;
-            border-radius: 12px; 
-            padding: 22px; 
-            margin-bottom: 18px;
-            transition: all 0.3s ease;
-        }
-        
-        .wall-item:hover, .opening-item:hover {
-            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.15);
-        }
-        
-        .opening-item {
-            border-color: #e74c3c;
-        }
-        
-        .wall-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 16px;
-        }
-        
-        .wall-header h3 { 
-            color: #2980b9;
-            font-size: 1.15em;
-            font-weight: 700;
-        }
-        
-        .opening-item .wall-header h3 {
-            color: #e74c3c;
-        }
-        
-        .btn-remove { 
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            color: white; 
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
+            color: #94a3b8;
             cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-remove:hover {
-            transform: scale(1.05);
-        }
-        
-        .wall-area, .opening-area { 
-            background: #f0f8f5;
-            padding: 14px; 
-            border-radius: 10px; 
-            font-weight: 700; 
-            color: #27ae60; 
-            text-align: center; 
-            margin-top: 16px;
-            border: 2px solid #27ae60;
-        }
-        
-        .opening-area {
-            background: #ffe8e8;
-            color: #e74c3c;
-            border-color: #e74c3c;
-        }
-        
-        .summary-box { 
-            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
-            color: white; 
-            padding: 28px; 
-            border-radius: 14px; 
-            margin: 24px 0;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-        }
-        
-        .summary-row { 
-            display: flex; 
-            justify-content: space-between; 
-            padding: 14px 0; 
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            align-items: center;
-        }
-        
-        .summary-row:last-child {
-            border-bottom: none;
-        }
-        
-        .summary-row span:last-child {
-            font-weight: 700;
-            color: #ffd700;
-            font-size: 1.1em;
-        }
-        
-        .method-content {
-            display: none;
-        }
-        
-        .method-content.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .info-box {
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            border-left: 5px solid #2196f3;
-            padding: 18px;
-            margin: 18px 0;
-            border-radius: 10px;
-            font-size: 0.98em;
-            color: #1565c0;
-            font-weight: 500;
-            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.1);
-        }
-        
-        .button-group {
+            padding: 6px;
             display: flex;
-            gap: 12px;
-            margin-top: 30px;
-            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: color 0.2s;
         }
-        
-        .button-group button {
-            flex: 1;
-            min-width: 140px;
+
+        .toggle-password-btn:hover {
+            color: var(--primary);
         }
+
+        .nav-tabs {
+            display: flex; gap: 10px; margin-bottom: 20px; background: #f1f5f9; padding: 5px; border-radius: 12px;
+        }
+
+        .tab-btn {
+            flex: 1; padding: 11px 16px; border: none; background: transparent;
+            color: var(--gray-sub); font-size: 0.95rem; font-weight: 600; border-radius: 10px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+
+        .tab-btn.active { background: var(--white); color: var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        .wall-card {
+            background: #ffffff; border: 1.5px solid var(--border-color); border-radius: var(--radius-md);
+            padding: 20px; margin-bottom: 16px;
+        }
+
+        .wall-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .wall-badge {
+            background: var(--primary-light); color: var(--primary); padding: 5px 12px;
+            border-radius: 20px; font-weight: 600; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px;
+        }
+
+        .btn-delete {
+            background: transparent; border: none; color: #94a3b8; cursor: pointer;
+            padding: 5px 8px; border-radius: 6px; font-size: 0.88rem;
+        }
+
+        .btn-delete:hover { background: var(--danger-bg); color: var(--danger); }
+
+        .openings-panel {
+            background: #fafbfc; border: 1px dashed #cbd5e1; border-radius: 10px;
+            padding: 14px; margin-top: 14px;
+        }
+
+        .openings-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .opening-row {
+            display: grid; grid-template-columns: 1.5fr 1fr 1fr 0.8fr 1fr 30px;
+            gap: 8px; align-items: center; background: var(--white);
+            border: 1px solid #e2e8f0; padding: 8px 10px; border-radius: 8px; margin-bottom: 8px;
+        }
+
+        .wall-lintel-status {
+            margin-top: 12px; padding: 10px 14px; border-radius: 8px; font-size: 0.86rem;
+            display: flex; align-items: flex-start; gap: 10px; line-height: 1.5;
+        }
+
+        .status-ok { background: var(--success-bg); border: 1px solid #bbf7d0; color: #15803d; }
+        .status-warn { background: var(--warning-bg); border: 1px solid #fde68a; color: #b45309; }
+        .status-danger { background: var(--danger-bg); border: 1px solid #fecaca; color: var(--danger); }
+
+        .btn-primary {
+            background: var(--primary); color: var(--white); border: none; padding: 12px 24px;
+            font-size: 0.95rem; font-weight: 600; border-radius: 8px; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+
+        .btn-primary:hover { background: var(--primary-hover); }
+
+        .btn-secondary {
+            background: #e2e8f0; color: #475569; border: none; padding: 12px 20px;
+            font-size: 0.95rem; font-weight: 600; border-radius: 8px; cursor: pointer;
+        }
+
+        .btn-outline {
+            background: var(--white); border: 1.5px dashed var(--primary); color: var(--primary);
+            padding: 7px 14px; font-size: 0.88rem; font-weight: 600; border-radius: 8px; cursor: pointer;
+        }
+
+        .summary-dashboard {
+            background: var(--white); border: 2px solid var(--primary-border); border-radius: var(--radius-md);
+            padding: 20px; margin: 20px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px;
+        }
+
+        .stat-card { padding: 10px 12px; border-radius: 8px; background: #fffaf5; border-left: 4px solid var(--primary); }
+        .stat-card .label { font-size: 0.8rem; color: #64748b; }
+        .stat-card .num { font-size: 1.5rem; font-weight: 700; color: var(--dark); margin-top: 2px; }
+
+        .results-box { display: none; margin-top: 20px; }
+        .results-box.show { display: block; }
+        .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
+        .res-card {
+            background: var(--white); border: 1px solid var(--border-color); border-radius: var(--radius-md);
+            padding: 16px; text-align: center; border-top: 4px solid var(--primary);
+        }
+
+        .res-card .res-title { font-size: 0.86rem; color: var(--gray-sub); }
+        .res-card .res-qty { font-size: 1.7rem; font-weight: 700; color: var(--primary); margin: 6px 0; }
+
+        .custom-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.88rem; }
+        .custom-table th { background: #fff7ed; color: #9a3412; padding: 9px 12px; text-align: left; border: 1px solid #fed7aa; }
+        .custom-table td { padding: 9px 12px; border: 1px solid var(--border-color); color: #334155; }
+        .custom-table tr:nth-child(even) { background: #fafbfc; }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center; z-index: 9999;
+        }
+
+        .modal-card {
+            background: #ffffff; border-radius: 16px; width: 95%; max-width: 520px;
+            padding: 26px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); position: relative;
+        }
+
+        .modal-card.wide { max-width: 950px; max-height: 85vh; overflow-y: auto; }
+
+        .strength-meter { height: 6px; width: 100%; background: #e2e8f0; border-radius: 4px; margin-top: 6px; overflow: hidden; }
+        .strength-bar { height: 100%; width: 0%; transition: all 0.3s; }
+        .strength-text { font-size: 0.78rem; font-weight: 600; margin-top: 4px; text-align: right; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <div class="header-content">
-            <h1><i class="fas fa-hammer"></i> QCON</h1>
-            <p>ระบบคำนวนวัสดุก่อสร้างอิฐมวลเบา ปูนก่อ ปูนฉาบ Metal strap และรถบรรทุก</p>
+<!-- LOGIN GATE SCREEN: บังคับล็อกอินก่อนเข้าใช้งาน -->
+<div id="loginGateScreen">
+    <div class="login-box">
+        <div class="login-brand-icon"><i class="fas fa-cubes"></i></div>
+        <h2 style="font-size:1.4rem; color:var(--dark); margin-bottom:6px;">เข้าสู่ระบบ Q-CON Calculator</h2>
+        <p style="font-size:0.86rem; color:#64748b; margin-bottom:20px;">กรุณาระบุชื่อผู้ใช้งานและรหัสผ่านเพื่อเข้าใช้งาน</p>
+        
+        <div style="text-align:left; margin-bottom:14px;">
+            <label>ชื่อผู้ใช้งาน (Username):</label>
+            <input type="text" id="gateLoginUser" placeholder="เช่น admin" autocomplete="username">
+        </div>
+        <div style="text-align:left; margin-bottom:16px;">
+            <label>รหัสผ่าน (Password):</label>
+            <div class="password-wrapper">
+                <input type="password" id="gateLoginPass" placeholder="กรอกรหัสผ่าน" autocomplete="current-password">
+                <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('gateLoginPass', this)" title="แสดง/ซ่อนรหัสผ่าน">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:18px; text-align:left;">
+            <input type="checkbox" id="gateRememberMe" checked style="width:auto;">
+            <label for="gateRememberMe" style="margin:0; cursor:pointer;">จดจำการเข้าสู่ระบบ</label>
+        </div>
+
+        <div id="gateLoginError" style="color:var(--danger); font-size:0.86rem; margin-bottom:14px; display:none;"></div>
+
+        <button class="btn-primary" style="width:100%; justify-content:center; padding:12px;" onclick="performGateLogin()">
+            <i class="fas fa-sign-in-alt"></i> เข้าสู่ระบบ
+        </button>
+        <p style="font-size:0.78rem; color:#94a3b8; margin-top:14px;">บัญชีเริ่มต้นระบบ: admin / Password123!</p>
+    </div>
+</div>
+
+<!-- MAIN APPLICATION -->
+<div class="container" id="mainAppSection" style="display:none;">
+    <header class="app-header">
+        <div class="brand-title">
+            <div class="brand-icon"><i class="fas fa-cubes"></i></div>
+            <div>
+                <h1 style="font-size:1.5rem;">Q-CON Pro Wall & Lintel Calculator</h1>
+                <p style="font-size:0.84rem; color:#64748b;">ระบบคำนวณและประเมินเสาเอ็น-ทับหลัง เชื่อมต่อฐานข้อมูล Google Sheets อัตโนมัติ</p>
+            </div>
+        </div>
+
+        <div class="user-panel">
+            <button class="btn-secondary" style="background:#0284c7; color:#fff;" onclick="openHistoryModal()"><i class="fas fa-history"></i> ประวัติรายการคำนวณ</button>
+            <span id="adminAddUserBtnSlot"></span>
+            <div id="userBadgeDisplay" class="user-badge"></div>
+            <button class="btn-secondary" style="padding:7px 12px; font-size:0.85rem;" onclick="openChangePwdModal(false)"><i class="fas fa-key"></i> เปลี่ยนรหัส</button>
+            <button class="btn-secondary" style="padding:7px 12px; font-size:0.85rem;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> ออกจากระบบ</button>
+        </div>
+    </header>
+
+    <!-- SECTION 1: ข้อมูลโครงการ -->
+    <div class="card" id="projectInfoCard">
+        <div class="card-title">
+            <span><i class="fas fa-clipboard-list" style="color:var(--primary);"></i> ข้อมูลโครงการและหน่วยงาน</span>
+            <span id="calcIdBadge" style="font-size:0.85rem; color:#0284c7; font-weight:600;"></span>
+        </div>
+        <div class="grid-row">
+            <div>
+                <label for="docDate" class="required">วัน/เดือน/ปี:</label>
+                <input type="date" id="docDate">
+            </div>
+            <div>
+                <label for="storeName" class="required">ชื่อร้านค้าตัวแทนจำหน่าย:</label>
+                <input type="text" id="storeName" placeholder="เช่น บจก. เอสซีจี โฮมเซ็นเตอร์">
+            </div>
+            <div>
+                <label for="projectName" class="required">ชื่อหน่วยงาน / โครงการ:</label>
+                <input type="text" id="projectName" placeholder="เช่น บ้านเดี่ยว 2 ชั้น">
+            </div>
+            <div>
+                <label for="district" class="required">อำเภอ / เขต:</label>
+                <input type="text" id="district" placeholder="เช่น เมือง">
+            </div>
+            <div>
+                <label for="province" class="required">จังหวัด:</label>
+                <input type="text" id="province" placeholder="เช่น นครราชสีมา">
+            </div>
         </div>
     </div>
 
-    <div class="method-tabs">
-        <button class="method-btn active" onclick="switchMethod(1)"><i class="fas fa-ruler"></i> วิธีที่ 1: ป้อนพื้นที่รวม</button>
-        <button class="method-btn" onclick="switchMethod(2)"><i class="fas fa-tape"></i> วิธีที่ 2: ป้อนมิติแต่ละด้าน</button>
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchMethod(2)" id="tabBtn2"><i class="fas fa-border-all"></i> วิธีที่ 2: ป้อนข้อมูลรายผนัง + ช่องเปิด + เสาเอ็นทับหลัง</button>
+        <button class="tab-btn" onclick="switchMethod(1)" id="tabBtn1"><i class="fas fa-layer-group"></i> วิธีที่ 1: ป้อนพื้นที่รวม</button>
     </div>
 
-    <!-- METHOD 1 -->
-    <div id="method1" class="method-content active">
-        <div class="section">
-            <div class="section-title"><i class="fas fa-chart-area"></i> ป้อนข้อมูลพื้นที่ผนัง</div>
-            <div class="form-row">
-                <div>
-                    <label for="area1"><i class="fas fa-square"></i> พื้นที่ผนังทั้งหมด (ตร.ม.):</label>
-                    <input type="number" id="area1" step="0.01" min="0" placeholder="เช่น 100" oninput="calc1()">
-                </div>
+    <!-- Options Card -->
+    <div class="card">
+        <div class="card-title"><span><i class="fas fa-sliders-h" style="color:var(--primary);"></i> ตัวเลือกปูนฉาบและส่วนเผื่อวัสดุ (Waste Allowance)</span></div>
+        <div class="grid-row">
+            <div>
+                <label>การฉาบปูน:</label>
+                <select id="plasterOption">
+                    <option value="both_1">ฉาบ 2 ด้าน (หนา 1.0 ซม. - 2.3 ตร.ม./ถุง)</option>
+                    <option value="both_125">ฉาบ 2 ด้าน (หนา 1.25 ซม. - 2.0 ตร.ม./ถุง)</option>
+                    <option value="single_1">ฉาบด้านเดียว (หนา 1.0 ซม. - 2.3 ตร.ม./ถุง)</option>
+                    <option value="none">ไม่คิดงานฉาบปูน</option>
+                </select>
             </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title"><i class="fas fa-arrows-alt-h"></i> ความหนาผนัง</div>
-            <div class="radio-group">
-                <div class="radio-item"><input type="radio" id="t1" name="thick1" value="7.5" oninput="calc1()"><label for="t1">7.5 ซม</label></div>
-                <div class="radio-item"><input type="radio" id="t2" name="thick1" value="10" oninput="calc1()"><label for="t2">10 ซม</label></div>
-                <div class="radio-item"><input type="radio" id="t3" name="thick1" value="12.5" oninput="calc1()"><label for="t3">12.5 ซม</label></div>
-                <div class="radio-item"><input type="radio" id="t4" name="thick1" value="15" checked oninput="calc1()"><label for="t4">15 ซม</label></div>
-                <div class="radio-item"><input type="radio" id="t5" name="thick1" value="17.5" oninput="calc1()"><label for="t5">17.5 ซม</label></div>
-                <div class="radio-item"><input type="radio" id="t6" name="thick1" value="20" oninput="calc1()"><label for="t6">20 ซม</label></div>
-                <div class="radio-item"><input type="radio" id="t7" name="thick1" value="25" oninput="calc1()"><label for="t7">25 ซม</label></div>
+            <div>
+                <label>ส่วนเผื่อวัสดุก่อ/ฉาบ (%):</label>
+                <select id="wasteSelect">
+                    <option value="5" selected>เผื่อ 5% (มาตรฐานแนะนำ)</option>
+                    <option value="3">เผื่อ 3%</option>
+                    <option value="10">เผื่อ 10%</option>
+                    <option value="0">0% (ไม่เผื่อเศษสูญเสีย)</option>
+                </select>
             </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title"><i class="fas fa-check-circle"></i> เลือกสินค้า</div>
-            <div class="checkbox-group">
-                <div class="checkbox-item"><input type="checkbox" id="b1" checked oninput="calc1()"><label for="b1">🧱 อิฐมวลเบา</label></div>
-                <div class="checkbox-item"><input type="checkbox" id="m1" checked oninput="calc1()"><label for="m1">🛠️ ปูนก่อ</label></div>
-                <div class="checkbox-item"><input type="checkbox" id="pl1" checked oninput="calc1()"><label for="pl1">🎨 ปูนฉาบ</label></div>
-                <div class="checkbox-item"><input type="checkbox" id="ms1" checked oninput="calc1()"><label for="ms1">🔗 Metal strap</label></div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title"><i class="fas fa-paint-roller"></i> ตัวเลือกปูนฉาบ</div>
-            <div class="checkbox-group">
-                <div class="checkbox-item"><input type="checkbox" id="p1" checked oninput="calc1()"><label for="p1">ฉาบปูนเต็มผนัง (ฉาบ 2 ด้าน)</label></div>
-            </div>
-            <div class="radio-group">
-                <div class="radio-item"><input type="radio" id="pthick1a" name="pthick1" value="1" checked oninput="calc1()"><label for="pthick1a">1.00 ซม (ได้ 2.3 ตร.ม./ถุง)</label></div>
-                <div class="radio-item"><input type="radio" id="pthick1b" name="pthick1" value="1.25" oninput="calc1()"><label for="pthick1b">1.25 ซม (ได้ 2.0 ตร.ม./ถุง)</label></div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title"><i class="fas fa-sliders-h"></i> ส่วนเผื่อวัสดุ (%)</div>
-            <div class="form-row">
-                <div>
-                    <label for="ba1">อิฐ (%):</label>
-                    <select id="ba1" oninput="calc1()">
-                        <option value="0">0%</option>
-                        <option value="3">3%</option>
-                        <option value="5" selected>5% (แนะนำ)</option>
-                        <option value="10">10%</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="ma1">ปูนก่อ (%):</label>
-                    <select id="ma1" oninput="calc1()">
-                        <option value="0">0%</option>
-                        <option value="3" selected>3% (แนะนำ)</option>
-                        <option value="5">5%</option>
-                        <option value="10">10%</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="pa1">ปูนฉาบ (%):</label>
-                    <select id="pa1" oninput="calc1()">
-                        <option value="0">0%</option>
-                        <option value="3">3%</option>
-                        <option value="5" selected>5% (แนะนำ)</option>
-                        <option value="10">10%</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="msa1">Metal strap (%):</label>
-                    <select id="msa1" oninput="calc1()">
-                        <option value="0">0%</option>
-                        <option value="3" selected>3% (แนะนำ)</option>
-                        <option value="5">5%</option>
-                        <option value="10">10%</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="button-group">
-            <button class="btn-calc" onclick="calc1()"><i class="fas fa-calculator"></i> คำนวนวัสดุ</button>
-            <button class="btn-reset" onclick="reset1()"><i class="fas fa-redo"></i> ล้างข้อมูล</button>
-        </div>
-
-        <div class="results" id="res1"></div>
-
-        <div class="truck-section" id="truck1" style="display:none;">
-            <div class="section-title"><i class="fas fa-truck"></i> คำนวนรถบรรทุก</div>
-            <div class="truck-controls">
-                <div>
-                    <label for="g1Type"><i class="fas fa-tag"></i> ประเภท:</label>
-                    <select id="g1Type" onchange="calcTruck1()">
-                        <option value="g2">G2</option>
-                        <option value="g4">G4</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="g1Truck"><i class="fas fa-car"></i> ประเภทรถ:</label>
-                    <select id="g1Truck" onchange="calcTruck1()">
-                        <option value="6">รถ 6 ล้อ</option>
-                        <option value="trailer">รถเทรลเลอร์</option>
-                    </select>
-                </div>
-            </div>
-            <div class="truck-result" id="truckRes1"></div>
         </div>
     </div>
 
-    <!-- METHOD 2 -->
-    <div id="method2" class="method-content">
-        <div class="section">
-            <div class="section-title"><i class="fas fa-arrows-alt-h"></i> ความหนาผนัง</div>
-            <div class="radio-group">
-                <div class="radio-item"><input type="radio" id="t21" name="thick2" value="7.5" oninput="calc2()"><label for="t21">7.5 ซม</label></div>
-                <div class="radio-item"><input type="radio" id="t22" name="thick2" value="10" oninput="calc2()"><label for="t22">10 ซม</label></div>
-                <div class="radio-item"><input type="radio" id="t23" name="thick2" value="12.5" oninput="calc2()"><label for="t23">12.5 ซม</label></div>
-                <div class="radio-item"><input type="radio" id="t24" name="thick2" value="15" checked oninput="calc2()"><label for="t24">15 ซม</label></div>
-                <div class="radio-item"><input type="radio" id="t25" name="thick2" value="17.5" oninput="calc2()"><label for="t25">17.5 ซม</label></div>
-                <div class="radio-item"><input type="radio" id="t26" name="thick2" value="20" oninput="calc2()"><label for="t26">20 ซม</label></div>
-                <div class="radio-item"><input type="radio" id="t27" name="thick2" value="25" oninput="calc2()"><label for="t27">25 ซม</label></div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title"><i class="fas fa-check-circle"></i> เลือกสินค้า</div>
-            <div class="checkbox-group">
-                <div class="checkbox-item"><input type="checkbox" id="b2" checked oninput="calc2()"><label for="b2">🧱 อิฐมวลเบา</label></div>
-                <div class="checkbox-item"><input type="checkbox" id="m2" checked oninput="calc2()"><label for="m2">🛠️ ปูนก่อ</label></div>
-                <div class="checkbox-item"><input type="checkbox" id="pl2" checked oninput="calc2()"><label for="pl2">🎨 ปูนฉาบ</label></div>
-                <div class="checkbox-item"><input type="checkbox" id="ms2" checked oninput="calc2()"><label for="ms2">🔗 Metal strap</label></div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title"><i class="fas fa-paint-roller"></i> ตัวเลือกปูนฉาบ</div>
-            <div class="checkbox-group">
-                <div class="checkbox-item"><input type="checkbox" id="p2" checked oninput="calc2()"><label for="p2">ฉาบปูนเต็มผนัง (ฉาบ 2 ด้าน)</label></div>
-            </div>
-            <div class="radio-group">
-                <div class="radio-item"><input type="radio" id="pthick2a" name="pthick2" value="1" checked oninput="calc2()"><label for="pthick2a">1.00 ซม (ได้ 2.3 ตร.ม./ถุง)</label></div>
-                <div class="radio-item"><input type="radio" id="pthick2b" name="pthick2" value="1.25" oninput="calc2()"><label for="pthick2b">1.25 ซม (ได้ 2.0 ตร.ม./ถุง)</label></div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title"><i class="fas fa-cube"></i> ข้อมูลผนัง</div>
-            <div id="walls"></div>
-            <button class="btn-add" onclick="addWall()"><i class="fas fa-plus"></i> เพิ่มผนัง</button>
-        </div>
-
-        <div class="section">
-            <div class="section-title"><i class="fas fa-door-open"></i> ข้อมูลช่องเปิด (หลังมุก/ประตู)</div>
-            <div id="openings"></div>
-            <button class="btn-add" onclick="addOpening()"><i class="fas fa-plus"></i> เพิ่มช่องเปิด</button>
-        </div>
-
-        <div class="summary-box">
-            <div class="summary-row">
-                <span><i class="fas fa-chart-area"></i> พื้นที่ผนังรวม:</span>
-                <span id="total">0.00 ตร.ม.</span>
-            </div>
-            <div class="summary-row">
-                <span><i class="fas fa-door-open"></i> พื้นที่ช่องเปิดหักลบ:</span>
-                <span id="totalOpening">0.00 ตร.ม.</span>
-            </div>
-            <div class="summary-row" style="border-top: 2px solid rgba(255,255,255,0.3); padding-top: 16px; margin-top: 16px; font-size: 1.15em;">
-                <span><i class="fas fa-calculator"></i> พื้นที่สุทธิ:</span>
-                <span id="netArea">0.00 ตร.ม.</span>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title"><i class="fas fa-sliders-h"></i> ส่วนเผื่อวัสดุ (%)</div>
-            <div class="form-row">
+    <!-- METHOD 1 VIEW -->
+    <div id="method1View" style="display:none;">
+        <div class="card">
+            <div class="card-title"><span><i class="fas fa-chart-area" style="color:var(--primary);"></i> ข้อมูลพื้นที่ผนังรวม</span></div>
+            <div class="grid-row">
                 <div>
-                    <label for="ba2">อิฐ (%):</label>
-                    <select id="ba2" oninput="calc2()">
-                        <option value="0">0%</option>
-                        <option value="3">3%</option>
-                        <option value="5" selected>5% (แนะนำ)</option>
-                        <option value="10">10%</option>
-                    </select>
+                    <label for="flatArea" class="required">พื้นที่ผนังสุทธิรวม (ตร.ม.):</label>
+                    <input type="number" id="flatArea" step="0.1" min="0" placeholder="เช่น 150">
                 </div>
                 <div>
-                    <label for="ma2">ปูนก่อ (%):</label>
-                    <select id="ma2" oninput="calc2()">
-                        <option value="0">0%</option>
-                        <option value="3" selected>3% (แนะนำ)</option>
-                        <option value="5">5%</option>
-                        <option value="10">10%</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="pa2">ปูนฉาบ (%):</label>
-                    <select id="pa2" oninput="calc2()">
-                        <option value="0">0%</option>
-                        <option value="3">3%</option>
-                        <option value="5" selected>5% (แนะนำ)</option>
-                        <option value="10">10%</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="msa2">Metal strap (%):</label>
-                    <select id="msa2" oninput="calc2()">
-                        <option value="0">0%</option>
-                        <option value="3" selected>3% (แนะนำ)</option>
-                        <option value="5">5%</option>
-                        <option value="10">10%</option>
+                    <label>ความหนาบล็อก Q-CON:</label>
+                    <select id="m1Thick">
+                        <option value="7.5">7.5 ซม.</option>
+                        <option value="10" selected>10 ซม.</option>
+                        <option value="12.5">12.5 ซม.</option>
+                        <option value="15">15 ซม.</option>
+                        <option value="17.5">17.5 ซม.</option>
+                        <option value="20">20 ซม.</option>
                     </select>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="button-group">
-            <button class="btn-calc" onclick="calc2()"><i class="fas fa-calculator"></i> คำนวนวัสดุ</button>
-            <button class="btn-reset" onclick="reset2()"><i class="fas fa-redo"></i> ล้างข้อมูล</button>
+    <!-- METHOD 2 VIEW: Per-Wall Detailed -->
+    <div id="method2View">
+        <div class="card">
+            <div class="card-title">
+                <span><i class="fas fa-th-large" style="color:var(--primary);"></i> รายการแผงผนัง ช่องเปิด และเสาเอ็น-ทับหลังสำเร็จรูป</span>
+                <button class="btn-outline" onclick="addWall()"><i class="fas fa-plus"></i> เพิ่มผนังใหม่</button>
+            </div>
+            <div id="wallContainer"></div>
+            <button class="btn-outline" style="width: 100%; justify-content: center; padding: 12px; margin-top: 5px;" onclick="addWall()">
+                <i class="fas fa-plus-circle"></i> คลิกเพื่อเพิ่มแผงผนังถัดไป
+            </button>
+        </div>
+    </div>
+
+    <!-- Dashboard Summary -->
+    <div class="summary-dashboard">
+        <div class="stat-card">
+            <div class="label">พื้นที่ผนังรวม (Gross Area)</div>
+            <div class="num" id="statGross">0.00<span style="font-size:0.8rem; color:#94a3b8;"> ตร.ม.</span></div>
+        </div>
+        <div class="stat-card">
+            <div class="label">พื้นที่ช่องเปิดรวม (Openings)</div>
+            <div class="num" id="statOpenings" style="color:#d97706;">0.00<span style="font-size:0.8rem; color:#94a3b8;"> ตร.ม.</span></div>
+        </div>
+        <div class="stat-card" style="border-left-color: #16a34a;">
+            <div class="label">พื้นที่ก่อสุทธิ (Net Area)</div>
+            <div class="num" id="statNet" style="color:#16a34a;">0.00<span style="font-size:0.8rem; color:#94a3b8;"> ตร.ม.</span></div>
+        </div>
+        <div class="stat-card" style="border-left-color: #0284c7;">
+            <div class="label">คานทับหลังสำเร็จรูปรวม</div>
+            <div class="num" id="statLintelPieces" style="color:#0284c7;">0<span style="font-size:0.8rem; color:#94a3b8;"> ท่อน</span></div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="display:flex; gap:12px; margin-bottom: 25px; flex-wrap: wrap;">
+        <button class="btn-primary" onclick="validateCalculateAndAutoSave()"><i class="fas fa-calculator"></i> คำนวณรายการวัสดุ (บันทึกอัตโนมัติ)</button>
+        <button class="btn-secondary" onclick="resetForm()"><i class="fas fa-redo"></i> ล้างข้อมูลเพื่อเริ่มใหม่</button>
+    </div>
+
+    <!-- Results Output Section -->
+    <div class="results-box" id="resultContainer">
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-bottom: 12px;">
+            <button class="btn-secondary" style="background:#dc2626; color:#fff;" onclick="exportToPDF()"><i class="fas fa-file-pdf"></i> ส่งออกเป็น PDF</button>
+            <button class="btn-secondary" style="background:#0284c7; color:#fff;" onclick="exportToImage()"><i class="fas fa-file-image"></i> ส่งออกเป็นไฟล์ภาพ (PNG)</button>
         </div>
 
-        <div class="results" id="res2"></div>
-
-        <div class="truck-section" id="truck2" style="display:none;">
-            <div class="section-title"><i class="fas fa-truck"></i> คำนวนรถบรรทุก</div>
-            <div class="truck-controls">
-                <div>
-                    <label for="g2Type"><i class="fas fa-tag"></i> ประเภท:</label>
-                    <select id="g2Type" onchange="calcTruck2()">
-                        <option value="g2">G2</option>
-                        <option value="g4">G4</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="g2Truck"><i class="fas fa-car"></i> ประเภทรถ:</label>
-                    <select id="g2Truck" onchange="calcTruck2()">
-                        <option value="6">รถ 6 ล้อ</option>
-                        <option value="trailer">รถเทรลเลอร์</option>
-                    </select>
+        <div id="printableArea">
+            <div class="card">
+                <div class="card-title"><span><i class="fas fa-boxes-stacked" style="color:var(--primary);"></i> 1. สรุปรายการวัสดุหลักที่ต้องสั่งซื้อ</span></div>
+                <div id="brickBreakdownTable"></div>
+                <div class="res-grid" style="margin-top:16px;">
+                    <div class="res-card">
+                        <div class="res-title"><i class="fas fa-mortar-pestle"></i> ปูนก่อ Q-CON</div>
+                        <div class="res-qty" id="outMortar">0</div>
+                        <div class="res-sub">ถุง (50 กก.)</div>
+                    </div>
+                    <div class="res-card">
+                        <div class="res-title"><i class="fas fa-paint-roller"></i> ปูนฉาบ Q-CON</div>
+                        <div class="res-qty" id="outPlaster">0</div>
+                        <div class="res-sub" id="outPlasterSub">ถุง (50 กก.)</div>
+                    </div>
+                    <div class="res-card">
+                        <div class="res-title"><i class="fas fa-link"></i> Metal Strap</div>
+                        <div class="res-qty" id="outStrap">0</div>
+                        <div class="res-sub">ชิ้น (ยึดโครงสร้าง)</div>
+                    </div>
                 </div>
             </div>
-            <div class="truck-result" id="truckRes2"></div>
+
+            <div class="card">
+                <div class="card-title"><span><i class="fas fa-layer-group" style="color:var(--primary);"></i> 2. สรุปรายการสินค้าคานทับหลังสำเร็จรูป Q-CON ที่ต้องสั่งซื้อ (ไม่คิดเปอร์เซ็นต์เผื่อ)</span></div>
+                <div id="lintelTableContainer"></div>
+                <div id="castInPlaceNotice" class="note-box" style="display:none; background:#fffbeb; border-left:4px solid #f59e0b; padding:12px; margin-top:12px; border-radius:6px; color:#92400e;"></div>
+            </div>
+
+            <div class="card" style="background: #fffdfa; border-color: #fed7aa;">
+                <div class="card-title"><span><i class="fas fa-truck-moving" style="color:var(--primary);"></i> 3. ประมาณการการขนส่ง (Logistics)</span></div>
+                <div class="grid-row">
+                    <div>
+                        <label>เกรดบล็อก:</label>
+                        <select id="truckBlockGrade" onchange="calcLogistics()">
+                            <option value="g2">Q-CON G2</option>
+                            <option value="g4" selected>Q-CON G4</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>ประเภทรถบรรทุก:</label>
+                        <select id="truckTypeSelect" onchange="calcLogistics()">
+                            <option value="6wheel">รถ 6 ล้อ (บรรทุก ~6 พาเลท)</option>
+                            <option value="trailer">รถเทรลเลอร์ (บรรทุก ~20-22 พาเลท)</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="truckDetailOutput" style="margin-top: 15px;"></div>
+            </div>
         </div>
     </div>
 </div>
 
+<!-- ================= MODALS ================= -->
+
+<!-- 1. Change Password Modal (บังคับเปลี่ยนครั้งแรก หรือเปลี่ยนจากเมนู) -->
+<div class="modal-overlay" id="pwdModal">
+    <div class="modal-card">
+        <h3 id="pwdModalTitle" style="font-size:1.2rem; margin-bottom:14px; color:var(--dark);"><i class="fas fa-key" style="color:var(--primary);"></i> เปลี่ยนรหัสผ่าน</h3>
+        
+        <div style="margin-bottom:12px;">
+            <label>รหัสผ่านเดิม:</label>
+            <div class="password-wrapper">
+                <input type="password" id="oldPwdInput" placeholder="กรอกรหัสผ่านเดิม" autocomplete="current-password">
+                <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('oldPwdInput', this)" title="แสดง/ซ่อนรหัสผ่าน">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div style="margin-bottom:12px;">
+            <label>รหัสผ่านใหม่:</label>
+            <div class="password-wrapper">
+                <input type="password" id="newPwdInput" placeholder="อย่างน้อย 6 ตัวอักษร" autocomplete="new-password" oninput="checkPwdStrength(this.value)">
+                <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('newPwdInput', this)" title="แสดง/ซ่อนรหัสผ่าน">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            <div class="strength-meter"><div class="strength-bar" id="strengthBar"></div></div>
+            <div class="strength-text" id="strengthText" style="color:#64748b;">ความแข็งแรง: ยังไม่ระบุ</div>
+        </div>
+        
+        <div style="margin-bottom:16px;">
+            <label>ยืนยันรหัสผ่านใหม่:</label>
+            <div class="password-wrapper">
+                <input type="password" id="confirmNewPwdInput" placeholder="กรอกรหัสผ่านใหม่อีกครั้ง" autocomplete="new-password">
+                <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('confirmNewPwdInput', this)" title="แสดง/ซ่อนรหัสผ่าน">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div id="pwdErrorMsg" style="color:var(--danger); font-size:0.86rem; margin-bottom:12px; display:none;"></div>
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button class="btn-secondary" id="cancelPwdBtn" onclick="closeModal('pwdModal')">ยกเลิก</button>
+            <button class="btn-primary" onclick="performChangePassword()">ยืนยันเปลี่ยนรหัสผ่าน</button>
+        </div>
+    </div>
+</div>
+
+<!-- 2. Add User Modal (สำหรับ Admin) -->
+<div class="modal-overlay" id="addUserModal">
+    <div class="modal-card">
+        <h3 style="font-size:1.2rem; margin-bottom:14px; color:var(--dark);"><i class="fas fa-user-plus" style="color:var(--primary);"></i> เพิ่มผู้ใช้งานใหม่</h3>
+        <div style="margin-bottom:12px;">
+            <label class="required">ชื่อผู้ใช้งาน (Username):</label>
+            <input type="text" id="newUsernameInput" placeholder="เช่น somchai" autocomplete="off">
+        </div>
+        <div style="margin-bottom:12px;">
+            <label class="required">ชื่อ-นามสกุล หรือชื่อเรียก:</label>
+            <input type="text" id="newFullNameInput" placeholder="เช่น สมชาย ใจดี">
+        </div>
+        <div style="margin-bottom:12px;">
+            <label class="required">รหัสผ่านเริ่มต้น:</label>
+            <div class="password-wrapper">
+                <input type="password" id="newInitialPwdInput" placeholder="เช่น 123456" autocomplete="new-password">
+                <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('newInitialPwdInput', this)" title="แสดง/ซ่อนรหัสผ่าน">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+        </div>
+        <div style="margin-bottom:16px;">
+            <label>สิทธิ์การใช้งาน (Role):</label>
+            <select id="newUserRoleSelect">
+                <option value="user" selected>ผู้ใช้ทั่วไป (ดูได้เฉพาะของตนเอง)</option>
+                <option value="admin">ผู้ดูแลระบบ (เห็นและแก้ไขได้ทั้งหมด)</option>
+            </select>
+        </div>
+        <div id="addUserError" style="color:var(--danger); font-size:0.86rem; margin-bottom:12px; display:none;"></div>
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button class="btn-secondary" onclick="closeModal('addUserModal')">ยกเลิก</button>
+            <button class="btn-primary" onclick="performAddUser()">บันทึกผู้ใช้ใหม่</button>
+        </div>
+    </div>
+</div>
+
+<!-- 3. History Modal (ค้นหาตามโครงการ / ช่วงวันที่ / กรองตามสิทธิ์) -->
+<div class="modal-overlay" id="historyModal">
+    <div class="modal-card wide">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <h3 style="font-size:1.25rem; color:#0284c7;"><i class="fas fa-history"></i> ประวัติรายการคำนวณ</h3>
+            <button class="btn-delete" onclick="closeModal('historyModal')"><i class="fas fa-times" style="font-size:1.3rem;"></i></button>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 2fr 1fr 1fr auto; gap:10px; margin-bottom:16px; background:#f8fafc; padding:12px; border-radius:10px;">
+            <div>
+                <label>ค้นหาชื่อโครงการ:</label>
+                <input type="text" id="histSearchKeyword" placeholder="พิมพ์ชื่อโครงการที่ต้องการค้นหา...">
+            </div>
+            <div>
+                <label>ตั้งแต่วันที่:</label>
+                <input type="date" id="histStartDate">
+            </div>
+            <div>
+                <label>ถึงวันที่:</label>
+                <input type="date" id="histEndDate">
+            </div>
+            <div style="display:flex; align-items:flex-end;">
+                <button class="btn-primary" style="padding:10px 16px;" onclick="loadHistoryList()"><i class="fas fa-search"></i> ค้นหา</button>
+            </div>
+        </div>
+
+        <div id="historyTableContainer" style="overflow-x:auto;">กำลังโหลดข้อมูล...</div>
+    </div>
+</div>
+
 <script>
-const PALLET = { '7.5': 200, '10': 150, '12.5': 120, '15': 100, '17.5': 80, '20': 70, '25': 60 };
-let wallId = 0, openingId = 0, lastBrick1 = 0, lastBrick2 = 0;
+// Web App Endpoint สำหรับเชื่อมต่อ Google Sheets
+const API_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzMlanJwIWy8COxK7EOE42ovEHvAOIbtRrkhH5ZSBjuiiP0joHzRgNfNKax2JhII-ku/exec';
 
+/**
+ * เกณฑ์ความกว้างสูงสุดของผนัง โดยไม่ต้องมีเสาเอ็น / ทับหลัง คสล. [1]
+ */
+const LINTEL_CRITERIA = {
+    external: [
+        { h: 2.50, widths: { '7.5': 2.9, '10': 4.7, '12.5': 6.4, '15': 8.0, '17.5': 9.2, '20': 9.2 } },
+        { h: 2.75, widths: { '7.5': 2.6, '10': 4.5, '12.5': 5.8, '15': 7.7, '17.5': 9.2, '20': 9.2 } },
+        { h: 3.00, widths: { '7.5': 2.4, '10': 4.3, '12.5': 5.3, '15': 6.6, '17.5': 8.5, '20': 9.2 } },
+        { h: 3.25, widths: { '7.5': 2.1, '10': 3.7, '12.5': 5.0, '15': 6.1, '17.5': 7.7, '20': 9.2 } },
+        { h: 3.50, widths: { '7.5': 1.4, '10': 3.4, '12.5': 4.3, '15': 5.7, '17.5': 6.8, '20': 9.2 } },
+        { h: 3.75, widths: { '7.5': null, '10': 2.9, '12.5': 3.8, '15': 5.1, '17.5': 6.0, '20': 9.2 } },
+        { h: 4.00, widths: { '7.5': null, '10': 2.3, '12.5': 3.0, '15': 4.4, '17.5': 5.1, '20': 8.5 } },
+        { h: 4.50, widths: { '7.5': null, '10': 1.1, '12.5': 2.0, '15': 3.2, '17.5': 4.7, '20': 7.7 } },
+        { h: 5.00, widths: { '7.5': null, '10': null, '12.5': 1.4, '15': 2.6, '17.5': 4.3, '20': 6.4 } },
+        { h: 5.50, widths: { '7.5': null, '10': null, '12.5': null, '15': 2.0, '17.5': 3.4, '20': 5.1 } },
+        { h: 6.00, widths: { '7.5': null, '10': null, '12.5': null, '15': 1.2, '17.5': 2.6, '20': 4.3 } }
+    ],
+    internal: [
+        { h: 2.50, widths: { '7.5': 4.2, '10': 6.3, '12.5': 8.0, '15': 10.0, '17.5': 10.8, '20': 10.8 } },
+        { h: 2.75, widths: { '7.5': 3.7, '10': 6.0, '12.5': 7.2, '15': 9.6, '17.5': 10.8, '20': 10.8 } },
+        { h: 3.00, widths: { '7.5': 3.4, '10': 5.7, '12.5': 6.6, '15': 8.2, '17.5': 10.0, '20': 10.8 } },
+        { h: 3.25, widths: { '7.5': 3.0, '10': 4.9, '12.5': 6.2, '15': 7.6, '17.5': 9.0, '20': 10.8 } },
+        { h: 3.50, widths: { '7.5': 2.0, '10': 4.5, '12.5': 5.4, '15': 7.1, '17.5': 8.0, '20': 10.8 } },
+        { h: 3.75, widths: { '7.5': null, '10': 3.8, '12.5': 4.8, '15': 6.4, '17.5': 7.0, '20': 10.8 } },
+        { h: 4.00, widths: { '7.5': null, '10': 3.0, '12.5': 3.8, '15': 5.5, '17.5': 6.0, '20': 10.0 } },
+        { h: 4.50, widths: { '7.5': null, '10': 1.5, '12.5': 2.5, '15': 4.0, '17.5': 5.5, '20': 9.0 } },
+        { h: 5.00, widths: { '7.5': null, '10': null, '12.5': 1.8, '15': 3.2, '17.5': 5.0, '20': 7.5 } },
+        { h: 5.50, widths: { '7.5': null, '10': null, '12.5': null, '15': 2.5, '17.5': 4.0, '20': 6.0 } },
+        { h: 6.00, widths: { '7.5': null, '10': null, '12.5': null, '15': 1.5, '17.5': 3.0, '20': 5.0 } }
+    ]
+};
+
+const SIZES_7_5 = [1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.3, 3.6, 4.0];
+const SIZES_10_UP = [1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.3, 3.6];
+const PALLET_QTY = { '7.5': 200, '10': 150, '12.5': 120, '15': 100, '17.5': 80, '20': 70 };
+
+let currentUser = null;
+let currentCalcId = '';
+let activeMethod = 2;
+let wallCount = 0;
+let totalBlocksCount = 0;
+let thicknessSummaryGlobal = {};
+
+// ================= PASSWORD VISIBILITY TOGGLE (ปลดล็อกการสลับภาษา) =================
+function togglePasswordVisibility(inputId, btnElement) {
+    const input = document.getElementById(inputId);
+    const icon = btnElement.querySelector('i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+    input.focus();
+}
+
+// ================= AUTHENTICATION (GATE SCREEN) =================
+async function performGateLogin() {
+    const u = document.getElementById('gateLoginUser').value.trim();
+    const p = document.getElementById('gateLoginPass').value;
+    const err = document.getElementById('gateLoginError');
+    err.style.display = 'none';
+
+    if (!u || !p) {
+        err.textContent = 'กรุณากรอก Username และ Password ให้ครบถ้วน';
+        err.style.display = 'block';
+        return;
+    }
+
+    try {
+        const res = await fetch(API_ENDPOINT, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'login', username: u, password: p })
+        });
+        const d = await res.json();
+        if (d.success) {
+            currentUser = d.user;
+            if (document.getElementById('gateRememberMe').checked) {
+                localStorage.setItem('qcon_user_session', JSON.stringify(currentUser));
+            }
+
+            unlockApp();
+
+            if (currentUser.mustChangePwd) {
+                openChangePwdModal(true);
+            }
+        } else {
+            err.textContent = d.message || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
+            err.style.display = 'block';
+        }
+    } catch (e) {
+        err.textContent = 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้: ' + e.message;
+        err.style.display = 'block';
+    }
+}
+
+function unlockApp() {
+    document.getElementById('loginGateScreen').style.display = 'none';
+    document.getElementById('mainAppSection').style.display = 'block';
+
+    document.getElementById('userBadgeDisplay').innerHTML = 
+        `<i class="fas fa-user-circle" style="color:var(--primary);"></i> ${currentUser.fullName} (${currentUser.username})`;
+
+    const adminSlot = document.getElementById('adminAddUserBtnSlot');
+    if (currentUser.role === 'admin') {
+        adminSlot.innerHTML = `<button class="btn-primary" style="padding:7px 14px; font-size:0.85rem;" onclick="openModal('addUserModal')"><i class="fas fa-user-plus"></i> เพิ่มผู้ใช้งาน</button>`;
+    } else {
+        adminSlot.innerHTML = '';
+    }
+}
+
+function logout() {
+    currentUser = null;
+    localStorage.removeItem('qcon_user_session');
+    document.getElementById('mainAppSection').style.display = 'none';
+    document.getElementById('loginGateScreen').style.display = 'flex';
+    document.getElementById('gateLoginPass').value = '';
+}
+
+// ================= PASSWORD MANAGEMENT =================
+function openChangePwdModal(isForced = false) {
+    document.getElementById('oldPwdInput').value = '';
+    document.getElementById('newPwdInput').value = '';
+    document.getElementById('confirmNewPwdInput').value = '';
+    document.getElementById('pwdErrorMsg').style.display = 'none';
+    checkPwdStrength('');
+
+    if (isForced) {
+        document.getElementById('pwdModalTitle').innerHTML = '<i class="fas fa-shield-alt" style="color:var(--danger);"></i> บังคับเปลี่ยนรหัสผ่านในการเข้าใช้งานครั้งแรก';
+        document.getElementById('cancelPwdBtn').style.display = 'none';
+    } else {
+        document.getElementById('pwdModalTitle').innerHTML = '<i class="fas fa-key" style="color:var(--primary);"></i> เปลี่ยนรหัสผ่าน';
+        document.getElementById('cancelPwdBtn').style.display = 'inline-block';
+    }
+    openModal('pwdModal');
+}
+
+function checkPwdStrength(pwd) {
+    const bar = document.getElementById('strengthBar');
+    const txt = document.getElementById('strengthText');
+    let score = 0;
+    if (!pwd) { bar.style.width = '0%'; txt.textContent = 'ความแข็งแรง: ยังไม่ระบุ'; return; }
+
+    if (pwd.length >= 8) score += 25;
+    if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) score += 25;
+    if (/[0-9]/.test(pwd)) score += 25;
+    if (/[^a-zA-Z0-9]/.test(pwd)) score += 25;
+
+    bar.style.width = score + '%';
+    if (score <= 25) { bar.style.background = '#dc2626'; txt.textContent = 'ความแข็งแรง: อ่อนมาก'; txt.style.color = '#dc2626'; }
+    else if (score <= 50) { bar.style.background = '#f59e0b'; txt.textContent = 'ความแข็งแรง: พอใช้'; txt.style.color = '#f59e0b'; }
+    else if (score <= 75) { bar.style.background = '#0284c7'; txt.textContent = 'ความแข็งแรง: ปานกลาง'; txt.style.color = '#0284c7'; }
+    else { bar.style.background = '#16a34a'; txt.textContent = 'ความแข็งแรง: แข็งแรงมาก'; txt.style.color = '#16a34a'; }
+}
+
+async function performChangePassword() {
+    const oldP = document.getElementById('oldPwdInput').value;
+    const newP = document.getElementById('newPwdInput').value;
+    const confP = document.getElementById('confirmNewPwdInput').value;
+    const err = document.getElementById('pwdErrorMsg');
+    err.style.display = 'none';
+
+    if (newP !== confP) { err.textContent = 'รหัสผ่านใหม่ไม่ตรงกัน'; err.style.display = 'block'; return; }
+    if (newP.length < 6) { err.textContent = 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'; err.style.display = 'block'; return; }
+
+    try {
+        const res = await fetch(API_ENDPOINT, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'change_password',
+                username: currentUser.username,
+                oldPassword: oldP,
+                newPassword: newP
+            })
+        });
+        const d = await res.json();
+        if (d.success) {
+            alert('เปลี่ยนรหัสผ่านเรียบร้อยแล้ว!');
+            currentUser.mustChangePwd = false;
+            localStorage.setItem('qcon_user_session', JSON.stringify(currentUser));
+            closeModal('pwdModal');
+        } else {
+            err.textContent = d.message || 'เปลี่ยนรหัสผ่านไม่สำเร็จ';
+            err.style.display = 'block';
+        }
+    } catch (e) {
+        err.textContent = 'เกิดข้อผิดพลาด: ' + e.message;
+        err.style.display = 'block';
+    }
+}
+
+// ================= USER MANAGEMENT (ADMIN ONLY) =================
+async function performAddUser() {
+    const u = document.getElementById('newUsernameInput').value.trim();
+    const fn = document.getElementById('newFullNameInput').value.trim();
+    const p = document.getElementById('newInitialPwdInput').value;
+    const r = document.getElementById('newUserRoleSelect').value;
+    const err = document.getElementById('addUserError');
+    err.style.display = 'none';
+
+    if (!u || !fn || !p) {
+        err.textContent = 'กรุณาระบุข้อมูลผู้ใช้งานให้ครบถ้วน';
+        err.style.display = 'block';
+        return;
+    }
+
+    try {
+        const res = await fetch(API_ENDPOINT, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'add_user',
+                new_username: u,
+                full_name: fn,
+                initial_password: p,
+                role: r
+            })
+        });
+        const d = await res.json();
+        if (d.success) {
+            alert(d.message);
+            closeModal('addUserModal');
+            document.getElementById('newUsernameInput').value = '';
+            document.getElementById('newFullNameInput').value = '';
+            document.getElementById('newInitialPwdInput').value = '';
+        } else {
+            err.textContent = d.message;
+            err.style.display = 'block';
+        }
+    } catch (e) {
+        err.textContent = 'เกิดข้อผิดพลาด: ' + e.message;
+        err.style.display = 'block';
+    }
+}
+
+// ================= HISTORY & SEARCH FILTER =================
+function openHistoryModal() {
+    openModal('historyModal');
+    loadHistoryList();
+}
+
+async function loadHistoryList() {
+    const container = document.getElementById('historyTableContainer');
+    container.innerHTML = '<p style="padding:20px; text-align:center;"><i class="fas fa-spinner fa-spin"></i> กำลังโหลดข้อมูลประวัติจาก Google Sheets...</p>';
+
+    const kw = document.getElementById('histSearchKeyword').value;
+    const sDate = document.getElementById('histStartDate').value;
+    const eDate = document.getElementById('histEndDate').value;
+
+    try {
+        const res = await fetch(API_ENDPOINT, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'get_history',
+                current_user: currentUser,
+                keyword: kw,
+                start_date: sDate,
+                end_date: eDate
+            })
+        });
+        const d = await res.json();
+        if (d.success && d.history.length > 0) {
+            let html = `
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>เลขที่คำนวณ</th>
+                        <th>วันที่</th>
+                        <th>โครงการ</th>
+                        <th>ร้านค้า</th>
+                        <th style="text-align:right;">พื้นที่สุทธิ (ตร.ม.)</th>
+                        <th style="text-align:right;">อิฐรวม (ก้อน)</th>
+                        <th>ผู้บันทึก</th>
+                        <th style="text-align:center;">การกระทำ</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            d.history.forEach(h => {
+                html += `
+                <tr>
+                    <td><strong>${h.calc_id}</strong></td>
+                    <td>${new Date(h.doc_date).toLocaleDateString('th-TH')}</td>
+                    <td>${h.project_name}</td>
+                    <td>${h.store_name}</td>
+                    <td style="text-align:right;">${parseFloat(h.total_net_area).toFixed(2)}</td>
+                    <td style="text-align:right; font-weight:600; color:var(--primary);">${parseInt(h.total_blocks).toLocaleString()}</td>
+                    <td><small>${h.created_by}</small></td>
+                    <td style="text-align:center;">
+                        <button class="btn-primary" style="padding:5px 12px; font-size:0.8rem;" onclick="loadCalculationToEdit('${h.calc_id}')">
+                            <i class="fas fa-edit"></i> ดึงมาแก้ไข
+                        </button>
+                    </td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = '<p style="padding:20px; text-align:center; color:#64748b;">ไม่พบประวัติรายการคำนวณตามเงื่อนไข</p>';
+        }
+    } catch (e) {
+        container.innerHTML = '<p style="color:var(--danger); padding:20px;">เกิดข้อผิดพลาดในการโหลด: ' + e.message + '</p>';
+    }
+}
+
+async function loadCalculationToEdit(calcId) {
+    try {
+        const res = await fetch(API_ENDPOINT, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'get_calculation', calc_id: calcId })
+        });
+        const d = await res.json();
+        if (d.success) {
+            const data = d.data;
+            const p = data.payload;
+
+            currentCalcId = data.calc_id;
+            document.getElementById('calcIdBadge').textContent = `[กำลังแก้ไข ID: ${currentCalcId}]`;
+
+            document.getElementById('docDate').value = data.doc_date ? new Date(data.doc_date).toISOString().split('T')[0] : '';
+            document.getElementById('storeName').value = data.store_name || '';
+            document.getElementById('projectName').value = data.project_name || '';
+            document.getElementById('district').value = data.district || '';
+            document.getElementById('province').value = data.province || '';
+            document.getElementById('wasteSelect').value = p.waste_percent || '5';
+            document.getElementById('plasterOption').value = p.plaster_option || 'both_1';
+
+            switchMethod(p.calc_method || 2);
+
+            if (p.calc_method === 1) {
+                document.getElementById('flatArea').value = p.flat_area || 0;
+                document.getElementById('m1Thick').value = p.primary_thick || '10';
+            } else {
+                document.getElementById('wallContainer').innerHTML = '';
+                wallCount = 0;
+                if (p.walls && p.walls.length > 0) {
+                    p.walls.forEach(w => {
+                        wallCount++;
+                        addWallWithData(wallCount, w);
+                    });
+                } else {
+                    addWall();
+                }
+            }
+
+            closeModal('historyModal');
+            calculateAllMaterials(false);
+            alert(`ดึงข้อมูลใบคำนวณ ${currentCalcId} กลับมาที่หน้าจอเรียบร้อยแล้ว`);
+        } else {
+            alert('ไม่สามารถดึงข้อมูลได้: ' + d.message);
+        }
+    } catch (e) {
+        alert('เกิดข้อผิดพลาด: ' + e.message);
+    }
+}
+
+// ================= CALCULATION & AUTO-SAVE =================
+function validateCalculateAndAutoSave() {
+    const fields = [
+        { id: 'docDate', label: 'วัน/เดือน/ปี' },
+        { id: 'storeName', label: 'ชื่อร้านค้าตัวแทนจำหน่าย' },
+        { id: 'projectName', label: 'ชื่อหน่วยงาน / โครงการ' },
+        { id: 'district', label: 'อำเภอ / เขต' },
+        { id: 'province', label: 'จังหวัด' }
+    ];
+
+    let missing = [];
+    fields.forEach(f => {
+        const input = document.getElementById(f.id);
+        if (!input.value.trim()) { input.classList.add('input-error'); missing.push(f.label); }
+        else { input.classList.remove('input-error'); }
+    });
+
+    if (missing.length > 0) {
+        alert('กรุณากรอกข้อมูลโครงการให้ครบถ้วนก่อนคำนวณ:\n- ' + missing.join('\n- '));
+        return;
+    }
+
+    calculateAllMaterials(true);
+}
+
+async function calculateAllMaterials(shouldAutoSave = true) {
+    const wastePercent = parseFloat(document.getElementById('wasteSelect').value) || 0;
+    const wasteMul = 1 + (wastePercent / 100);
+    const plasterChoice = document.getElementById('plasterOption').value;
+
+    let totalGrossArea = 0;
+    let totalOpeningArea = 0;
+    let totalNetArea = 0;
+
+    thicknessSummaryGlobal = {};
+    const detailedLintelList = [];
+    const castInPlaceAlerts = [];
+    const wallSnapshot = [];
+
+    if (activeMethod === 1) {
+        const a = parseFloat(document.getElementById('flatArea').value) || 0;
+        if (a <= 0) { alert('กรุณาระบุพื้นที่ผนังรวม'); return; }
+        const thick = document.getElementById('m1Thick').value;
+        totalGrossArea = a;
+        totalNetArea = a;
+        thicknessSummaryGlobal[thick] = a;
+    } else {
+        const wallCards = document.querySelectorAll('.wall-card');
+        if (wallCards.length === 0) { alert('กรุณาเพิ่มแผงผนังอย่างน้อย 1 แผง'); return; }
+
+        wallCards.forEach((card, idx) => {
+            const wId = idx + 1;
+            const wallName = card.querySelector('.wall-name').value || `ผนังที่ ${wId}`;
+            const thick = card.querySelector('.wall-thick').value;
+            const wallType = card.querySelector('.wall-type').value;
+            const w = parseFloat(card.querySelector('.wall-width').value) || 0;
+            const h = parseFloat(card.querySelector('.wall-height').value) || 0;
+
+            const gross = w * h;
+            totalGrossArea += gross;
+
+            let wallOpeningArea = 0;
+            const opRows = card.querySelectorAll('.opening-row');
+            const hasOpenings = opRows.length > 0;
+            const openingsData = [];
+
+            opRows.forEach(row => {
+                const opTypeVal = row.querySelector('.op-type').value;
+                const opTypeText = row.querySelector('.op-type').options[row.querySelector('.op-type').selectedIndex].text;
+                const opW = parseFloat(row.querySelector('.op-w').value) || 0;
+                const opH = parseFloat(row.querySelector('.op-h').value) || 0;
+                const opQty = parseFloat(row.querySelector('.op-qty').value) || 0;
+
+                wallOpeningArea += (opW * opH * opQty);
+                openingsData.push({ type: opTypeVal, w: opW, h: opH, qty: opQty });
+
+                if (thick === '7.5') {
+                    const colRes = getLintel7_5(h);
+                    if (colRes.castInPlace) {
+                        castInPlaceAlerts.push(`${wallName} - เสาเอ็นช่องเปิด (${opTypeText}) สูง ${h} ม. > 4.0 ม. ต้องเท คสล. ในที่`);
+                    } else {
+                        detailedLintelList.push({ wall: wallName, application: `เสาเอ็นประกบข้าง (${opTypeText})`, thick, length: colRes.length, qty: 2 * opQty });
+                    }
+
+                    const beamRes = getLintel7_5(opW);
+                    const pieces = (opTypeVal === 'door') ? 1 : 2;
+                    if (beamRes.castInPlace) {
+                        castInPlaceAlerts.push(`${wallName} - ทับหลังช่องเปิด (${opTypeText}) กว้าง ${opW} ม. > 4.0 ม. ต้องเท คสล. ในที่`);
+                    } else {
+                        detailedLintelList.push({ wall: wallName, application: `ทับหลังพาดช่องเปิด (${opTypeText})`, thick, length: beamRes.length, qty: pieces * opQty });
+                    }
+                } else {
+                    const lintelRes = getLintel10Up(opW);
+                    if (lintelRes.castInPlace) {
+                        castInPlaceAlerts.push(`${wallName} - ทับหลังเหนือช่องเปิด (${opTypeText}) กว้าง ${opW} ม. > 3.0 ม. ต้องเทคอนกรีตในที่`);
+                    } else {
+                        detailedLintelList.push({ wall: wallName, application: `ทับหลังเหนือช่องเปิด (${opTypeText})`, thick, length: lintelRes.length, qty: 1 * opQty });
+                    }
+                }
+            });
+
+            totalOpeningArea += wallOpeningArea;
+            const net = Math.max(0, gross - wallOpeningArea);
+            thicknessSummaryGlobal[thick] = (thicknessSummaryGlobal[thick] || 0) + net;
+
+            wallSnapshot.push({ name: wallName, thick, type: wallType, width: w, height: h, openings: openingsData });
+
+            if (w > 0 && h > 0) {
+                const check = checkWallStructuralCriteria(wallType, thick, w, h);
+                if (check.needed && check.maxW > 0) {
+                    const stiffenerCount = Math.ceil(w / check.maxW) - 1;
+                    if (stiffenerCount > 0) {
+                        if (parseFloat(thick) >= 10) {
+                            const colLintel = getColumnLintel10Up(h);
+                            if (colLintel.castInPlace) {
+                                castInPlaceAlerts.push(`${wallName} - เสาเอ็นตัวตั้งแบ่งช่วงผนัง [1] สูง ${h} ม. > 3.6 ม. ต้องเทคอนกรีต คสล. ในที่`);
+                            } else {
+                                detailedLintelList.push({ wall: wallName, application: `ตัวตั้ง (เสาเอ็นสำเร็จรูปแบ่งช่วงผนัง [1])`, thick, length: colLintel.length, qty: stiffenerCount });
+                            }
+                        } else if (!hasOpenings) {
+                            const colLintel = getLintel7_5(h);
+                            if (colLintel.castInPlace) {
+                                castInPlaceAlerts.push(`${wallName} - เสาเอ็นตัวตั้งแบ่งช่วงผนัง [1] สูง ${h} ม. > 4.0 ม. ต้องเท คสล. ในที่`);
+                            } else {
+                                detailedLintelList.push({ wall: wallName, application: `ตัวตั้ง (เสาเอ็นสำเร็จรูปแบ่งช่วงผนัง [1])`, thick, length: colLintel.length, qty: stiffenerCount });
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        totalNetArea = Math.max(0, totalGrossArea - totalOpeningArea);
+    }
+
+    document.getElementById('statGross').innerHTML = `${totalGrossArea.toFixed(2)}<span style="font-size:0.8rem;"> ตร.ม.</span>`;
+    document.getElementById('statOpenings').innerHTML = `${totalOpeningArea.toFixed(2)}<span style="font-size:0.8rem;"> ตร.ม.</span>`;
+    document.getElementById('statNet').innerHTML = `${totalNetArea.toFixed(2)}<span style="font-size:0.8rem;"> ตร.ม.</span>`;
+
+    let totalLintelPcs = detailedLintelList.reduce((acc, cur) => acc + cur.qty, 0);
+    document.getElementById('statLintelPieces').innerHTML = `${totalLintelPcs}<span style="font-size:0.8rem;"> ท่อน</span>`;
+
+    renderBrickBreakdownTable(thicknessSummaryGlobal, wasteMul);
+
+    const mortarBags = Math.ceil(((totalBlocksCount * 0.15) / 50) * wasteMul);
+    let plasterBags = 0;
+    let plasterSub = 'ถุง (50 กก.)';
+
+    if (plasterChoice === 'both_1') { plasterBags = Math.ceil(((totalNetArea * 2) / 2.3) * wasteMul); plasterSub = 'ถุง (ฉาบ 2 ด้าน หนา 1.0 ซม.)'; }
+    else if (plasterChoice === 'both_125') { plasterBags = Math.ceil(((totalNetArea * 2) / 2.0) * wasteMul); plasterSub = 'ถุง (ฉาบ 2 ด้าน หนา 1.25 ซม.)'; }
+    else if (plasterChoice === 'single_1') { plasterBags = Math.ceil((totalNetArea / 2.3) * wasteMul); plasterSub = 'ถุง (ฉาบด้านเดียว หนา 1.0 ซม.)'; }
+
+    const straps = Math.ceil(totalNetArea * 2 * wasteMul);
+
+    document.getElementById('outMortar').textContent = mortarBags.toLocaleString();
+    document.getElementById('outPlaster').textContent = plasterBags.toLocaleString();
+    document.getElementById('outPlasterSub').textContent = plasterSub;
+    document.getElementById('outStrap').textContent = straps.toLocaleString();
+
+    renderDetailedLintelTable(detailedLintelList);
+
+    const alertBox = document.getElementById('castInPlaceNotice');
+    if (castInPlaceAlerts.length > 0) {
+        alertBox.style.display = 'block';
+        alertBox.innerHTML = `<strong><i class="fas fa-exclamation-triangle"></i> รายการที่ต้องเทคอนกรีต คสล. ในที่:</strong><br>` + castInPlaceAlerts.map(a => `• ${a}`).join('<br>');
+    } else {
+        alertBox.style.display = 'none';
+    }
+
+    document.getElementById('resultContainer').classList.add('show');
+    calcLogistics();
+    document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth' });
+
+    // บันทึกไปยัง Google Sheets อัตโนมัติ
+    if (shouldAutoSave && currentUser) {
+        const payloadData = {
+            calc_id: currentCalcId,
+            doc_date: document.getElementById('docDate').value,
+            store_name: document.getElementById('storeName').value,
+            project_name: document.getElementById('projectName').value,
+            district: document.getElementById('district').value,
+            province: document.getElementById('province').value,
+            created_by: currentUser.fullName + ` (${currentUser.username})`,
+            calc_method: activeMethod,
+            total_gross_area: totalGrossArea,
+            total_opening_area: totalOpeningArea,
+            total_net_area: totalNetArea,
+            total_blocks: totalBlocksCount,
+            total_mortar_bags: mortarBags,
+            total_plaster_bags: plasterBags,
+            total_lintel_pcs: totalLintelPcs,
+            project_payload_json: {
+                calc_method: activeMethod,
+                waste_percent: wastePercent,
+                plaster_option: plasterChoice,
+                flat_area: document.getElementById('flatArea').value,
+                primary_thick: document.getElementById('m1Thick').value,
+                walls: wallSnapshot
+            }
+        };
+
+        try {
+            const res = await fetch(API_ENDPOINT, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'save_calculation', payload: payloadData })
+            });
+            const d = await res.json();
+            if (d.success) {
+                currentCalcId = d.calc_id;
+                document.getElementById('calcIdBadge').textContent = `[เลขอ้างอิง: ${currentCalcId}]`;
+                console.log('Auto-saved to Sheets: ' + currentCalcId);
+            }
+        } catch (e) {
+            console.error('Auto-save error: ', e);
+        }
+    }
+}
+
+function renderBrickBreakdownTable(thickMap, wasteMul) {
+    const container = document.getElementById('brickBreakdownTable');
+    let html = `
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>ความหนาบล็อก Q-CON</th>
+                <th style="text-align:right;">พื้นที่สุทธิ (ตร.ม.)</th>
+                <th style="text-align:right;">จำนวนจริง (ก้อน)</th>
+                <th style="text-align:right;">จำนวนรวมเผื่อเศษ (ก้อน)</th>
+            </tr>
+        </thead>
+        <tbody>`;
+
+    totalBlocksCount = 0;
+    const thicknesses = Object.keys(thickMap).sort((a,b) => parseFloat(a) - parseFloat(b));
+
+    thicknesses.forEach(th => {
+        const area = thickMap[th];
+        const exactBlocks = Math.ceil(area * 8.33);
+        const orderBlocks = Math.ceil(area * 8.33 * wasteMul);
+        totalBlocksCount += orderBlocks;
+
+        html += `
+        <tr>
+            <td><strong>บล็อก Q-CON หนา ${th} ซม.</strong> (20x60 ซม.)</td>
+            <td style="text-align:right;">${area.toFixed(2)}</td>
+            <td style="text-align:right;">${exactBlocks.toLocaleString()}</td>
+            <td style="text-align:right; font-weight:700; color:var(--primary); font-size:1.05rem;">${orderBlocks.toLocaleString()}</td>
+        </tr>`;
+    });
+
+    html += `
+        <tr style="background:#fff7ed; font-weight:700;">
+            <td colspan="3" style="text-align:right; color:#9a3412;">รวมจำนวนอิฐมวลเบาทุกขนาด:</td>
+            <td style="text-align:right; color:var(--primary); font-size:1.1rem;">${totalBlocksCount.toLocaleString()} ก้อน</td>
+        </tr>
+    </tbody></table>`;
+    container.innerHTML = html;
+}
+
+function renderDetailedLintelTable(lintelList) {
+    const container = document.getElementById('lintelTableContainer');
+    if (lintelList.length === 0) {
+        container.innerHTML = '<p style="color:#64748b; font-size:0.92rem; padding:10px 0;">ไม่มีรายการที่ต้องใช้คานทับหลังสำเร็จรูป</p>';
+        return;
+    }
+
+    let html = `
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>ตำแหน่งผนัง</th>
+                <th>วัตถุประสงค์การใช้งาน</th>
+                <th>ขนาดคานทับหลังสำเร็จรูป Q-CON</th>
+                <th style="text-align:center;">จำนวนที่ต้องใช้จริง (ไม่เผื่อ)</th>
+                <th>หน่วย</th>
+            </tr>
+        </thead>
+        <tbody>`;
+
+    lintelList.forEach(item => {
+        html += `
+        <tr>
+            <td><strong>${item.wall}</strong></td>
+            <td>${item.application}</td>
+            <td>คานทับหลัง Q-CON หนา ${item.thick} ซม. x <strong>ยาว ${item.length.toFixed(1)} ม.</strong></td>
+            <td style="text-align:center; font-weight:700; color:var(--primary);">${item.qty}</td>
+            <td>ท่อน</td>
+        </tr>`;
+    });
+
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+}
+
+function calcLogistics() {
+    if (totalBlocksCount <= 0) return;
+    const grade = document.getElementById('truckBlockGrade').value;
+    const truckType = document.getElementById('truckTypeSelect').value;
+
+    let totalPallets = 0;
+    for (let th in thicknessSummaryGlobal) {
+        const area = thicknessSummaryGlobal[th];
+        const wastePercent = parseFloat(document.getElementById('wasteSelect').value) || 0;
+        const blocks = Math.ceil(area * 8.33 * (1 + wastePercent/100));
+        const perPallet = PALLET_QTY[th] || 100;
+        totalPallets += Math.ceil(blocks / perPallet);
+    }
+    if (totalPallets === 0) totalPallets = Math.ceil(totalBlocksCount / 100);
+
+    const maxCapacity = (truckType === '6wheel') ? 6 : (grade === 'g2' ? 22 : 20);
+    const trips = Math.ceil(totalPallets / maxCapacity);
+
+    document.getElementById('truckDetailOutput').innerHTML = `
+        <div style="background:#fff; border:1px solid #fed7aa; padding:12px; border-radius:8px;">
+            <i class="fas fa-pallet" style="color:var(--primary);"></i> ปริมาณพาเลทอิฐมวลเบารวม: <strong>${totalPallets}</strong> พาเลท<br>
+            <i class="fas fa-truck" style="color:var(--primary);"></i> ความจุบรรทุกต่อคัน (${truckType === '6wheel' ? 'รถ 6 ล้อ' : 'รถเทรลเลอร์'}): <strong>${maxCapacity}</strong> พาเลท/คัน<br>
+            <i class="fas fa-check-circle" style="color:#16a34a;"></i> จำนวนเที่ยวรถที่แนะนำ: <strong style="font-size:1.2rem; color:var(--primary);">${trips}</strong> คัน
+        </div>`;
+}
+
+// ================= WALL HELPERS =================
 function switchMethod(m) {
-    document.querySelectorAll('.method-content').forEach(e => e.classList.remove('active'));
-    document.querySelectorAll('.method-btn').forEach(e => e.classList.remove('active'));
-    document.getElementById('method' + m).classList.add('active');
-    event.target.closest('.method-btn').classList.add('active');
-}
-
-function calc1() {
-    const a = parseFloat(document.getElementById('area1').value) || 0;
-    if (a <= 0) { 
-        document.getElementById('res1').classList.remove('show');
-        document.getElementById('truck1').style.display = 'none';
-        return; 
-    }
-    const t = document.querySelector('input[name="thick1"]:checked').value;
-    const p = document.getElementById('p1').checked;
-    const pt = document.querySelector('input[name="pthick1"]:checked').value;
-    const r = calc(a, t, p, pt, 
-        parseInt(document.getElementById('ba1').value),
-        parseInt(document.getElementById('ma1').value),
-        parseInt(document.getElementById('pa1').value),
-        parseInt(document.getElementById('msa1').value),
-        document.getElementById('b1').checked,
-        document.getElementById('m1').checked,
-        document.getElementById('pl1').checked,
-        document.getElementById('ms1').checked);
-    lastBrick1 = r.b || 0;
-    show('res1', r, a, t, pt);
-    if (r.b > 0) {
-        document.getElementById('truck1').style.display = 'block';
-        calcTruck1();
-    }
-}
-
-function calc2() {
-    const a = getTotal();
-    const o = getOpening();
-    const n = a - o;
-    if (a <= 0) { 
-        document.getElementById('res2').classList.remove('show');
-        document.getElementById('truck2').style.display = 'none';
-        return; 
-    }
-    const t = document.querySelector('input[name="thick2"]:checked').value;
-    const p = document.getElementById('p2').checked;
-    const pt = document.querySelector('input[name="pthick2"]:checked').value;
-    const r = calc(n, t, p, pt,
-        parseInt(document.getElementById('ba2').value),
-        parseInt(document.getElementById('ma2').value),
-        parseInt(document.getElementById('pa2').value),
-        parseInt(document.getElementById('msa2').value),
-        document.getElementById('b2').checked,
-        document.getElementById('m2').checked,
-        document.getElementById('pl2').checked,
-        document.getElementById('ms2').checked);
-    lastBrick2 = r.b || 0;
-    show('res2', r, n, t, pt);
-    if (r.b > 0) {
-        document.getElementById('truck2').style.display = 'block';
-        calcTruck2();
-    }
-}
-
-function calc(a, t, p, pt, ba, ma, pa, msa, bc, mc, pc, msc) {
-    const r = {};
-    if (bc) r.b = Math.ceil(a * 8.33 * (1 + ba / 100));
-    if (mc) {
-        const brickCount = r.b || (a * 8.33);
-        const mortarKg = brickCount * 0.15;
-        r.m = Math.ceil((mortarKg / 50) * (1 + ma / 100));
-    }
-    if (p && pc) {
-        const coverage = pt === '1' ? 2.3 : 2.0;
-        const totalPlasterArea = a * 2;
-        r.p = Math.ceil((totalPlasterArea / coverage) * (1 + pa / 100));
-        r.pt = pt;
-    }
-    if (msc) r.ms = Math.ceil(a * 2 * (1 + msa / 100));
-    return r;
-}
-
-function show(id, r, a, t, pt) {
-    let h = '<div class="results-title"><i class="fas fa-check-circle"></i> ผลการคำนวน</div>';
-    h += '<div class="info-box"><i class="fas fa-info-circle"></i> พื้นที่ผนัง: <strong>' + a.toFixed(2) + ' ตร.ม.</strong> | ความหนา: <strong>' + t + ' ซม.</strong></div>';
-    h += '<div class="result-grid">';
-    
-    if (r.b) h += `<div class="result-card"><div class="label"><i class="fas fa-cube"></i> อิฐมวลเบา</div><div class="value">${r.b}</div><div class="unit">ก้อน</div></div>`;
-    if (r.m) h += `<div class="result-card"><div class="label"><i class="fas fa-mortar-pestle"></i> ปูนก่อ</div><div class="value">${r.m}</div><div class="unit">ถุง (50 กก.)</div></div>`;
-    if (r.p) h += `<div class="result-card"><div class="label"><i class="fas fa-paint-roller"></i> ปูนฉาบ</div><div class="value">${r.p}</div><div class="unit">ถุง (50 กก.)</div><div class="note">ฉาบหนา ${r.pt} ซม. (ได้ ${r.pt === '1' ? '2.3' : '2.0'} ตร.ม./ถุง)</div></div>`;
-    if (r.ms) h += `<div class="result-card"><div class="label"><i class="fas fa-link"></i> Metal strap</div><div class="value">${r.ms}</div><div class="unit">ชิ้น</div></div>`;
-    
-    h += '</div>';
-    document.getElementById(id).innerHTML = h;
-    document.getElementById(id).classList.add('show');
-}
-
-function calcTruck1() {
-    if (lastBrick1 <= 0) return;
-    const t = document.querySelector('input[name="thick1"]:checked').value;
-    truck('truckRes1', lastBrick1, document.getElementById('g1Type').value, document.getElementById('g1Truck').value, t);
-}
-
-function calcTruck2() {
-    if (lastBrick2 <= 0) return;
-    const t = document.querySelector('input[name="thick2"]:checked').value;
-    truck('truckRes2', lastBrick2, document.getElementById('g2Type').value, document.getElementById('g2Truck').value, t);
-}
-
-function truck(id, b, ty, tr, t) {
-    const pp = PALLET[t];
-    const pn = Math.ceil(b / pp);
-    const tc = tr === '6' ? 6 : (ty === 'g2' ? 22 : 20);
-    const tn = Math.ceil(pn / tc);
-    let h = `<div class="truck-info"><i class="fas fa-truck"></i> ประเภท: <strong>${ty.toUpperCase()}</strong> | ${tr === '6' ? 'รถ 6 ล้อ' : 'รถเทรลเลอร์'} | ความหนา: <strong>${t} ซม.</strong></div>`;
-    h += `<div class="truck-detail"><i class="fas fa-cube"></i> จำนวนอิฐ: <strong>${b}</strong> ก้อน</div>`;
-    h += `<div class="truck-detail"><i class="fas fa-palette"></i> จำนวนพาเลท: <strong>${pn}</strong> พาเลท (${pp} ก้อน/พาเลท)</div>`;
-    h += `<div class="truck-needed"><i class="fas fa-exclamation-circle"></i> จำนวนรถที่ต้องการ: <strong>${tn}</strong> คัน</div>`;
-    document.getElementById(id).innerHTML = h;
-    document.getElementById(id).classList.add('show');
+    activeMethod = m;
+    document.getElementById('method1View').style.display = m === 1 ? 'block' : 'none';
+    document.getElementById('method2View').style.display = m === 2 ? 'block' : 'none';
+    document.getElementById('tabBtn1').classList.toggle('active', m === 1);
+    document.getElementById('tabBtn2').classList.toggle('active', m === 2);
 }
 
 function addWall() {
-    const h = `<div class="wall-item" id="wall${++wallId}">
-        <div class="wall-header"><h3><i class="fas fa-cube"></i> ผนัง ${wallId}</h3><button class="btn-remove" onclick="delWall(${wallId})"><i class="fas fa-trash"></i> ลบ</button></div>
-        <div class="form-row">
-            <div><label><i class="fas fa-arrows-alt-h"></i> กว้าง (ม.):</label><input type="number" class="wall-width" step="0.01" min="0" placeholder="เช่น 5" onchange="calc2()"></div>
-            <div><label><i class="fas fa-arrows-alt-v"></i> สูง (ม.):</label><input type="number" class="wall-height" step="0.01" min="0" placeholder="เช่น 3" onchange="calc2()"></div>
+    wallCount++;
+    addWallWithData(wallCount, null);
+}
+
+function addWallWithData(wId, data) {
+    const html = `
+    <div class="wall-card" id="wallCard_${wId}">
+        <div class="wall-top">
+            <div class="wall-badge"><i class="fas fa-cube"></i> แผงผนังที่ ${wId}</div>
+            <button class="btn-delete" onclick="removeWall(${wId})" title="ลบผนังนี้"><i class="fas fa-trash-alt"></i> ลบผนัง</button>
         </div>
-        <div class="wall-area"><i class="fas fa-chart-area"></i> 0.00 ตร.ม.</div>
-    </div>`;
-    document.getElementById('walls').insertAdjacentHTML('beforeend', h);
-    calc2();
-}
-
-function addOpening() {
-    const h = `<div class="opening-item" id="opening${++openingId}">
-        <div class="wall-header"><h3><i class="fas fa-door-open"></i> ช่องเปิด ${openingId}</h3><button class="btn-remove" onclick="delOpening(${openingId})"><i class="fas fa-trash"></i> ลบ</button></div>
-        <div class="form-row">
-            <div><label><i class="fas fa-arrows-alt-h"></i> กว้าง (ม.):</label><input type="number" class="opening-width" step="0.01" min="0" placeholder="เช่น 1" onchange="calc2()"></div>
-            <div><label><i class="fas fa-arrows-alt-v"></i> สูง (ม.):</label><input type="number" class="opening-height" step="0.01" min="0" placeholder="เช่น 2" onchange="calc2()"></div>
-            <div><label><i class="fas fa-list-ol"></i> จำนวน:</label><input type="number" class="opening-qty" step="1" min="0" value="1" placeholder="เช่น 1" onchange="calc2()"></div>
+        <div class="grid-row">
+            <div>
+                <label>ชื่อผนัง / อ้างอิง:</label>
+                <input type="text" class="wall-name" value="${data ? data.name : 'ผนัง ' + wId}">
+            </div>
+            <div>
+                <label>ความหนาบล็อก:</label>
+                <select class="wall-thick" onchange="updateWallStatus(${wId})">
+                    <option value="7.5" ${data && data.thick==='7.5'?'selected':''}>7.5 ซม.</option>
+                    <option value="10" ${!data || data.thick==='10'?'selected':''}>10 ซม.</option>
+                    <option value="12.5" ${data && data.thick==='12.5'?'selected':''}>12.5 ซม.</option>
+                    <option value="15" ${data && data.thick==='15'?'selected':''}>15 ซม.</option>
+                    <option value="17.5" ${data && data.thick==='17.5'?'selected':''}>17.5 ซม.</option>
+                    <option value="20" ${data && data.thick==='20'?'selected':''}>20 ซม.</option>
+                </select>
+            </div>
+            <div>
+                <label>ประเภทผนัง:</label>
+                <select class="wall-type" onchange="updateWallStatus(${wId})">
+                    <option value="internal" ${!data || data.type==='internal'?'selected':''}>ผนังภายในอาคาร</option>
+                    <option value="external" ${data && data.type==='external'?'selected':''}>ผนังภายนอกอาคาร</option>
+                </select>
+            </div>
+            <div>
+                <label>ความกว้าง (ม.):</label>
+                <input type="number" class="wall-width" step="0.05" min="0" placeholder="เช่น 4.5" value="${data ? data.width : ''}" oninput="updateWallStatus(${wId})">
+            </div>
+            <div>
+                <label>ความสูง (ม.):</label>
+                <input type="number" class="wall-height" step="0.05" min="0" placeholder="เช่น 2.8" value="${data ? data.height : ''}" oninput="updateWallStatus(${wId})">
+            </div>
         </div>
-        <div class="opening-area"><i class="fas fa-chart-area"></i> 0.00 ตร.ม.</div>
+        <div class="openings-panel">
+            <div class="openings-panel-header">
+                <h4><i class="fas fa-door-open"></i> รายการช่องเปิดในผนังนี้ (ประตู / หน้าต่าง / ช่องแสง)</h4>
+                <button class="btn-outline" style="padding:3px 8px; font-size:0.8rem;" onclick="addOpeningToWall(${wId})"><i class="fas fa-plus"></i> เพิ่มช่องเปิด</button>
+            </div>
+            <div class="openings-list" id="openingsList_${wId}"></div>
+        </div>
+        <div class="wall-lintel-status status-ok" id="wallStatus_${wId}">
+            <i class="fas fa-info-circle"></i>
+            <div class="status-text">กรอกขนาดเพื่อตรวจสอบเสาเอ็น/ทับหลัง</div>
+        </div>
     </div>`;
-    document.getElementById('openings').insertAdjacentHTML('beforeend', h);
-    calc2();
+
+    document.getElementById('wallContainer').insertAdjacentHTML('beforeend', html);
+    if (data && data.openings && data.openings.length > 0) {
+        data.openings.forEach(op => addOpeningToWallWithData(wId, op));
+    }
+    updateWallStatus(wId);
 }
 
-function delWall(id) { document.getElementById('wall' + id).remove(); calc2(); }
-function delOpening(id) { document.getElementById('opening' + id).remove(); calc2(); }
+function removeWall(id) {
+    const el = document.getElementById(`wallCard_${id}`);
+    if (el) el.remove();
+}
 
-function getTotal() {
-    let t = 0;
-    document.querySelectorAll('.wall-item').forEach(w => {
-        const a = (parseFloat(w.querySelector('.wall-width').value) || 0) * (parseFloat(w.querySelector('.wall-height').value) || 0);
-        w.querySelector('.wall-area').textContent = a.toFixed(2) + ' ตร.ม.';
-        t += a;
+function addOpeningToWall(wallId) {
+    addOpeningToWallWithData(wallId, null);
+}
+
+function addOpeningToWallWithData(wallId, data) {
+    const list = document.getElementById(`openingsList_${wallId}`);
+    const rowId = Date.now() + Math.random().toString(36).substr(2, 4);
+    const html = `
+    <div class="opening-row" id="opRow_${rowId}">
+        <div>
+            <select class="op-type" onchange="onOpeningTypeChange('${rowId}', ${wallId})">
+                <option value="door" ${data && data.type==='door'?'selected':''}>🚪 ประตู (0.90x2.00 ม.)</option>
+                <option value="window" ${data && data.type==='window'?'selected':''}>🪟 หน้าต่าง (1.20x1.10 ม.)</option>
+                <option value="transom" ${data && data.type==='transom'?'selected':''}>☀️ ช่องแสง (0.60x0.40 ม.)</option>
+                <option value="custom" ${data && data.type==='custom'?'selected':''}>✏️ กำหนดเอง</option>
+            </select>
+        </div>
+        <div><input type="number" class="op-w" step="0.05" min="0" value="${data ? data.w : '0.90'}" oninput="calcOpeningRow('${rowId}', ${wallId})"></div>
+        <div><input type="number" class="op-h" step="0.05" min="0" value="${data ? data.h : '2.00'}" oninput="calcOpeningRow('${rowId}', ${wallId})"></div>
+        <div><input type="number" class="op-qty" min="1" step="1" value="${data ? data.qty : '1'}" oninput="calcOpeningRow('${rowId}', ${wallId})"></div>
+        <div class="opening-area-val" id="opArea_${rowId}">1.80 ตร.ม.</div>
+        <div><button class="btn-delete" onclick="document.getElementById('opRow_${rowId}').remove(); updateWallStatus(${wallId});"><i class="fas fa-times"></i></button></div>
+    </div>`;
+    list.insertAdjacentHTML('beforeend', html);
+    calcOpeningRow(rowId, wallId);
+}
+
+function onOpeningTypeChange(rowId, wallId) {
+    const row = document.getElementById(`opRow_${rowId}`);
+    const type = row.querySelector('.op-type').value;
+    const wInput = row.querySelector('.op-w');
+    const hInput = row.querySelector('.op-h');
+
+    if (type === 'door') { wInput.value = 0.90; hInput.value = 2.00; }
+    else if (type === 'window') { wInput.value = 1.20; hInput.value = 1.10; }
+    else if (type === 'transom') { wInput.value = 0.60; hInput.value = 0.40; }
+    calcOpeningRow(rowId, wallId);
+}
+
+function calcOpeningRow(rowId, wallId) {
+    const row = document.getElementById(`opRow_${rowId}`);
+    if (!row) return;
+    const w = parseFloat(row.querySelector('.op-w').value) || 0;
+    const h = parseFloat(row.querySelector('.op-h').value) || 0;
+    const qty = parseFloat(row.querySelector('.op-qty').value) || 0;
+    document.getElementById(`opArea_${rowId}`).textContent = (w * h * qty).toFixed(2) + ' ตร.ม.';
+    updateWallStatus(wallId);
+}
+
+function checkWallStructuralCriteria(wallType, thickness, width, height) {
+    const table = LINTEL_CRITERIA[wallType] || LINTEL_CRITERIA.internal;
+    if (height <= 0 || width <= 0) return { needed: false, note: 'กรอกขนาดผนังเพื่อตรวจสอบ' };
+
+    let matchedRow = table.find(r => r.h >= height);
+    if (!matchedRow) return { needed: true, maxW: 0, note: `ความสูง (${height} ม.) เกินขีดจำกัด 6.0 ม. [1] ต้องมีเสาเอ็น/ทับหลัง คสล.` };
+
+    const maxAllowableW = matchedRow.widths[thickness];
+    if (maxAllowableW === null || maxAllowableW === undefined) return { needed: true, maxW: 0, note: `ความหนา ${thickness} ซม. เกินเกณฑ์มาตรฐาน [1] ต้องมีเสาเอ็น คสล.` };
+
+    if (width > maxAllowableW) return { needed: true, maxW: maxAllowableW, note: `ความกว้าง (${width} ม.) เกินเกณฑ์สูงสุด (${maxAllowableW} ม.) [1]` };
+
+    return { needed: false, maxW: maxAllowableW, note: `ขนาดอยู่ในเกณฑ์มาตรฐาน [1] (กว้างไม่เกิน ${maxAllowableW} ม.)` };
+}
+
+function updateWallStatus(wallId) {
+    const card = document.getElementById(`wallCard_${wallId}`);
+    if (!card) return;
+
+    const w = parseFloat(card.querySelector('.wall-width').value) || 0;
+    const h = parseFloat(card.querySelector('.wall-height').value) || 0;
+    const thick = card.querySelector('.wall-thick').value;
+    const wallType = card.querySelector('.wall-type').value;
+
+    const statusBox = card.querySelector('.wall-lintel-status');
+    const statusText = card.querySelector('.status-text');
+
+    let openingArea = 0;
+    let opCount = 0;
+    card.querySelectorAll('.opening-row').forEach(row => {
+        const opW = parseFloat(row.querySelector('.op-w').value) || 0;
+        const opH = parseFloat(row.querySelector('.op-h').value) || 0;
+        const opQty = parseFloat(row.querySelector('.op-qty').value) || 0;
+        openingArea += (opW * opH * opQty);
+        opCount += opQty;
     });
-    document.getElementById('total').textContent = t.toFixed(2) + ' ตร.ม.';
-    return t;
+
+    const gross = w * h;
+    const net = Math.max(0, gross - openingArea);
+
+    if (w > 0 && h > 0) {
+        const check = checkWallStructuralCriteria(wallType, thick, w, h);
+        let info = `<strong>พื้นที่สุทธิ: ${net.toFixed(2)} ตร.ม.</strong> (รวม ${gross.toFixed(2)} - ช่องเปิด ${openingArea.toFixed(2)})<br>`;
+        if (check.needed) {
+            statusBox.className = 'wall-lintel-status status-danger';
+            info += `<i class="fas fa-exclamation-triangle"></i> <strong>เตือนโครงสร้าง:</strong> ${check.note}`;
+            if (thick === '7.5' && opCount > 0) {
+                info += `<br><span style="color:#16a34a;"><i class="fas fa-check-circle"></i> ผนังนี้มีช่องเปิดแล้ว จึงยกเว้นการคิดคานทับหลังตัวตั้งแบ่งผนังซ้ำซ้อน</span>`;
+            }
+        } else {
+            statusBox.className = 'wall-lintel-status status-ok';
+            info += `<i class="fas fa-check-circle"></i> <strong>โครงสร้างหลัก:</strong> ${check.note}`;
+        }
+        statusText.innerHTML = info;
+    } else {
+        statusBox.className = 'wall-lintel-status status-warn';
+        statusText.innerHTML = 'กรุณาระบุขนาดผนัง';
+    }
 }
 
-function getOpening() {
-    let t = 0;
-    document.querySelectorAll('.opening-item').forEach(o => {
-        const a = (parseFloat(o.querySelector('.opening-width').value) || 0) * 
-                    (parseFloat(o.querySelector('.opening-height').value) || 0) * 
-                    (parseFloat(o.querySelector('.opening-qty').value) || 0);
-        o.querySelector('.opening-area').textContent = a.toFixed(2) + ' ตร.ม.';
-        t += a;
+function getLintel7_5(len) {
+    if (len > 4.0) return { length: null, castInPlace: true };
+    for (let s of SIZES_7_5) if (s >= len) return { length: s, castInPlace: false };
+    return { length: 4.0, castInPlace: false };
+}
+
+function getLintel10Up(opWidth) {
+    if (opWidth <= 0.90) return { length: 1.2, castInPlace: false };
+    if (opWidth <= 1.10) return { length: 1.5, castInPlace: false };
+    if (opWidth <= 1.40) return { length: 1.8, castInPlace: false };
+    if (opWidth <= 1.70) return { length: 2.1, castInPlace: false };
+    if (opWidth <= 2.00) return { length: 2.4, castInPlace: false };
+    if (opWidth <= 2.10) return { length: 2.7, castInPlace: false };
+    if (opWidth <= 2.40) return { length: 3.0, castInPlace: false };
+    if (opWidth <= 2.70) return { length: 3.3, castInPlace: false };
+    if (opWidth <= 3.00) return { length: 3.6, castInPlace: false };
+    return { length: null, castInPlace: true };
+}
+
+function getColumnLintel10Up(height) {
+    if (height > 3.60) return { length: null, castInPlace: true };
+    for (let s of SIZES_10_UP) if (s >= height) return { length: s, castInPlace: false };
+    return { length: 3.6, castInPlace: false };
+}
+
+function exportToImage() {
+    html2canvas(document.getElementById('printableArea'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `รายการวัสดุ_${document.getElementById('projectName').value || 'QCON'}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
     });
-    const n = getTotal() - t;
-    document.getElementById('totalOpening').textContent = t.toFixed(2) + ' ตร.ม.';
-    document.getElementById('netArea').textContent = n.toFixed(2) + ' ตร.ม.';
-    return t;
 }
 
-function reset1() { 
-    document.getElementById('area1').value = '';
-    document.getElementById('res1').classList.remove('show');
-    document.getElementById('truck1').style.display = 'none';
-    lastBrick1 = 0;
+function exportToPDF() {
+    const { jsPDF } = window.jspdf;
+    const element = document.getElementById('printableArea');
+    html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`ใบประมาณการ_${document.getElementById('projectName').value || 'QCON'}.pdf`);
+    });
 }
 
-function reset2() { 
-    document.getElementById('walls').innerHTML = '';
-    document.getElementById('openings').innerHTML = '';
-    document.getElementById('total').textContent = '0.00 ตร.ม.';
-    document.getElementById('totalOpening').textContent = '0.00 ตร.ม.';
-    document.getElementById('netArea').textContent = '0.00 ตร.ม.';
-    document.getElementById('res2').classList.remove('show');
-    document.getElementById('truck2').style.display = 'none';
-    wallId = 0;
-    openingId = 0;
-    lastBrick2 = 0;
+function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+function resetForm() {
+    currentCalcId = '';
+    document.getElementById('calcIdBadge').textContent = '';
+    document.getElementById('flatArea').value = '';
+    document.getElementById('wallContainer').innerHTML = '';
+    document.getElementById('resultContainer').classList.remove('show');
+    wallCount = 0;
+    addWall();
 }
+
+window.onload = function() {
+    document.getElementById('docDate').valueAsDate = new Date();
+    const saved = localStorage.getItem('qcon_user_session');
+    if (saved) {
+        currentUser = JSON.parse(saved);
+        unlockApp();
+        if (currentUser.mustChangePwd) {
+            openChangePwdModal(true);
+        }
+    } else {
+        document.getElementById('loginGateScreen').style.display = 'flex';
+        document.getElementById('mainAppSection').style.display = 'none';
+    }
+    addWall();
+};
 </script>
 </body>
 </html>
