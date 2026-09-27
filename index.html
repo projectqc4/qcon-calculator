@@ -50,7 +50,6 @@
         body { background-color: #fbfbfd; color: var(--dark); min-height: 100vh; padding: 25px 16px; }
         .container { max-width: 1240px; margin: 0 auto; }
 
-        /* Login Gate Screen */
         #loginGateScreen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(135deg, #fff7ed 0%, #f1f5f9 100%);
@@ -118,35 +117,18 @@
 
         input.input-error { border-color: var(--danger) !important; background-color: #fffaf0; }
 
-        /* กล่องครอบช่องรหัสผ่านและปุ่มสลับแสดง/ซ่อนเพื่อรองรับการเปลี่ยนภาษา */
-        .password-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            width: 100%;
+        .password-input-wrapper { position: relative; display: flex; align-items: center; }
+        .password-input-wrapper input { padding-right: 42px; }
+        .password-toggle-btn {
+            position: absolute; right: 12px; background: transparent; border: none;
+            color: #94a3b8; cursor: pointer; font-size: 1.05rem;
         }
+        .password-toggle-btn:hover { color: var(--primary); }
 
-        .password-wrapper input {
-            padding-right: 44px;
-        }
-
-        .toggle-password-btn {
-            position: absolute;
-            right: 8px;
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            cursor: pointer;
-            padding: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            transition: color 0.2s;
-        }
-
-        .toggle-password-btn:hover {
-            color: var(--primary);
+        .thai-warning-badge {
+            font-size: 0.76rem; color: var(--danger); background: #fef2f2;
+            border: 1px solid #fecaca; border-radius: 6px; padding: 4px 8px;
+            margin-top: 5px; display: none; align-items: center; gap: 5px;
         }
 
         .nav-tabs {
@@ -176,14 +158,12 @@
             background: transparent; border: none; color: #94a3b8; cursor: pointer;
             padding: 5px 8px; border-radius: 6px; font-size: 0.88rem;
         }
-
         .btn-delete:hover { background: var(--danger-bg); color: var(--danger); }
 
         .openings-panel {
             background: #fafbfc; border: 1px dashed #cbd5e1; border-radius: 10px;
             padding: 14px; margin-top: 14px;
         }
-
         .openings-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .opening-row {
             display: grid; grid-template-columns: 1.5fr 1fr 1fr 0.8fr 1fr 30px;
@@ -195,7 +175,6 @@
             margin-top: 12px; padding: 10px 14px; border-radius: 8px; font-size: 0.86rem;
             display: flex; align-items: flex-start; gap: 10px; line-height: 1.5;
         }
-
         .status-ok { background: var(--success-bg); border: 1px solid #bbf7d0; color: #15803d; }
         .status-warn { background: var(--warning-bg); border: 1px solid #fde68a; color: #b45309; }
         .status-danger { background: var(--danger-bg); border: 1px solid #fecaca; color: var(--danger); }
@@ -205,7 +184,6 @@
             font-size: 0.95rem; font-weight: 600; border-radius: 8px; cursor: pointer;
             display: inline-flex; align-items: center; gap: 8px;
         }
-
         .btn-primary:hover { background: var(--primary-hover); }
 
         .btn-secondary {
@@ -222,7 +200,6 @@
             background: var(--white); border: 2px solid var(--primary-border); border-radius: var(--radius-md);
             padding: 20px; margin: 20px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px;
         }
-
         .stat-card { padding: 10px 12px; border-radius: 8px; background: #fffaf5; border-left: 4px solid var(--primary); }
         .stat-card .label { font-size: 0.8rem; color: #64748b; }
         .stat-card .num { font-size: 1.5rem; font-weight: 700; color: var(--dark); margin-top: 2px; }
@@ -234,7 +211,6 @@
             background: var(--white); border: 1px solid var(--border-color); border-radius: var(--radius-md);
             padding: 16px; text-align: center; border-top: 4px solid var(--primary);
         }
-
         .res-card .res-title { font-size: 0.86rem; color: var(--gray-sub); }
         .res-card .res-qty { font-size: 1.7rem; font-weight: 700; color: var(--primary); margin: 6px 0; }
 
@@ -248,13 +224,11 @@
             background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
             display: none; align-items: center; justify-content: center; z-index: 9999;
         }
-
         .modal-card {
             background: #ffffff; border-radius: 16px; width: 95%; max-width: 520px;
             padding: 26px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); position: relative;
         }
-
-        .modal-card.wide { max-width: 950px; max-height: 85vh; overflow-y: auto; }
+        .modal-card.wide { max-width: 1050px; max-height: 85vh; overflow-y: auto; }
 
         .strength-meter { height: 6px; width: 100%; background: #e2e8f0; border-radius: 4px; margin-top: 6px; overflow: hidden; }
         .strength-bar { height: 100%; width: 0%; transition: all 0.3s; }
@@ -263,7 +237,7 @@
 </head>
 <body>
 
-<!-- LOGIN GATE SCREEN: บังคับล็อกอินก่อนเข้าใช้งาน -->
+<!-- LOGIN GATE SCREEN -->
 <div id="loginGateScreen">
     <div class="login-box">
         <div class="login-brand-icon"><i class="fas fa-cubes"></i></div>
@@ -272,17 +246,24 @@
         
         <div style="text-align:left; margin-bottom:14px;">
             <label>ชื่อผู้ใช้งาน (Username):</label>
-            <input type="text" id="gateLoginUser" placeholder="เช่น admin" autocomplete="username">
+            <input type="text" id="gateLoginUser" placeholder="เช่น admin" lang="en" inputmode="latin" autocomplete="username">
         </div>
+
         <div style="text-align:left; margin-bottom:16px;">
             <label>รหัสผ่าน (Password):</label>
-            <div class="password-wrapper">
-                <input type="password" id="gateLoginPass" placeholder="กรอกรหัสผ่าน" autocomplete="current-password">
-                <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('gateLoginPass', this)" title="แสดง/ซ่อนรหัสผ่าน">
+            <div class="password-input-wrapper">
+                <input type="password" id="gateLoginPass" placeholder="กรอกรหัสผ่าน" lang="en" inputmode="latin" 
+                       autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false"
+                       oninput="detectThaiInput(this, 'loginThaiWarn')">
+                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('gateLoginPass', this)">
                     <i class="fas fa-eye"></i>
                 </button>
             </div>
+            <div class="thai-warning-badge" id="loginThaiWarn">
+                <i class="fas fa-exclamation-triangle"></i> พบตัวอักษรภาษาไทย! กรุณาสลับแป้นพิมพ์เป็น EN
+            </div>
         </div>
+
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:18px; text-align:left;">
             <input type="checkbox" id="gateRememberMe" checked style="width:auto;">
             <label for="gateRememberMe" style="margin:0; cursor:pointer;">จดจำการเข้าสู่ระบบ</label>
@@ -293,7 +274,7 @@
         <button class="btn-primary" style="width:100%; justify-content:center; padding:12px;" onclick="performGateLogin()">
             <i class="fas fa-sign-in-alt"></i> เข้าสู่ระบบ
         </button>
-        <p style="font-size:0.78rem; color:#94a3b8; margin-top:14px;">บัญชีเริ่มต้นระบบ: admin / Password123!</p>
+        <p style="font-size:0.78rem; color:#94a3b8; margin-top:14px;">บัญชีเริ่มต้น: admin / Password123!</p>
     </div>
 </div>
 
@@ -350,7 +331,7 @@
     <!-- Navigation Tabs -->
     <div class="nav-tabs">
         <button class="tab-btn active" onclick="switchMethod(2)" id="tabBtn2"><i class="fas fa-border-all"></i> วิธีที่ 2: ป้อนข้อมูลรายผนัง + ช่องเปิด + เสาเอ็นทับหลัง</button>
-        <button class="tab-btn" onclick="switchMethod(1)" id="tabBtn1"><i class="fas fa-layer-group"></i> วิธีที่ 1: ป้อนพื้นที่รวม</button>
+        <button class="tab-btn" onclick="switchMethod(1)" id="tabBtn1"><i class="fas fa-layer-group"></i> วิธีที่ 1: ป้อนพื้นที่รวม (หลายรายการ)</button>
     </div>
 
     <!-- Options Card -->
@@ -360,7 +341,7 @@
             <div>
                 <label>การฉาบปูน:</label>
                 <select id="plasterOption">
-                    <option value="both_1">ฉาบ 2 ด้าน (หนา 1.0 ซม. - 2.3 ตร.ม./ถุง)</option>
+                    <option value="both_1" selected>ฉาบ 2 ด้าน (หนา 1.0 ซม. - 2.3 ตร.ม./ถุง)</option>
                     <option value="both_125">ฉาบ 2 ด้าน (หนา 1.25 ซม. - 2.0 ตร.ม./ถุง)</option>
                     <option value="single_1">ฉาบด้านเดียว (หนา 1.0 ซม. - 2.3 ตร.ม./ถุง)</option>
                     <option value="none">ไม่คิดงานฉาบปูน</option>
@@ -381,28 +362,23 @@
     <!-- METHOD 1 VIEW -->
     <div id="method1View" style="display:none;">
         <div class="card">
-            <div class="card-title"><span><i class="fas fa-chart-area" style="color:var(--primary);"></i> ข้อมูลพื้นที่ผนังรวม</span></div>
-            <div class="grid-row">
-                <div>
-                    <label for="flatArea" class="required">พื้นที่ผนังสุทธิรวม (ตร.ม.):</label>
-                    <input type="number" id="flatArea" step="0.1" min="0" placeholder="เช่น 150">
-                </div>
-                <div>
-                    <label>ความหนาบล็อก Q-CON:</label>
-                    <select id="m1Thick">
-                        <option value="7.5">7.5 ซม.</option>
-                        <option value="10" selected>10 ซม.</option>
-                        <option value="12.5">12.5 ซม.</option>
-                        <option value="15">15 ซม.</option>
-                        <option value="17.5">17.5 ซม.</option>
-                        <option value="20">20 ซม.</option>
-                    </select>
+            <div class="card-title">
+                <span><i class="fas fa-list-check" style="color:var(--primary);"></i> รายการพื้นที่ผนังรวม (ระบุได้หลายบริเวณและหลายความหนา)</span>
+                <button class="btn-outline" onclick="addMethod1Row()"><i class="fas fa-plus"></i> เพิ่มรายการผนัง</button>
+            </div>
+            
+            <div id="m1RowsContainer"></div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#fafbfc; border:1px dashed #cbd5e1; padding:12px 16px; border-radius:10px; margin-top:10px;">
+                <button class="btn-outline" onclick="addMethod1Row()"><i class="fas fa-plus-circle"></i> คลิกเพื่อเพิ่มแถวใหม่</button>
+                <div style="font-weight:600; font-size:0.95rem; color:#475569;">
+                    พื้นที่สุทธิรวมวิธีที่ 1: <span id="m1TotalAreaDisplay" style="color:var(--primary); font-size:1.15rem; font-weight:700;">0.00</span> ตร.ม.
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- METHOD 2 VIEW: Per-Wall Detailed -->
+    <!-- METHOD 2 VIEW -->
     <div id="method2View">
         <div class="card">
             <div class="card-title">
@@ -478,8 +454,11 @@
                 <div id="castInPlaceNotice" class="note-box" style="display:none; background:#fffbeb; border-left:4px solid #f59e0b; padding:12px; margin-top:12px; border-radius:6px; color:#92400e;"></div>
             </div>
 
+            <!-- SECTION 3: Logistics -->
             <div class="card" style="background: #fffdfa; border-color: #fed7aa;">
-                <div class="card-title"><span><i class="fas fa-truck-moving" style="color:var(--primary);"></i> 3. ประมาณการการขนส่ง (Logistics)</span></div>
+                <div class="card-title">
+                    <span><i class="fas fa-truck-moving" style="color:var(--primary);"></i> 3. ประมาณการการขนส่ง (Logistics)</span>
+                </div>
                 <div class="grid-row">
                     <div>
                         <label>เกรดบล็อก:</label>
@@ -502,45 +481,44 @@
     </div>
 </div>
 
-<!-- ================= MODALS ================= -->
-
-<!-- 1. Change Password Modal (บังคับเปลี่ยนครั้งแรก หรือเปลี่ยนจากเมนู) -->
+<!-- MODALS -->
 <div class="modal-overlay" id="pwdModal">
     <div class="modal-card">
         <h3 id="pwdModalTitle" style="font-size:1.2rem; margin-bottom:14px; color:var(--dark);"><i class="fas fa-key" style="color:var(--primary);"></i> เปลี่ยนรหัสผ่าน</h3>
         
         <div style="margin-bottom:12px;">
             <label>รหัสผ่านเดิม:</label>
-            <div class="password-wrapper">
-                <input type="password" id="oldPwdInput" placeholder="กรอกรหัสผ่านเดิม" autocomplete="current-password">
-                <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('oldPwdInput', this)" title="แสดง/ซ่อนรหัสผ่าน">
-                    <i class="fas fa-eye"></i>
-                </button>
+            <div class="password-input-wrapper">
+                <input type="password" id="oldPwdInput" placeholder="กรอกรหัสผ่านเดิม" lang="en" inputmode="latin" 
+                       autocomplete="current-password" autocapitalize="none" autocorrect="off" oninput="detectThaiInput(this, 'oldPwdThaiWarn')">
+                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('oldPwdInput', this)"><i class="fas fa-eye"></i></button>
             </div>
+            <div class="thai-warning-badge" id="oldPwdThaiWarn"><i class="fas fa-exclamation-triangle"></i> พบตัวอักษรภาษาไทย! กรุณาสลับแป้นพิมพ์เป็น EN</div>
         </div>
-        
+
         <div style="margin-bottom:12px;">
             <label>รหัสผ่านใหม่:</label>
-            <div class="password-wrapper">
-                <input type="password" id="newPwdInput" placeholder="อย่างน้อย 6 ตัวอักษร" autocomplete="new-password" oninput="checkPwdStrength(this.value)">
-                <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('newPwdInput', this)" title="แสดง/ซ่อนรหัสผ่าน">
-                    <i class="fas fa-eye"></i>
-                </button>
+            <div class="password-input-wrapper">
+                <input type="password" id="newPwdInput" placeholder="อย่างน้อย 6 ตัวอักษร" lang="en" inputmode="latin" 
+                       autocomplete="new-password" autocapitalize="none" autocorrect="off"
+                       oninput="checkPwdStrength(this.value); detectThaiInput(this, 'newPwdThaiWarn');">
+                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('newPwdInput', this)"><i class="fas fa-eye"></i></button>
             </div>
+            <div class="thai-warning-badge" id="newPwdThaiWarn"><i class="fas fa-exclamation-triangle"></i> พบตัวอักษรภาษาไทย! กรุณาสลับแป้นพิมพ์เป็น EN</div>
             <div class="strength-meter"><div class="strength-bar" id="strengthBar"></div></div>
             <div class="strength-text" id="strengthText" style="color:#64748b;">ความแข็งแรง: ยังไม่ระบุ</div>
         </div>
-        
+
         <div style="margin-bottom:16px;">
             <label>ยืนยันรหัสผ่านใหม่:</label>
-            <div class="password-wrapper">
-                <input type="password" id="confirmNewPwdInput" placeholder="กรอกรหัสผ่านใหม่อีกครั้ง" autocomplete="new-password">
-                <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('confirmNewPwdInput', this)" title="แสดง/ซ่อนรหัสผ่าน">
-                    <i class="fas fa-eye"></i>
-                </button>
+            <div class="password-input-wrapper">
+                <input type="password" id="confirmNewPwdInput" placeholder="กรอกรหัสผ่านใหม่อีกครั้ง" lang="en" inputmode="latin" 
+                       autocomplete="new-password" autocapitalize="none" autocorrect="off" oninput="detectThaiInput(this, 'confPwdThaiWarn')">
+                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('confirmNewPwdInput', this)"><i class="fas fa-eye"></i></button>
             </div>
+            <div class="thai-warning-badge" id="confPwdThaiWarn"><i class="fas fa-exclamation-triangle"></i> พบตัวอักษรภาษาไทย! กรุณาสลับแป้นพิมพ์เป็น EN</div>
         </div>
-        
+
         <div id="pwdErrorMsg" style="color:var(--danger); font-size:0.86rem; margin-bottom:12px; display:none;"></div>
         <div style="display:flex; justify-content:flex-end; gap:10px;">
             <button class="btn-secondary" id="cancelPwdBtn" onclick="closeModal('pwdModal')">ยกเลิก</button>
@@ -549,13 +527,12 @@
     </div>
 </div>
 
-<!-- 2. Add User Modal (สำหรับ Admin) -->
 <div class="modal-overlay" id="addUserModal">
     <div class="modal-card">
         <h3 style="font-size:1.2rem; margin-bottom:14px; color:var(--dark);"><i class="fas fa-user-plus" style="color:var(--primary);"></i> เพิ่มผู้ใช้งานใหม่</h3>
         <div style="margin-bottom:12px;">
             <label class="required">ชื่อผู้ใช้งาน (Username):</label>
-            <input type="text" id="newUsernameInput" placeholder="เช่น somchai" autocomplete="off">
+            <input type="text" id="newUsernameInput" placeholder="เช่น somchai" lang="en" inputmode="latin">
         </div>
         <div style="margin-bottom:12px;">
             <label class="required">ชื่อ-นามสกุล หรือชื่อเรียก:</label>
@@ -563,12 +540,11 @@
         </div>
         <div style="margin-bottom:12px;">
             <label class="required">รหัสผ่านเริ่มต้น:</label>
-            <div class="password-wrapper">
-                <input type="password" id="newInitialPwdInput" placeholder="เช่น 123456" autocomplete="new-password">
-                <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('newInitialPwdInput', this)" title="แสดง/ซ่อนรหัสผ่าน">
-                    <i class="fas fa-eye"></i>
-                </button>
+            <div class="password-input-wrapper">
+                <input type="password" id="newInitialPwdInput" placeholder="เช่น 123456" lang="en" inputmode="latin" autocomplete="new-password" oninput="detectThaiInput(this, 'addUsrThaiWarn')">
+                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('newInitialPwdInput', this)"><i class="fas fa-eye"></i></button>
             </div>
+            <div class="thai-warning-badge" id="addUsrThaiWarn"><i class="fas fa-exclamation-triangle"></i> พบตัวอักษรภาษาไทย! กรุณาสลับแป้นพิมพ์เป็น EN</div>
         </div>
         <div style="margin-bottom:16px;">
             <label>สิทธิ์การใช้งาน (Role):</label>
@@ -585,7 +561,6 @@
     </div>
 </div>
 
-<!-- 3. History Modal (ค้นหาตามโครงการ / ช่วงวันที่ / กรองตามสิทธิ์) -->
 <div class="modal-overlay" id="historyModal">
     <div class="modal-card wide">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -616,12 +591,8 @@
 </div>
 
 <script>
-// Web App Endpoint สำหรับเชื่อมต่อ Google Sheets
-const API_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzMlanJwIWy8COxK7EOE42ovEHvAOIbtRrkhH5ZSBjuiiP0joHzRgNfNKax2JhII-ku/exec';
+const API_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx__KFYYMytjkwbSYr2gbGpfdVynBVeb81OqSMmb8vHEkyEv0xnbzpOwdoeNahPOCo/exec';
 
-/**
- * เกณฑ์ความกว้างสูงสุดของผนัง โดยไม่ต้องมีเสาเอ็น / ทับหลัง คสล. [1]
- */
 const LINTEL_CRITERIA = {
     external: [
         { h: 2.50, widths: { '7.5': 2.9, '10': 4.7, '12.5': 6.4, '15': 8.0, '17.5': 9.2, '20': 9.2 } },
@@ -655,18 +626,98 @@ const SIZES_7_5 = [1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.3, 3.6, 4.0];
 const SIZES_10_UP = [1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.3, 3.6];
 const PALLET_QTY = { '7.5': 200, '10': 150, '12.5': 120, '15': 100, '17.5': 80, '20': 70 };
 
+const LINTEL_LOGISTICS_DATA = {
+    '7.5': { 1.2:{pallet:50,truck6:300,trailer:2000}, 1.5:{pallet:50,truck6:300,trailer:1500}, 1.8:{pallet:50,truck6:300,trailer:1250}, 2.1:{pallet:50,truck6:250,trailer:1000}, 2.4:{pallet:50,truck6:250,trailer:950}, 2.7:{pallet:50,truck6:200,trailer:800}, 3.0:{pallet:30,truck6:150,trailer:720}, 3.3:{pallet:30,truck6:150,trailer:540}, 3.6:{pallet:30,truck6:150,trailer:540}, 4.0:{pallet:30,truck6:150,trailer:540} },
+    '10': { 1.2:{pallet:50,truck6:300,trailer:1500}, 1.5:{pallet:50,truck6:300,trailer:1100}, 1.8:{pallet:50,truck6:250,trailer:900}, 2.1:{pallet:50,truck6:200,trailer:750}, 2.4:{pallet:50,truck6:200,trailer:700}, 2.7:{pallet:50,truck6:150,trailer:600}, 3.0:{pallet:30,truck6:150,trailer:540}, 3.3:{pallet:30,truck6:120,trailer:510}, 3.6:{pallet:30,truck6:120,trailer:450} },
+    '12.5': { 1.2:{pallet:40,truck6:240,trailer:1120}, 1.5:{pallet:40,truck6:240,trailer:880}, 1.8:{pallet:40,truck6:200,trailer:720}, 2.1:{pallet:40,truck6:160,trailer:640}, 2.4:{pallet:40,truck6:160,trailer:560}, 2.7:{pallet:40,truck6:120,trailer:480}, 3.0:{pallet:30,truck6:120,trailer:420}, 3.3:{pallet:30,truck6:120,trailer:390}, 3.6:{pallet:30,truck6:90,trailer:360} },
+    '15': { 1.2:{pallet:30,truck6:180,trailer:900}, 1.5:{pallet:30,truck6:180,trailer:750}, 1.8:{pallet:30,truck6:180,trailer:600}, 2.1:{pallet:30,truck6:120,trailer:540}, 2.4:{pallet:30,truck6:120,trailer:450}, 2.7:{pallet:30,truck6:90,trailer:420}, 3.0:{pallet:30,truck6:80,trailer:360}, 3.3:{pallet:30,truck6:80,trailer:330}, 3.6:{pallet:30,truck6:80,trailer:300} },
+    '17.5': { 1.2:{pallet:20,truck6:140,trailer:800}, 1.5:{pallet:20,truck6:140,trailer:640}, 1.8:{pallet:20,truck6:120,trailer:520}, 2.1:{pallet:20,truck6:120,trailer:440}, 2.4:{pallet:20,truck6:100,trailer:400}, 2.7:{pallet:20,truck6:100,trailer:360}, 3.0:{pallet:20,truck6:80,trailer:320}, 3.3:{pallet:20,truck6:80,trailer:280}, 3.6:{pallet:20,truck6:60,trailer:260} },
+    '20': { 1.2:{pallet:20,truck6:140,trailer:700}, 1.5:{pallet:20,truck6:140,trailer:560}, 1.8:{pallet:20,truck6:120,trailer:460}, 2.1:{pallet:20,truck6:100,trailer:400}, 2.4:{pallet:20,truck6:100,trailer:340}, 2.7:{pallet:20,truck6:80,trailer:300}, 3.0:{pallet:20,truck6:60,trailer:280}, 3.3:{pallet:20,truck6:60,trailer:260}, 3.6:{pallet:20,truck6:60,trailer:220} }
+};
+
 let currentUser = null;
 let currentCalcId = '';
 let activeMethod = 2;
 let wallCount = 0;
 let totalBlocksCount = 0;
 let thicknessSummaryGlobal = {};
+let globalDetailedLintelList = [];
 
-// ================= PASSWORD VISIBILITY TOGGLE (ปลดล็อกการสลับภาษา) =================
-function togglePasswordVisibility(inputId, btnElement) {
-    const input = document.getElementById(inputId);
-    const icon = btnElement.querySelector('i');
+// ================= RESET FORM (ปรับปรุงสมบูรณ์) =================
+function resetForm() {
+    if (!confirm('คุณต้องการล้างข้อมูลทั้งหมดเพื่อเริ่มคำนวณใหม่ใช่หรือไม่?')) {
+        return;
+    }
+
+    // 1. ล้างรหัสการคำนวณเดิม
+    currentCalcId = '';
+    const badge = document.getElementById('calcIdBadge');
+    if (badge) badge.textContent = '';
+
+    // 2. ล้างข้อมูลโครงการและข้อความเตือนกรอกไม่ครบ
+    document.getElementById('docDate').valueAsDate = new Date();
+    ['storeName', 'projectName', 'district', 'province'].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.value = '';
+            input.classList.remove('input-error');
+        }
+    });
+
+    // 3. รีเซ็ตตัวเลือกการฉาบและเผื่อวัสดุกลับเป็นค่ามาตรฐาน
+    document.getElementById('plasterOption').value = 'both_1';
+    document.getElementById('wasteSelect').value = '5';
+
+    // 4. รีเซ็ตตัวแปรประมวลผลภายในทั้งหมด
+    totalBlocksCount = 0;
+    thicknessSummaryGlobal = {};
+    globalDetailedLintelList = [];
+
+    // 5. ล้างแถววิธีที่ 1 และสร้างใหม่ 1 แถวว่าง
+    const m1Container = document.getElementById('m1RowsContainer');
+    if (m1Container) m1Container.innerHTML = '';
+    m1RowCount = 0;
+    addMethod1Row();
+    calcMethod1TotalDisplay();
+
+    // 6. ล้างแผงผนังวิธีที่ 2 และสร้างใหม่ 1 แผงว่าง
+    const wallContainer = document.getElementById('wallContainer');
+    if (wallContainer) wallContainer.innerHTML = '';
+    wallCount = 0;
+    addWall();
+
+    // 7. สลับกลับมาวิธีที่ 2 เป็นค่าเริ่มต้น
+    switchMethod(2);
+
+    // 8. รีเซ็ตค่าบน Dashboard สรุปพื้นที่
+    document.getElementById('statGross').innerHTML = '0.00<span style="font-size:0.8rem; color:#94a3b8;"> ตร.ม.</span>';
+    document.getElementById('statOpenings').innerHTML = '0.00<span style="font-size:0.8rem; color:#94a3b8;"> ตร.ม.</span>';
+    document.getElementById('statNet').innerHTML = '0.00<span style="font-size:0.8rem; color:#94a3b8;"> ตร.ม.</span>';
+    document.getElementById('statLintelPieces').innerHTML = '0<span style="font-size:0.8rem; color:#94a3b8;"> ท่อน</span>';
+
+    // 9. ซ่อนและล้างข้อมูลส่วนผลลัพธ์การคำนวณ
+    const resBox = document.getElementById('resultContainer');
+    if (resBox) resBox.classList.remove('show');
+    document.getElementById('brickBreakdownTable').innerHTML = '';
+    document.getElementById('outMortar').textContent = '0';
+    document.getElementById('outPlaster').textContent = '0';
+    document.getElementById('outPlasterSub').textContent = 'ถุง (50 กก.)';
+    document.getElementById('outStrap').textContent = '0';
+    document.getElementById('lintelTableContainer').innerHTML = '';
     
+    const cipAlert = document.getElementById('castInPlaceNotice');
+    if (cipAlert) { cipAlert.style.display = 'none'; cipAlert.innerHTML = ''; }
+    
+    document.getElementById('truckDetailOutput').innerHTML = '';
+
+    // เลื่อนหน้าจอขึ้นด้านบนสุด
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ================= PASSWORD HELPERS =================
+function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('i');
     if (input.type === 'password') {
         input.type = 'text';
         icon.classList.remove('fa-eye');
@@ -676,10 +727,15 @@ function togglePasswordVisibility(inputId, btnElement) {
         icon.classList.remove('fa-eye-slash');
         icon.classList.add('fa-eye');
     }
-    input.focus();
 }
 
-// ================= AUTHENTICATION (GATE SCREEN) =================
+function detectThaiInput(input, warnElementId) {
+    const warnEl = document.getElementById(warnElementId);
+    if (!warnEl) return;
+    warnEl.style.display = /[\u0E00-\u0E7F]/.test(input.value) ? 'flex' : 'none';
+}
+
+// ================= AUTHENTICATION =================
 async function performGateLogin() {
     const u = document.getElementById('gateLoginUser').value.trim();
     const p = document.getElementById('gateLoginPass').value;
@@ -703,18 +759,14 @@ async function performGateLogin() {
             if (document.getElementById('gateRememberMe').checked) {
                 localStorage.setItem('qcon_user_session', JSON.stringify(currentUser));
             }
-
             unlockApp();
-
-            if (currentUser.mustChangePwd) {
-                openChangePwdModal(true);
-            }
+            if (currentUser.mustChangePwd) openChangePwdModal(true);
         } else {
             err.textContent = d.message || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
             err.style.display = 'block';
         }
     } catch (e) {
-        err.textContent = 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้: ' + e.message;
+        err.textContent = 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณาลองใหม่อีกครั้ง';
         err.style.display = 'block';
     }
 }
@@ -740,14 +792,17 @@ function logout() {
     document.getElementById('mainAppSection').style.display = 'none';
     document.getElementById('loginGateScreen').style.display = 'flex';
     document.getElementById('gateLoginPass').value = '';
+    document.getElementById('loginThaiWarn').style.display = 'none';
 }
 
-// ================= PASSWORD MANAGEMENT =================
 function openChangePwdModal(isForced = false) {
     document.getElementById('oldPwdInput').value = '';
     document.getElementById('newPwdInput').value = '';
     document.getElementById('confirmNewPwdInput').value = '';
     document.getElementById('pwdErrorMsg').style.display = 'none';
+    document.getElementById('oldPwdThaiWarn').style.display = 'none';
+    document.getElementById('newPwdThaiWarn').style.display = 'none';
+    document.getElementById('confPwdThaiWarn').style.display = 'none';
     checkPwdStrength('');
 
     if (isForced) {
@@ -785,6 +840,11 @@ async function performChangePassword() {
     const err = document.getElementById('pwdErrorMsg');
     err.style.display = 'none';
 
+    if (/[\u0E00-\u0E7F]/.test(oldP) || /[\u0E00-\u0E7F]/.test(newP) || /[\u0E00-\u0E7F]/.test(confP)) {
+        err.textContent = 'รหัสผ่านต้องเป็นภาษาอังกฤษและตัวเลขเท่านั้น (ห้ามใช้ภาษาไทย)';
+        err.style.display = 'block';
+        return;
+    }
     if (newP !== confP) { err.textContent = 'รหัสผ่านใหม่ไม่ตรงกัน'; err.style.display = 'block'; return; }
     if (newP.length < 6) { err.textContent = 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'; err.style.display = 'block'; return; }
 
@@ -809,12 +869,11 @@ async function performChangePassword() {
             err.style.display = 'block';
         }
     } catch (e) {
-        err.textContent = 'เกิดข้อผิดพลาด: ' + e.message;
+        err.textContent = 'เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง';
         err.style.display = 'block';
     }
 }
 
-// ================= USER MANAGEMENT (ADMIN ONLY) =================
 async function performAddUser() {
     const u = document.getElementById('newUsernameInput').value.trim();
     const fn = document.getElementById('newFullNameInput').value.trim();
@@ -847,17 +906,71 @@ async function performAddUser() {
             document.getElementById('newUsernameInput').value = '';
             document.getElementById('newFullNameInput').value = '';
             document.getElementById('newInitialPwdInput').value = '';
+            document.getElementById('addUsrThaiWarn').style.display = 'none';
         } else {
             err.textContent = d.message;
             err.style.display = 'block';
         }
     } catch (e) {
-        err.textContent = 'เกิดข้อผิดพลาด: ' + e.message;
+        err.textContent = 'เกิดข้อผิดพลาดในการเพิ่มผู้ใช้งาน กรุณาลองใหม่อีกครั้ง';
         err.style.display = 'block';
     }
 }
 
-// ================= HISTORY & SEARCH FILTER =================
+// ================= METHOD 1: MULTIPLE WALL ROWS =================
+let m1RowCount = 0;
+
+function addMethod1Row(name = '', thick = '10', area = '') {
+    m1RowCount++;
+    const container = document.getElementById('m1RowsContainer');
+    const rowId = `m1Row_${m1RowCount}`;
+    const defaultName = name || `บริเวณที่ ${m1RowCount}`;
+
+    const html = `
+    <div class="opening-row" id="${rowId}" style="grid-template-columns: 2fr 1.5fr 1.5fr 40px; margin-bottom:10px; padding:10px 12px;">
+        <div>
+            <label style="font-size:0.75rem; color:#64748b; margin-bottom:2px;">ชื่อบริเวณ / อ้างอิง:</label>
+            <input type="text" class="m1-name" value="${defaultName}" placeholder="เช่น ผนังห้องนอน 1">
+        </div>
+        <div>
+            <label style="font-size:0.75rem; color:#64748b; margin-bottom:2px;">ความหนาบล็อก Q-CON:</label>
+            <select class="m1-thick">
+                <option value="7.5" ${thick==='7.5'?'selected':''}>7.5 ซม.</option>
+                <option value="10" ${thick==='10'?'selected':''}>10 ซม.</option>
+                <option value="12.5" ${thick==='12.5'?'selected':''}>12.5 ซม.</option>
+                <option value="15" ${thick==='15'?'selected':''}>15 ซม.</option>
+                <option value="17.5" ${thick==='17.5'?'selected':''}>17.5 ซม.</option>
+                <option value="20" ${thick==='20'?'selected':''}>20 ซม.</option>
+            </select>
+        </div>
+        <div>
+            <label style="font-size:0.75rem; color:#64748b; margin-bottom:2px;">พื้นที่สุทธิ (ตร.ม.):</label>
+            <input type="number" class="m1-area" step="0.1" min="0" placeholder="เช่น 25.5" value="${area}" oninput="calcMethod1TotalDisplay()">
+        </div>
+        <div style="display:flex; align-items:flex-end;">
+            <button class="btn-delete" onclick="removeMethod1Row('${rowId}')" title="ลบรายการนี้" style="margin-bottom:6px;"><i class="fas fa-trash-alt"></i></button>
+        </div>
+    </div>`;
+
+    container.insertAdjacentHTML('beforeend', html);
+    calcMethod1TotalDisplay();
+}
+
+function removeMethod1Row(rowId) {
+    const el = document.getElementById(rowId);
+    if (el) el.remove();
+    calcMethod1TotalDisplay();
+}
+
+function calcMethod1TotalDisplay() {
+    let sum = 0;
+    document.querySelectorAll('.m1-area').forEach(input => {
+        sum += parseFloat(input.value) || 0;
+    });
+    document.getElementById('m1TotalAreaDisplay').textContent = sum.toFixed(2);
+}
+
+// ================= HISTORY & DELETE MANAGEMENT =================
 function openHistoryModal() {
     openModal('historyModal');
     loadHistoryList();
@@ -865,7 +978,7 @@ function openHistoryModal() {
 
 async function loadHistoryList() {
     const container = document.getElementById('historyTableContainer');
-    container.innerHTML = '<p style="padding:20px; text-align:center;"><i class="fas fa-spinner fa-spin"></i> กำลังโหลดข้อมูลประวัติจาก Google Sheets...</p>';
+    container.innerHTML = '<p style="padding:20px; text-align:center;"><i class="fas fa-spinner fa-spin"></i> กำลังโหลดประวัติรายการคำนวณอย่างรวดเร็ว...</p>';
 
     const kw = document.getElementById('histSearchKeyword').value;
     const sDate = document.getElementById('histStartDate').value;
@@ -901,7 +1014,7 @@ async function loadHistoryList() {
                 <tbody>`;
             d.history.forEach(h => {
                 html += `
-                <tr>
+                <tr id="histRow_${h.calc_id}">
                     <td><strong>${h.calc_id}</strong></td>
                     <td>${new Date(h.doc_date).toLocaleDateString('th-TH')}</td>
                     <td>${h.project_name}</td>
@@ -909,9 +1022,12 @@ async function loadHistoryList() {
                     <td style="text-align:right;">${parseFloat(h.total_net_area).toFixed(2)}</td>
                     <td style="text-align:right; font-weight:600; color:var(--primary);">${parseInt(h.total_blocks).toLocaleString()}</td>
                     <td><small>${h.created_by}</small></td>
-                    <td style="text-align:center;">
-                        <button class="btn-primary" style="padding:5px 12px; font-size:0.8rem;" onclick="loadCalculationToEdit('${h.calc_id}')">
-                            <i class="fas fa-edit"></i> ดึงมาแก้ไข
+                    <td style="text-align:center; white-space:nowrap;">
+                        <button class="btn-primary" style="padding:5px 10px; font-size:0.8rem; margin-right:5px;" onclick="loadCalculationToEdit('${h.calc_id}')">
+                            <i class="fas fa-edit"></i> แก้ไข
+                        </button>
+                        <button class="btn-delete" style="background:#fee2e2; color:#dc2626; padding:5px 9px; font-size:0.8rem;" onclick="deleteCalculationItem('${h.calc_id}')" title="ลบรายการนี้">
+                            <i class="fas fa-trash-alt"></i> ลบ
                         </button>
                     </td>
                 </tr>`;
@@ -922,7 +1038,39 @@ async function loadHistoryList() {
             container.innerHTML = '<p style="padding:20px; text-align:center; color:#64748b;">ไม่พบประวัติรายการคำนวณตามเงื่อนไข</p>';
         }
     } catch (e) {
-        container.innerHTML = '<p style="color:var(--danger); padding:20px;">เกิดข้อผิดพลาดในการโหลด: ' + e.message + '</p>';
+        container.innerHTML = '<p style="color:var(--danger); padding:20px;">ไม่สามารถโหลดประวัติได้ กรุณาลองใหม่อีกครั้ง</p>';
+    }
+}
+
+async function deleteCalculationItem(calcId) {
+    if (!confirm(`คุณต้องการลบรายการคำนวณเลขที่ ${calcId} หรือไม่? (การกระทำนี้ไม่สามารถย้อนกลับได้)`)) {
+        return;
+    }
+
+    try {
+        const res = await fetch(API_ENDPOINT, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'delete_calculation',
+                calc_id: calcId,
+                current_user: currentUser
+            })
+        });
+        const d = await res.json();
+        if (d.success) {
+            alert('ลบรายการคำนวณสำเร็จ');
+            const row = document.getElementById(`histRow_${calcId}`);
+            if (row) row.remove();
+
+            if (currentCalcId === calcId) {
+                currentCalcId = '';
+                document.getElementById('calcIdBadge').textContent = '';
+            }
+        } else {
+            alert('ไม่สามารถลบรายการได้: ' + d.message);
+        }
+    } catch (e) {
+        alert('เกิดข้อผิดพลาดในการลบรายการ');
     }
 }
 
@@ -951,8 +1099,15 @@ async function loadCalculationToEdit(calcId) {
             switchMethod(p.calc_method || 2);
 
             if (p.calc_method === 1) {
-                document.getElementById('flatArea').value = p.flat_area || 0;
-                document.getElementById('m1Thick').value = p.primary_thick || '10';
+                document.getElementById('m1RowsContainer').innerHTML = '';
+                m1RowCount = 0;
+                if (p.method1_items && p.method1_items.length > 0) {
+                    p.method1_items.forEach(it => addMethod1Row(it.name, it.thick, it.area));
+                } else if (p.flat_area) {
+                    addMethod1Row('พื้นที่รวมเดิม', p.primary_thick || '10', p.flat_area);
+                } else {
+                    addMethod1Row();
+                }
             } else {
                 document.getElementById('wallContainer').innerHTML = '';
                 wallCount = 0;
@@ -968,12 +1123,12 @@ async function loadCalculationToEdit(calcId) {
 
             closeModal('historyModal');
             calculateAllMaterials(false);
-            alert(`ดึงข้อมูลใบคำนวณ ${currentCalcId} กลับมาที่หน้าจอเรียบร้อยแล้ว`);
+            alert(`ดึงข้อมูลใบคำนวณ ${currentCalcId} เรียบร้อยแล้ว`);
         } else {
             alert('ไม่สามารถดึงข้อมูลได้: ' + d.message);
         }
     } catch (e) {
-        alert('เกิดข้อผิดพลาด: ' + e.message);
+        alert('เกิดข้อผิดพลาดในการดึงข้อมูล');
     }
 }
 
@@ -1015,14 +1170,31 @@ async function calculateAllMaterials(shouldAutoSave = true) {
     const detailedLintelList = [];
     const castInPlaceAlerts = [];
     const wallSnapshot = [];
+    const method1ItemsSnapshot = [];
 
     if (activeMethod === 1) {
-        const a = parseFloat(document.getElementById('flatArea').value) || 0;
-        if (a <= 0) { alert('กรุณาระบุพื้นที่ผนังรวม'); return; }
-        const thick = document.getElementById('m1Thick').value;
-        totalGrossArea = a;
-        totalNetArea = a;
-        thicknessSummaryGlobal[thick] = a;
+        const rows = document.querySelectorAll('#m1RowsContainer .opening-row');
+        if (rows.length === 0) { alert('กรุณาเพิ่มรายการพื้นที่ผนังอย่างน้อย 1 รายการ'); return; }
+
+        let validCount = 0;
+        rows.forEach(r => {
+            const name = r.querySelector('.m1-name').value || 'บริเวณผนัง';
+            const thick = r.querySelector('.m1-thick').value;
+            const area = parseFloat(r.querySelector('.m1-area').value) || 0;
+
+            if (area > 0) {
+                validCount++;
+                totalGrossArea += area;
+                totalNetArea += area;
+                thicknessSummaryGlobal[thick] = (thicknessSummaryGlobal[thick] || 0) + area;
+                method1ItemsSnapshot.push({ name, thick, area });
+            }
+        });
+
+        if (validCount === 0) {
+            alert('กรุณาระบุพื้นที่สุทธิในรายการผนัง');
+            return;
+        }
     } else {
         const wallCards = document.querySelectorAll('.wall-card');
         if (wallCards.length === 0) { alert('กรุณาเพิ่มแผงผนังอย่างน้อย 1 แผง'); return; }
@@ -1056,7 +1228,7 @@ async function calculateAllMaterials(shouldAutoSave = true) {
                 if (thick === '7.5') {
                     const colRes = getLintel7_5(h);
                     if (colRes.castInPlace) {
-                        castInPlaceAlerts.push(`${wallName} - เสาเอ็นช่องเปิด (${opTypeText}) สูง ${h} ม. > 4.0 ม. ต้องเท คสล. ในที่`);
+                        castInPlaceAlerts.push(`${wallName} - เสาเอ็นประกบข้าง (${opTypeText}) สูง ${h} ม. > 4.0 ม. ต้องเท คสล. ในที่`);
                     } else {
                         detailedLintelList.push({ wall: wallName, application: `เสาเอ็นประกบข้าง (${opTypeText})`, thick, length: colRes.length, qty: 2 * opQty });
                     }
@@ -1064,7 +1236,7 @@ async function calculateAllMaterials(shouldAutoSave = true) {
                     const beamRes = getLintel7_5(opW);
                     const pieces = (opTypeVal === 'door') ? 1 : 2;
                     if (beamRes.castInPlace) {
-                        castInPlaceAlerts.push(`${wallName} - ทับหลังช่องเปิด (${opTypeText}) กว้าง ${opW} ม. > 4.0 ม. ต้องเท คสล. ในที่`);
+                        castInPlaceAlerts.push(`${wallName} - ทับหลังพาดช่องเปิด (${opTypeText}) กว้าง ${opW} ม. > 4.0 ม. ต้องเท คสล. ในที่`);
                     } else {
                         detailedLintelList.push({ wall: wallName, application: `ทับหลังพาดช่องเปิด (${opTypeText})`, thick, length: beamRes.length, qty: pieces * opQty });
                     }
@@ -1092,16 +1264,16 @@ async function calculateAllMaterials(shouldAutoSave = true) {
                         if (parseFloat(thick) >= 10) {
                             const colLintel = getColumnLintel10Up(h);
                             if (colLintel.castInPlace) {
-                                castInPlaceAlerts.push(`${wallName} - เสาเอ็นตัวตั้งแบ่งช่วงผนัง [1] สูง ${h} ม. > 3.6 ม. ต้องเทคอนกรีต คสล. ในที่`);
+                                castInPlaceAlerts.push(`${wallName} - เสาเอ็นสำเร็จรูปแบ่งช่วงผนัง สูง ${h} ม. > 3.6 ม. ต้องเทคอนกรีต คสล. ในที่`);
                             } else {
-                                detailedLintelList.push({ wall: wallName, application: `ตัวตั้ง (เสาเอ็นสำเร็จรูปแบ่งช่วงผนัง [1])`, thick, length: colLintel.length, qty: stiffenerCount });
+                                detailedLintelList.push({ wall: wallName, application: `ตัวตั้ง (เสาเอ็นสำเร็จรูปแบ่งช่วงผนัง)`, thick, length: colLintel.length, qty: stiffenerCount });
                             }
                         } else if (!hasOpenings) {
                             const colLintel = getLintel7_5(h);
                             if (colLintel.castInPlace) {
-                                castInPlaceAlerts.push(`${wallName} - เสาเอ็นตัวตั้งแบ่งช่วงผนัง [1] สูง ${h} ม. > 4.0 ม. ต้องเท คสล. ในที่`);
+                                castInPlaceAlerts.push(`${wallName} - เสาเอ็นสำเร็จรูปแบ่งช่วงผนัง สูง ${h} ม. > 4.0 ม. ต้องเท คสล. ในที่`);
                             } else {
-                                detailedLintelList.push({ wall: wallName, application: `ตัวตั้ง (เสาเอ็นสำเร็จรูปแบ่งช่วงผนัง [1])`, thick, length: colLintel.length, qty: stiffenerCount });
+                                detailedLintelList.push({ wall: wallName, application: `ตัวตั้ง (เสาเอ็นสำเร็จรูปแบ่งช่วงผนัง)`, thick, length: colLintel.length, qty: stiffenerCount });
                             }
                         }
                     }
@@ -1146,10 +1318,12 @@ async function calculateAllMaterials(shouldAutoSave = true) {
     }
 
     document.getElementById('resultContainer').classList.add('show');
+
+    globalDetailedLintelList = detailedLintelList;
     calcLogistics();
+
     document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth' });
 
-    // บันทึกไปยัง Google Sheets อัตโนมัติ
     if (shouldAutoSave && currentUser) {
         const payloadData = {
             calc_id: currentCalcId,
@@ -1171,8 +1345,7 @@ async function calculateAllMaterials(shouldAutoSave = true) {
                 calc_method: activeMethod,
                 waste_percent: wastePercent,
                 plaster_option: plasterChoice,
-                flat_area: document.getElementById('flatArea').value,
-                primary_thick: document.getElementById('m1Thick').value,
+                method1_items: method1ItemsSnapshot,
                 walls: wallSnapshot
             }
         };
@@ -1186,10 +1359,9 @@ async function calculateAllMaterials(shouldAutoSave = true) {
             if (d.success) {
                 currentCalcId = d.calc_id;
                 document.getElementById('calcIdBadge').textContent = `[เลขอ้างอิง: ${currentCalcId}]`;
-                console.log('Auto-saved to Sheets: ' + currentCalcId);
             }
         } catch (e) {
-            console.error('Auto-save error: ', e);
+            // ไม่บล็อกการทำงานหลัก
         }
     }
 }
@@ -1271,32 +1443,119 @@ function renderDetailedLintelTable(lintelList) {
 }
 
 function calcLogistics() {
-    if (totalBlocksCount <= 0) return;
-    const grade = document.getElementById('truckBlockGrade').value;
     const truckType = document.getElementById('truckTypeSelect').value;
+    const grade = document.getElementById('truckBlockGrade').value;
+    const is6Wheel = (truckType === '6wheel');
+    const truckTitle = is6Wheel ? 'รถ 6 ล้อ' : 'รถเทรลเลอร์';
 
-    let totalPallets = 0;
+    let blockPallets = 0;
+    const wastePercent = parseFloat(document.getElementById('wasteSelect').value) || 0;
     for (let th in thicknessSummaryGlobal) {
         const area = thicknessSummaryGlobal[th];
-        const wastePercent = parseFloat(document.getElementById('wasteSelect').value) || 0;
-        const blocks = Math.ceil(area * 8.33 * (1 + wastePercent/100));
+        const blocks = Math.ceil(area * 8.33 * (1 + wastePercent / 100));
         const perPallet = PALLET_QTY[th] || 100;
-        totalPallets += Math.ceil(blocks / perPallet);
+        blockPallets += Math.ceil(blocks / perPallet);
     }
-    if (totalPallets === 0) totalPallets = Math.ceil(totalBlocksCount / 100);
+    if (blockPallets === 0 && totalBlocksCount > 0) blockPallets = Math.ceil(totalBlocksCount / 100);
 
-    const maxCapacity = (truckType === '6wheel') ? 6 : (grade === 'g2' ? 22 : 20);
-    const trips = Math.ceil(totalPallets / maxCapacity);
+    const blockMaxCapacity = is6Wheel ? 6 : (grade === 'g2' ? 22 : 20);
+    const blockTrips = blockPallets > 0 ? Math.ceil(blockPallets / blockMaxCapacity) : 0;
+    const blockLoadRatio = blockPallets / blockMaxCapacity;
 
-    document.getElementById('truckDetailOutput').innerHTML = `
-        <div style="background:#fff; border:1px solid #fed7aa; padding:12px; border-radius:8px;">
-            <i class="fas fa-pallet" style="color:var(--primary);"></i> ปริมาณพาเลทอิฐมวลเบารวม: <strong>${totalPallets}</strong> พาเลท<br>
-            <i class="fas fa-truck" style="color:var(--primary);"></i> ความจุบรรทุกต่อคัน (${truckType === '6wheel' ? 'รถ 6 ล้อ' : 'รถเทรลเลอร์'}): <strong>${maxCapacity}</strong> พาเลท/คัน<br>
-            <i class="fas fa-check-circle" style="color:#16a34a;"></i> จำนวนเที่ยวรถที่แนะนำ: <strong style="font-size:1.2rem; color:var(--primary);">${trips}</strong> คัน
-        </div>`;
+    const mortarBags = parseInt((document.getElementById('outMortar').textContent || '0').replace(/,/g, '')) || 0;
+    const plasterBags = parseInt((document.getElementById('outPlaster').textContent || '0').replace(/,/g, '')) || 0;
+    const totalCementBags = mortarBags + plasterBags;
+
+    const cementPallets = totalCementBags > 0 ? Math.ceil(totalCementBags / 40) : 0;
+    const cementMaxCapacity = is6Wheel ? 4 : 16;
+    const cementTrips = cementPallets > 0 ? Math.ceil(cementPallets / cementMaxCapacity) : 0;
+    const cementLoadRatio = cementPallets / cementMaxCapacity;
+
+    let lintelPallets = 0;
+    let lintelLoadRatio = 0;
+    let totalLintelPcs = 0;
+
+    if (globalDetailedLintelList && globalDetailedLintelList.length > 0) {
+        globalDetailedLintelList.forEach(item => {
+            const th = String(item.thick);
+            const lenKey = parseFloat(item.length.toFixed(1));
+            totalLintelPcs += item.qty;
+
+            const ref = (LINTEL_LOGISTICS_DATA[th] && LINTEL_LOGISTICS_DATA[th][lenKey]) 
+                        ? LINTEL_LOGISTICS_DATA[th][lenKey] 
+                        : { pallet: 30, truck6: 120, trailer: 500 };
+
+            lintelPallets += Math.ceil(item.qty / ref.pallet);
+            const cap = is6Wheel ? ref.truck6 : ref.trailer;
+            lintelLoadRatio += (item.qty / cap);
+        });
+    }
+    const lintelTrips = lintelLoadRatio > 0 ? Math.ceil(lintelLoadRatio) : 0;
+
+    const totalCombinedLoadRatio = blockLoadRatio + cementLoadRatio + lintelLoadRatio;
+    const totalCombinedTrips = Math.ceil(totalCombinedLoadRatio);
+
+    const html = `
+    <div style="background:#ffffff; border:1.5px solid #fed7aa; border-radius:12px; padding:18px; margin-top:14px;">
+        <h4 style="color:#9a3412; font-size:1.05rem; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-truck-loading"></i> สรุปการประมาณการขนส่งแยกตามสินค้า (${truckTitle})
+        </h4>
+
+        <table class="custom-table" style="margin-top:0;">
+            <thead>
+                <tr style="background:#fff7ed; color:#9a3412;">
+                    <th>รายการสินค้า</th>
+                    <th style="text-align:right;">ปริมาณสินค้า</th>
+                    <th style="text-align:right;">จำนวนพาเลท</th>
+                    <th style="text-align:center;">พิกัดบรรทุกต่อคัน (${truckTitle})</th>
+                    <th style="text-align:right;">จำนวนเที่ยวรถ (กรณีส่งแยก)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>1. อิฐมวลเบา Q-CON (${grade.toUpperCase()})</strong></td>
+                    <td style="text-align:right;">${totalBlocksCount.toLocaleString()} ก้อน</td>
+                    <td style="text-align:right;"><strong>${blockPallets}</strong> พาเลท</td>
+                    <td style="text-align:center;">${blockMaxCapacity} พาเลท/คัน</td>
+                    <td style="text-align:right; font-weight:600; color:var(--primary);">${blockTrips} คัน</td>
+                </tr>
+                <tr>
+                    <td><strong>2. ปูนก่อและปูนฉาบ Q-CON</strong> (40 ถุง/พาเลท)</td>
+                    <td style="text-align:right;">${totalCementBags.toLocaleString()} ถุง<br><small style="color:#64748b;">(ก่อ ${mortarBags} + ฉาบ ${plasterBags})</small></td>
+                    <td style="text-align:right;"><strong>${cementPallets}</strong> พาเลท</td>
+                    <td style="text-align:center;">${cementMaxCapacity} พาเลท/คัน (${is6Wheel ? '160' : '640'} ถุง)</td>
+                    <td style="text-align:right; font-weight:600; color:var(--primary);">${cementTrips} คัน</td>
+                </tr>
+                <tr>
+                    <td><strong>3. คานทับหลังสำเร็จรูป Q-CON</strong></td>
+                    <td style="text-align:right;">${totalLintelPcs} ท่อน</td>
+                    <td style="text-align:right;"><strong>${lintelPallets}</strong> พาเลท</td>
+                    <td style="text-align:center;">ตามพิกัดน้ำหนักแต่ละขนาด</td>
+                    <td style="text-align:right; font-weight:600; color:var(--primary);">${lintelTrips} คัน</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="background:#fffaf5; border:1.5px dashed var(--primary); border-radius:10px; padding:14px 18px; margin-top:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>
+                <div style="font-weight:700; color:var(--dark); font-size:1rem;">
+                    <i class="fas fa-boxes" style="color:var(--primary);"></i> สรุปภาระการขนส่งรวมทั้งโครงการ (Combined Logistics)
+                </div>
+                <div style="font-size:0.86rem; color:#64748b; margin-top:3px;">
+                    พาเลทรวม: <strong>${blockPallets + cementPallets + lintelPallets}</strong> พาเลท | สัดส่วนการบรรทุกรวม: <strong>${totalCombinedLoadRatio.toFixed(2)}</strong> คัน
+                </div>
+            </div>
+            <div style="text-align:right;">
+                <span style="font-size:0.88rem; color:#64748b;">แนะนำให้เปิดเที่ยวรถขนส่งรวม:</span>
+                <span style="font-size:1.6rem; font-weight:800; color:var(--primary); margin-left:8px;">${totalCombinedTrips}</span>
+                <span style="font-size:0.95rem; font-weight:600; color:var(--dark);"> เที่ยว (${truckTitle})</span>
+            </div>
+        </div>
+    </div>`;
+
+    document.getElementById('truckDetailOutput').innerHTML = html;
 }
 
-// ================= WALL HELPERS =================
 function switchMethod(m) {
     activeMethod = m;
     document.getElementById('method1View').style.display = m === 1 ? 'block' : 'none';
@@ -1374,9 +1633,7 @@ function removeWall(id) {
     if (el) el.remove();
 }
 
-function addOpeningToWall(wallId) {
-    addOpeningToWallWithData(wallId, null);
-}
+function addOpeningToWall(wallId) { addOpeningToWallWithData(wallId, null); }
 
 function addOpeningToWallWithData(wallId, data) {
     const list = document.getElementById(`openingsList_${wallId}`);
@@ -1428,14 +1685,14 @@ function checkWallStructuralCriteria(wallType, thickness, width, height) {
     if (height <= 0 || width <= 0) return { needed: false, note: 'กรอกขนาดผนังเพื่อตรวจสอบ' };
 
     let matchedRow = table.find(r => r.h >= height);
-    if (!matchedRow) return { needed: true, maxW: 0, note: `ความสูง (${height} ม.) เกินขีดจำกัด 6.0 ม. [1] ต้องมีเสาเอ็น/ทับหลัง คสล.` };
+    if (!matchedRow) return { needed: true, maxW: 0, note: `ความสูง (${height} ม.) เกินขีดจำกัด 6.0 ม. ต้องมีเสาเอ็น/ทับหลัง คสล.` };
 
     const maxAllowableW = matchedRow.widths[thickness];
-    if (maxAllowableW === null || maxAllowableW === undefined) return { needed: true, maxW: 0, note: `ความหนา ${thickness} ซม. เกินเกณฑ์มาตรฐาน [1] ต้องมีเสาเอ็น คสล.` };
+    if (maxAllowableW === null || maxAllowableW === undefined) return { needed: true, maxW: 0, note: `ความหนา ${thickness} ซม. เกินเกณฑ์มาตรฐาน ต้องมีเสาเอ็น คสล.` };
 
-    if (width > maxAllowableW) return { needed: true, maxW: maxAllowableW, note: `ความกว้าง (${width} ม.) เกินเกณฑ์สูงสุด (${maxAllowableW} ม.) [1]` };
+    if (width > maxAllowableW) return { needed: true, maxW: maxAllowableW, note: `ความกว้าง (${width} ม.) เกินเกณฑ์สูงสุด (${maxAllowableW} ม.)` };
 
-    return { needed: false, maxW: maxAllowableW, note: `ขนาดอยู่ในเกณฑ์มาตรฐาน [1] (กว้างไม่เกิน ${maxAllowableW} ม.)` };
+    return { needed: false, maxW: maxAllowableW, note: `ขนาดอยู่ในเกณฑ์มาตรฐาน (กว้างไม่เกิน ${maxAllowableW} ม.)` };
 }
 
 function updateWallStatus(wallId) {
@@ -1533,29 +1790,18 @@ function exportToPDF() {
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-function resetForm() {
-    currentCalcId = '';
-    document.getElementById('calcIdBadge').textContent = '';
-    document.getElementById('flatArea').value = '';
-    document.getElementById('wallContainer').innerHTML = '';
-    document.getElementById('resultContainer').classList.remove('show');
-    wallCount = 0;
-    addWall();
-}
-
 window.onload = function() {
     document.getElementById('docDate').valueAsDate = new Date();
     const saved = localStorage.getItem('qcon_user_session');
     if (saved) {
         currentUser = JSON.parse(saved);
         unlockApp();
-        if (currentUser.mustChangePwd) {
-            openChangePwdModal(true);
-        }
+        if (currentUser.mustChangePwd) openChangePwdModal(true);
     } else {
         document.getElementById('loginGateScreen').style.display = 'flex';
         document.getElementById('mainAppSection').style.display = 'none';
     }
+    addMethod1Row();
     addWall();
 };
 </script>
