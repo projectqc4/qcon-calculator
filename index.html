@@ -200,11 +200,12 @@
 
         .summary-dashboard {
             background: var(--white); border: 2px solid var(--primary-border); border-radius: var(--radius-md);
-            padding: 20px; margin: 20px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px;
+            padding: 20px; margin: 20px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;
         }
-        .stat-card { padding: 10px 12px; border-radius: 8px; background: #fffaf5; border-left: 4px solid var(--primary); }
-        .stat-card .label { font-size: 0.8rem; color: #64748b; }
-        .stat-card .num { font-size: 1.5rem; font-weight: 700; color: var(--dark); margin-top: 2px; }
+        .stat-card { padding: 12px 14px; border-radius: 8px; background: #fffaf5; border-left: 4px solid var(--primary); }
+        .stat-card .label { font-size: 0.82rem; color: #64748b; font-weight: 500; }
+        .stat-card .num { font-size: 1.45rem; font-weight: 700; color: var(--dark); margin-top: 3px; }
+        .stat-card .sub-detail { font-size: 0.78rem; color: #64748b; margin-top: 4px; line-height: 1.4; }
 
         .results-box { display: none; margin-top: 20px; }
         .results-box.show { display: block; }
@@ -340,7 +341,7 @@
     <!-- Navigation Tabs -->
     <div class="nav-tabs">
         <button class="tab-btn active" onclick="switchMethod(2)" id="tabBtn2"><i class="fas fa-border-all"></i> วิธีที่ 2: ป้อนข้อมูลรายผนัง + ช่องเปิด + เสาเอ็นทับหลัง</button>
-        <button class="tab-btn" onclick="switchMethod(1)" id="tabBtn1"><i class="fas fa-layer-group"></i> วิธีที่ 1: ป้อนพื้นที่รวม (หลายรายการ)</button>
+        <button class="tab-btn" onclick="switchMethod(1)" id="tabBtn1"><i class="fas fa-layer-group"></i> วิธีที่ 1: ป้อนพื้นที่รวม (หลายรายการ แยกภายนอก/ภายใน)</button>
     </div>
 
     <!-- Options Card -->
@@ -372,16 +373,17 @@
     <div id="method1View" style="display:none;">
         <div class="card">
             <div class="card-title">
-                <span><i class="fas fa-list-check" style="color:var(--primary);"></i> รายการพื้นที่ผนังรวม (ระบุได้หลายบริเวณและหลายความหนา)</span>
+                <span><i class="fas fa-list-check" style="color:var(--primary);"></i> รายการพื้นที่ผนังรวม (ระบุได้หลายบริเวณ แยกประเภทผนังและขนาดความหนา)</span>
                 <button class="btn-outline" onclick="addMethod1Row()"><i class="fas fa-plus"></i> เพิ่มรายการผนัง</button>
             </div>
             
             <div id="m1RowsContainer"></div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; background:#fafbfc; border:1px dashed #cbd5e1; padding:12px 16px; border-radius:10px; margin-top:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#fafbfc; border:1px dashed #cbd5e1; padding:12px 16px; border-radius:10px; margin-top:10px; flex-wrap:wrap; gap:10px;">
                 <button class="btn-outline" onclick="addMethod1Row()"><i class="fas fa-plus-circle"></i> คลิกเพื่อเพิ่มแถวใหม่</button>
-                <div style="font-weight:600; font-size:0.95rem; color:#475569;">
-                    พื้นที่สุทธิรวมวิธีที่ 1: <span id="m1TotalAreaDisplay" style="color:var(--primary); font-size:1.15rem; font-weight:700;">0.00</span> ตร.ม.
+                <div style="font-weight:600; font-size:0.95rem; color:#475569; text-align:right;">
+                    <div>พื้นที่สุทธิรวมวิธีที่ 1: <span id="m1TotalAreaDisplay" style="color:var(--primary); font-size:1.15rem; font-weight:700;">0.00</span> ตร.ม.</div>
+                    <div style="font-size:0.8rem; color:#64748b;">(ภายนอก: <span id="m1ExtAreaDisplay" style="color:#0284c7; font-weight:600;">0.00</span> ตร.ม. | ภายใน: <span id="m1IntAreaDisplay" style="color:#16a34a; font-weight:600;">0.00</span> ตร.ม.)</div>
                 </div>
             </div>
         </div>
@@ -406,18 +408,25 @@
         <div class="stat-card">
             <div class="label">พื้นที่ผนังรวม (Gross Area)</div>
             <div class="num" id="statGross">0.00<span style="font-size:0.8rem; color:#94a3b8;"> ตร.ม.</span></div>
+            <div class="sub-detail" id="statGrossBreakdown">
+                ภายนอก: <span id="statGrossExt" style="color:#0284c7; font-weight:600;">0.00</span> ตร.ม.<br>
+                ภายใน: <span id="statGrossInt" style="color:#16a34a; font-weight:600;">0.00</span> ตร.ม.
+            </div>
         </div>
         <div class="stat-card">
             <div class="label">พื้นที่ช่องเปิดรวม (Openings)</div>
             <div class="num" id="statOpenings" style="color:#d97706;">0.00<span style="font-size:0.8rem; color:#94a3b8;"> ตร.ม.</span></div>
+            <div class="sub-detail">ช่องเปิดประตู หน้าต่าง ช่องแสง</div>
         </div>
         <div class="stat-card" style="border-left-color: #16a34a;">
             <div class="label">พื้นที่ก่อสุทธิ (Net Area)</div>
             <div class="num" id="statNet" style="color:#16a34a;">0.00<span style="font-size:0.8rem; color:#94a3b8;"> ตร.ม.</span></div>
+            <div class="sub-detail">หักช่องเปิดเรียบร้อยแล้ว</div>
         </div>
         <div class="stat-card" style="border-left-color: #0284c7;">
             <div class="label">คานทับหลังสำเร็จรูปรวม</div>
             <div class="num" id="statLintelPieces" style="color:#0284c7;">0<span style="font-size:0.8rem; color:#94a3b8;"> ท่อน</span></div>
+            <div class="sub-detail">ทับหลังและเสาเอ็นสำเร็จรูป</div>
         </div>
     </div>
 
@@ -776,6 +785,8 @@ function resetForm() {
     switchMethod(2);
 
     document.getElementById('statGross').innerHTML = '0.00<span style="font-size:0.8rem; color:#94a3b8;"> ตร.ม.</span>';
+    document.getElementById('statGrossExt').textContent = '0.00';
+    document.getElementById('statGrossInt').textContent = '0.00';
     document.getElementById('statOpenings').innerHTML = '0.00<span style="font-size:0.8rem; color:#94a3b8;"> ตร.ม.</span>';
     document.getElementById('statNet').innerHTML = '0.00<span style="font-size:0.8rem; color:#94a3b8;"> ตร.ม.</span>';
     document.getElementById('statLintelPieces').innerHTML = '0<span style="font-size:0.8rem; color:#94a3b8;"> ท่อน</span>';
@@ -999,20 +1010,27 @@ async function performAddUser() {
     }
 }
 
-// ================= METHOD 1: MULTIPLE WALL ROWS =================
+// ================= METHOD 1: MULTIPLE WALL ROWS (WITH EXTERNAL / INTERNAL TYPE) =================
 let m1RowCount = 0;
 
-function addMethod1Row(name = '', thick = '10', area = '') {
+function addMethod1Row(name = '', thick = '10', type = 'internal', area = '') {
     m1RowCount++;
     const container = document.getElementById('m1RowsContainer');
     const rowId = `m1Row_${m1RowCount}`;
     const defaultName = name || `บริเวณที่ ${m1RowCount}`;
 
     const html = `
-    <div class="opening-row" id="${rowId}" style="grid-template-columns: 2fr 1.5fr 1.5fr 40px; margin-bottom:10px; padding:10px 12px;">
+    <div class="opening-row" id="${rowId}" style="grid-template-columns: 1.8fr 1.3fr 1.3fr 1.3fr 40px; margin-bottom:10px; padding:10px 12px;">
         <div>
             <label style="font-size:0.75rem; color:#64748b; margin-bottom:2px;">ชื่อบริเวณ / อ้างอิง:</label>
             <input type="text" class="m1-name" value="${defaultName}" placeholder="เช่น ผนังห้องนอน 1">
+        </div>
+        <div>
+            <label style="font-size:0.75rem; color:#64748b; margin-bottom:2px;">ประเภทผนัง:</label>
+            <select class="m1-type" onchange="calcMethod1TotalDisplay()">
+                <option value="external" ${type==='external'?'selected':''}>ผนังภายนอก</option>
+                <option value="internal" ${type==='internal'?'selected':''}>ผนังภายใน</option>
+            </select>
         </div>
         <div>
             <label style="font-size:0.75rem; color:#64748b; margin-bottom:2px;">ความหนาบล็อก Q-CON:</label>
@@ -1045,11 +1063,19 @@ function removeMethod1Row(rowId) {
 }
 
 function calcMethod1TotalDisplay() {
-    let sum = 0;
-    document.querySelectorAll('.m1-area').forEach(input => {
-        sum += parseFloat(input.value) || 0;
+    let sumTotal = 0;
+    let sumExt = 0;
+    let sumInt = 0;
+    document.querySelectorAll('#m1RowsContainer .opening-row').forEach(row => {
+        const area = parseFloat(row.querySelector('.m1-area').value) || 0;
+        const type = row.querySelector('.m1-type') ? row.querySelector('.m1-type').value : 'internal';
+        sumTotal += area;
+        if (type === 'external') sumExt += area;
+        else sumInt += area;
     });
-    document.getElementById('m1TotalAreaDisplay').textContent = sum.toFixed(2);
+    document.getElementById('m1TotalAreaDisplay').textContent = sumTotal.toFixed(2);
+    document.getElementById('m1ExtAreaDisplay').textContent = sumExt.toFixed(2);
+    document.getElementById('m1IntAreaDisplay').textContent = sumInt.toFixed(2);
 }
 
 // ================= HISTORY & DELETE MANAGEMENT =================
@@ -1186,9 +1212,9 @@ async function loadCalculationToEdit(calcId) {
                 document.getElementById('m1RowsContainer').innerHTML = '';
                 m1RowCount = 0;
                 if (p.method1_items && p.method1_items.length > 0) {
-                    p.method1_items.forEach(it => addMethod1Row(it.name, it.thick, it.area));
+                    p.method1_items.forEach(it => addMethod1Row(it.name, it.thick, it.type || 'internal', it.area));
                 } else if (p.flat_area) {
-                    addMethod1Row('พื้นที่รวมเดิม', p.primary_thick || '10', p.flat_area);
+                    addMethod1Row('พื้นที่รวมเดิม', p.primary_thick || '10', 'internal', p.flat_area);
                 } else {
                     addMethod1Row();
                 }
@@ -1248,6 +1274,8 @@ async function calculateAllMaterials(shouldAutoSave = true) {
     const blockGrade = document.getElementById('section1BlockGradeSelect').value;
 
     let totalGrossArea = 0;
+    let grossExternalArea = 0;
+    let grossInternalArea = 0;
     let totalOpeningArea = 0;
     let totalNetArea = 0;
 
@@ -1265,14 +1293,18 @@ async function calculateAllMaterials(shouldAutoSave = true) {
         rows.forEach(r => {
             const name = r.querySelector('.m1-name').value || 'บริเวณผนัง';
             const thick = r.querySelector('.m1-thick').value;
+            const type = r.querySelector('.m1-type') ? r.querySelector('.m1-type').value : 'internal';
             const area = parseFloat(r.querySelector('.m1-area').value) || 0;
 
             if (area > 0) {
                 validCount++;
                 totalGrossArea += area;
+                if (type === 'external') grossExternalArea += area;
+                else grossInternalArea += area;
+
                 totalNetArea += area;
                 thicknessSummaryGlobal[thick] = (thicknessSummaryGlobal[thick] || 0) + area;
-                method1ItemsSnapshot.push({ name, thick, area });
+                method1ItemsSnapshot.push({ name, thick, type, area });
             }
         });
 
@@ -1294,6 +1326,8 @@ async function calculateAllMaterials(shouldAutoSave = true) {
 
             const gross = w * h;
             totalGrossArea += gross;
+            if (wallType === 'external') grossExternalArea += gross;
+            else grossInternalArea += gross;
 
             let wallOpeningArea = 0;
             const opRows = card.querySelectorAll('.opening-row');
@@ -1373,7 +1407,10 @@ async function calculateAllMaterials(shouldAutoSave = true) {
         totalNetArea = Math.max(0, totalGrossArea - totalOpeningArea);
     }
 
+    // อัปเดต Dashboard สรุปพื้นที่
     document.getElementById('statGross').innerHTML = `${totalGrossArea.toFixed(2)}<span style="font-size:0.8rem;"> ตร.ม.</span>`;
+    document.getElementById('statGrossExt').textContent = grossExternalArea.toFixed(2);
+    document.getElementById('statGrossInt').textContent = grossInternalArea.toFixed(2);
     document.getElementById('statOpenings').innerHTML = `${totalOpeningArea.toFixed(2)}<span style="font-size:0.8rem;"> ตร.ม.</span>`;
     document.getElementById('statNet').innerHTML = `${totalNetArea.toFixed(2)}<span style="font-size:0.8rem;"> ตร.ม.</span>`;
 
@@ -1425,6 +1462,8 @@ async function calculateAllMaterials(shouldAutoSave = true) {
             created_by: currentUser.fullName + ` (${currentUser.username})`,
             calc_method: activeMethod,
             total_gross_area: totalGrossArea,
+            gross_external_area: grossExternalArea,
+            gross_internal_area: grossInternalArea,
             total_opening_area: totalOpeningArea,
             total_net_area: totalNetArea,
             total_blocks: totalBlocksCount,
@@ -1436,6 +1475,8 @@ async function calculateAllMaterials(shouldAutoSave = true) {
                 block_grade: blockGrade,
                 waste_percent: wastePercent,
                 plaster_option: plasterChoice,
+                gross_external_area: grossExternalArea,
+                gross_internal_area: grossInternalArea,
                 method1_items: method1ItemsSnapshot,
                 walls: wallSnapshot
             }
@@ -1873,6 +1914,11 @@ function exportToExcel() {
     const wastePercent = document.getElementById('wasteSelect').value || '5';
     const wasteMul = 1 + (parseFloat(wastePercent) / 100);
 
+    const grossTotal = document.getElementById('statGross').innerText || '0.00 ตร.ม.';
+    const grossExt = document.getElementById('statGrossExt').innerText || '0.00';
+    const grossInt = document.getElementById('statGrossInt').innerText || '0.00';
+    const netTotal = document.getElementById('statNet').innerText || '0.00 ตร.ม.';
+
     const wb = XLSX.utils.book_new();
 
     const rows = [];
@@ -1881,6 +1927,11 @@ function exportToExcel() {
     rows.push(['ชื่อโครงการ', projName, 'ร้านค้าตัวแทนจำหน่าย', store]);
     rows.push(['สถานที่ก่อสร้าง', `${district} จ.${province}`, 'เกรดบล็อกมวลเบาที่สั่งซื้อ', grade]);
     rows.push(['ส่วนเผื่อเศษวัสดุ', `${wastePercent}%`, 'ตัวเลือกปูนฉาบ', document.getElementById('plasterOption').options[document.getElementById('plasterOption').selectedIndex].text]);
+    rows.push([]);
+
+    rows.push(['สรุปพื้นที่ผนังโครงการ']);
+    rows.push(['พื้นที่ผนังรวม (Gross Area)', grossTotal, 'พื้นที่ผนังภายนอก', `${grossExt} ตร.ม.`, 'พื้นที่ผนังภายใน', `${grossInt} ตร.ม.`]);
+    rows.push(['พื้นที่ก่อสุทธิ (Net Area)', netTotal]);
     rows.push([]);
 
     rows.push(['1. สรุปรายการวัสดุหลักที่ต้องสั่งซื้อ']);
