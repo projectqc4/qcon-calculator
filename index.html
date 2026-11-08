@@ -41,6 +41,8 @@
             --warning-bg: #fffbeb;
             --danger: #dc2626;
             --danger-bg: #fef2f2;
+            --info: #0284c7;
+            --info-bg: #f0f9ff;
             --radius-sm: 8px;
             --radius-md: 14px;
             --radius-lg: 20px;
@@ -49,7 +51,7 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
         body { background-color: #fbfbfd; color: var(--dark); min-height: 100vh; padding: 25px 16px; }
-        .container { max-width: 1240px; margin: 0 auto; }
+        .container { max-width: 1280px; margin: 0 auto; }
 
         #loginGateScreen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -100,7 +102,7 @@
         .card-title {
             font-size: 1.12rem; font-weight: 600; color: var(--dark);
             display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9;
+            margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; gap: 10px;
         }
 
         .grid-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
@@ -200,22 +202,22 @@
 
         .summary-dashboard {
             background: var(--white); border: 2px solid var(--primary-border); border-radius: var(--radius-md);
-            padding: 20px; margin: 20px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;
+            padding: 20px; margin: 20px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;
         }
         .stat-card { padding: 12px 14px; border-radius: 8px; background: #fffaf5; border-left: 4px solid var(--primary); }
         .stat-card .label { font-size: 0.82rem; color: #64748b; font-weight: 500; }
-        .stat-card .num { font-size: 1.45rem; font-weight: 700; color: var(--dark); margin-top: 3px; }
-        .stat-card .sub-detail { font-size: 0.78rem; color: #64748b; margin-top: 4px; line-height: 1.4; }
+        .stat-card .num { font-size: 1.4rem; font-weight: 700; color: var(--dark); margin-top: 3px; }
+        .stat-card .sub-detail { font-size: 0.78rem; color: #64748b; margin-top: 4px; line-height: 1.45; }
 
         .results-box { display: none; margin-top: 20px; }
         .results-box.show { display: block; }
-        .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
+        .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 14px; }
         .res-card {
             background: var(--white); border: 1px solid var(--border-color); border-radius: var(--radius-md);
             padding: 16px; text-align: center; border-top: 4px solid var(--primary);
         }
         .res-card .res-title { font-size: 0.86rem; color: var(--gray-sub); }
-        .res-card .res-qty { font-size: 1.7rem; font-weight: 700; color: var(--primary); margin: 6px 0; }
+        .res-card .res-qty { font-size: 1.6rem; font-weight: 700; color: var(--primary); margin: 6px 0; }
         .res-card .res-sku { font-size: 0.8rem; color: #0284c7; font-weight: 600; background: #f0f9ff; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px; }
 
         .custom-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.88rem; }
@@ -238,11 +240,15 @@
             background: #ffffff; border-radius: 16px; width: 95%; max-width: 520px;
             padding: 26px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); position: relative;
         }
-        .modal-card.wide { max-width: 1050px; max-height: 85vh; overflow-y: auto; }
+        .modal-card.wide { max-width: 1100px; max-height: 85vh; overflow-y: auto; }
 
         .strength-meter { height: 6px; width: 100%; background: #e2e8f0; border-radius: 4px; margin-top: 6px; overflow: hidden; }
         .strength-bar { height: 100%; width: 0%; transition: all 0.3s; }
         .strength-text { font-size: 0.78rem; font-weight: 600; margin-top: 4px; text-align: right; }
+
+        .compare-box {
+            background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 18px; margin-top: 18px;
+        }
     </style>
 </head>
 <body>
@@ -341,20 +347,32 @@
     <!-- Navigation Tabs -->
     <div class="nav-tabs">
         <button class="tab-btn active" onclick="switchMethod(2)" id="tabBtn2"><i class="fas fa-border-all"></i> วิธีที่ 2: ป้อนข้อมูลรายผนัง + ช่องเปิด + เสาเอ็นทับหลัง</button>
-        <button class="tab-btn" onclick="switchMethod(1)" id="tabBtn1"><i class="fas fa-layer-group"></i> วิธีที่ 1: ป้อนพื้นที่รวม (หลายรายการ แยกภายนอก/ภายใน)</button>
+        <button class="tab-btn" onclick="switchMethod(1)" id="tabBtn1"><i class="fas fa-layer-group"></i> วิธีที่ 1: ป้อนพื้นที่รวม (หลายรายการ แยกประเภทผนัง)</button>
     </div>
 
-    <!-- Options Card -->
+    <!-- Options Card (เพิ่มตัวเลือกปูนฉาบ และปูนสกิมโค้ท) -->
     <div class="card">
-        <div class="card-title"><span><i class="fas fa-sliders-h" style="color:var(--primary);"></i> ตัวเลือกปูนฉาบและส่วนเผื่อวัสดุ (Waste Allowance)</span></div>
+        <div class="card-title"><span><i class="fas fa-sliders-h" style="color:var(--primary);"></i> ตัวเลือกปูนฉาบ ปูนสกิมโค้ท และส่วนเผื่อวัสดุ (Waste Allowance)</span></div>
         <div class="grid-row">
             <div>
-                <label>การฉาบปูน:</label>
+                <label>การฉาบปูนทั่วไป:</label>
                 <select id="plasterOption">
                     <option value="both_1" selected>ฉาบ 2 ด้าน (หนา 1.0 ซม. - 2.3 ตร.ม./ถุง)</option>
                     <option value="both_125">ฉาบ 2 ด้าน (หนา 1.25 ซม. - 2.0 ตร.ม./ถุง)</option>
                     <option value="single_1">ฉาบด้านเดียว (หนา 1.0 ซม. - 2.3 ตร.ม./ถุง)</option>
-                    <option value="none">ไม่คิดงานฉาบปูน</option>
+                    <option value="none">ไม่คิดงานฉาบปูนทั่วไป</option>
+                </select>
+            </div>
+            <div>
+                <label>การฉาบปูนสกิมโค้ท (Skim Coat 20 กก./ถุง):</label>
+                <select id="skimOption">
+                    <option value="none" selected>ไม่ฉาบปูนสกิมโค้ท</option>
+                    <option value="single_1">ฉาบด้านเดียว หนา 1 มม. (16 ตร.ม./ถุง)</option>
+                    <option value="single_2">ฉาบด้านเดียว หนา 2 มม. (8 ตร.ม./ถุง)</option>
+                    <option value="single_3">ฉาบด้านเดียว หนา 3 มม. (5.33 ตร.ม./ถุง)</option>
+                    <option value="both_1">ฉาบ 2 ด้าน หนา 1 มม. (8 ตร.ม./ถุง)</option>
+                    <option value="both_2">ฉาบ 2 ด้าน หนา 2 มม. (4 ตร.ม./ถุง)</option>
+                    <option value="both_3">ฉาบ 2 ด้าน หนา 3 มม. (2.67 ตร.ม./ถุง)</option>
                 </select>
             </div>
             <div>
@@ -373,7 +391,7 @@
     <div id="method1View" style="display:none;">
         <div class="card">
             <div class="card-title">
-                <span><i class="fas fa-list-check" style="color:var(--primary);"></i> รายการพื้นที่ผนังรวม (ระบุได้หลายบริเวณ แยกประเภทผนังและขนาดความหนา)</span>
+                <span><i class="fas fa-list-check" style="color:var(--primary);"></i> รายการพื้นที่ผนังรวม (ระบุได้หลายบริเวณ แยกประเภทผนังและสินค้าบล็อก)</span>
                 <button class="btn-outline" onclick="addMethod1Row()"><i class="fas fa-plus"></i> เพิ่มรายการผนัง</button>
             </div>
             
@@ -381,9 +399,13 @@
 
             <div style="display:flex; justify-content:space-between; align-items:center; background:#fafbfc; border:1px dashed #cbd5e1; padding:12px 16px; border-radius:10px; margin-top:10px; flex-wrap:wrap; gap:10px;">
                 <button class="btn-outline" onclick="addMethod1Row()"><i class="fas fa-plus-circle"></i> คลิกเพื่อเพิ่มแถวใหม่</button>
-                <div style="font-weight:600; font-size:0.95rem; color:#475569; text-align:right;">
+                <div style="font-weight:600; font-size:0.92rem; color:#475569; text-align:right;">
                     <div>พื้นที่สุทธิรวมวิธีที่ 1: <span id="m1TotalAreaDisplay" style="color:var(--primary); font-size:1.15rem; font-weight:700;">0.00</span> ตร.ม.</div>
-                    <div style="font-size:0.8rem; color:#64748b;">(ภายนอก: <span id="m1ExtAreaDisplay" style="color:#0284c7; font-weight:600;">0.00</span> ตร.ม. | ภายใน: <span id="m1IntAreaDisplay" style="color:#16a34a; font-weight:600;">0.00</span> ตร.ม.)</div>
+                    <div style="font-size:0.8rem; color:#64748b;">
+                        (ภายนอกอาคาร: <span id="m1ExtAreaDisplay" style="color:#0284c7; font-weight:600;">0.00</span> ตร.ม. | 
+                        ภายในอาคาร: <span id="m1IntAreaDisplay" style="color:#16a34a; font-weight:600;">0.00</span> ตร.ม. | 
+                        ห้องน้ำ (ภายนอก+ภายใน): <span id="m1BathAreaDisplay" style="color:#d97706; font-weight:600;">0.00</span> ตร.ม.)
+                    </div>
                 </div>
             </div>
         </div>
@@ -403,14 +425,16 @@
         </div>
     </div>
 
-    <!-- Dashboard Summary -->
+    <!-- Dashboard Summary (แยก Gross Area: ภายนอก, ภายใน, ภายนอกห้องน้ำ + ภายในห้องน้ำ) -->
     <div class="summary-dashboard">
         <div class="stat-card">
             <div class="label">พื้นที่ผนังรวม (Gross Area)</div>
             <div class="num" id="statGross">0.00<span style="font-size:0.8rem; color:#94a3b8;"> ตร.ม.</span></div>
             <div class="sub-detail" id="statGrossBreakdown">
-                ภายนอก: <span id="statGrossExt" style="color:#0284c7; font-weight:600;">0.00</span> ตร.ม.<br>
-                ภายใน: <span id="statGrossInt" style="color:#16a34a; font-weight:600;">0.00</span> ตร.ม.
+                • ภายนอกอาคาร: <span id="statGrossExt" style="color:#0284c7; font-weight:600;">0.00</span> ตร.ม.<br>
+                • ภายในอาคาร: <span id="statGrossInt" style="color:#16a34a; font-weight:600;">0.00</span> ตร.ม.<br>
+                • ผนังห้องน้ำ (ภายนอก+ภายใน): <span id="statGrossBath" style="color:#d97706; font-weight:600;">0.00</span> ตร.ม.
+                <div style="font-size:0.73rem; color:#94a3b8; margin-top:2px;">(นอกห้องน้ำ: <span id="statGrossBathExt">0.00</span> | ในห้องน้ำ: <span id="statGrossBathInt">0.00</span>)</div>
             </div>
         </div>
         <div class="stat-card">
@@ -425,8 +449,8 @@
         </div>
         <div class="stat-card" style="border-left-color: #0284c7;">
             <div class="label">คานทับหลังสำเร็จรูปรวม</div>
-            <div class="num" id="statLintelPieces" style="color:#0284c7;">0<span style="font-size:0.8rem; color:#94a3b8;"> ท่อน</span></div>
-            <div class="sub-detail">ทับหลังและเสาเอ็นสำเร็จรูป</div>
+            <div class="num" id="statLintelPieces">0<span style="font-size:0.8rem; color:#94a3b8;"> ท่อน</span></div>
+            <div class="sub-detail">ความยาวรวม: <span id="statLintelTotalLength" style="font-weight:700; color:#0284c7;">0.00</span> ม.</div>
         </div>
     </div>
 
@@ -445,12 +469,12 @@
         </div>
 
         <div id="printableArea">
-            <!-- SECTION 1: สรุปรายการวัสดุหลักที่ต้องสั่งซื้อ พร้อมตัวเลือกสลับเกรด G2/G4 ที่เชื่อมต่อกับ SKU -->
+            <!-- SECTION 1: สรุปรายการวัสดุหลักที่ต้องสั่งซื้อ -->
             <div class="card">
                 <div class="card-title">
                     <span><i class="fas fa-boxes-stacked" style="color:var(--primary);"></i> 1. สรุปรายการวัสดุหลักที่ต้องสั่งซื้อ</span>
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="font-size:0.85rem; color:#64748b; font-weight:500;">เลือกเกรดบล็อก:</span>
+                        <span style="font-size:0.85rem; color:#64748b; font-weight:500;">เลือกเกรดบล็อกมาตรฐาน:</span>
                         <select id="section1BlockGradeSelect" style="width:auto; padding:5px 12px; font-size:0.88rem; font-weight:600; border-color:var(--primary);" onchange="onSection1GradeChanged(this.value)">
                             <option value="G4" selected>เกรด G4</option>
                             <option value="G2">เกรด G2</option>
@@ -473,6 +497,12 @@
                         <div class="res-sub" id="outPlasterSub">ถุง (50 กก.)</div>
                         <div class="res-sku">รหัสสินค้า: 8858847700131</div>
                     </div>
+                    <div class="res-card" id="cardOutSkim">
+                        <div class="res-title"><i class="fas fa-fill-drip"></i> ปูนสกิมโค้ท Q-CON (Skim Coat)</div>
+                        <div class="res-qty" id="outSkim">0</div>
+                        <div class="res-sub" id="outSkimSub">ถุง (20 กก.)</div>
+                        <div class="res-sku" style="background:#fef2f2; color:#dc2626;">รหัสสินค้า: ยังไม่มี</div>
+                    </div>
                     <div class="res-card">
                         <div class="res-title"><i class="fas fa-link"></i> Metal Strap</div>
                         <div class="res-qty" id="outStrap">0</div>
@@ -482,11 +512,35 @@
                 </div>
             </div>
 
-            <!-- SECTION 2: คานทับหลังสำเร็จรูป -->
+            <!-- SECTION 2: คานทับหลังสำเร็จรูป Q-CON พร้อมสรุปความยาวรวม และความยาวเทคอนกรีตในที่ -->
             <div class="card">
-                <div class="card-title"><span><i class="fas fa-layer-group" style="color:var(--primary);"></i> 2. สรุปรายการสินค้าคานทับหลังสำเร็จรูป Q-CON ที่ต้องสั่งซื้อ (ไม่คิดเปอร์เซ็นต์เผื่อ)</span></div>
+                <div class="card-title">
+                    <span><i class="fas fa-layer-group" style="color:var(--primary);"></i> 2. สรุปรายการสินค้าคานทับหลังสำเร็จรูป Q-CON ที่ต้องสั่งซื้อ (ไม่คิดเปอร์เซ็นต์เผื่อ)</span>
+                </div>
                 <div id="lintelTableContainer"></div>
-                <div id="castInPlaceNotice" class="note-box" style="display:none; background:#fffbeb; border-left:4px solid #f59e0b; padding:12px; margin-top:12px; border-radius:6px; color:#92400e;"></div>
+                
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#f0f9ff; border:1px solid #bae6fd; padding:12px 18px; border-radius:10px; margin-top:14px; flex-wrap:wrap; gap:10px;">
+                    <div>
+                        <span style="font-weight:600; color:#0369a1;"><i class="fas fa-ruler-combined"></i> รวมความยาวคานทับหลังสำเร็จรูป Q-CON ที่ต้องสั่งซื้อทั้งหมด:</span>
+                    </div>
+                    <div>
+                        <span style="font-size:1.35rem; font-weight:700; color:#0284c7;" id="outTotalLintelLength">0.00</span>
+                        <span style="font-weight:600; color:#0369a1;"> เมตร</span>
+                    </div>
+                </div>
+
+                <div id="castInPlaceNotice" class="note-box" style="display:none; background:#fffbeb; border-left:4px solid #f59e0b; padding:12px 16px; margin-top:14px; border-radius:6px; color:#92400e; line-height:1.6;"></div>
+            </div>
+
+            <!-- SECTION 2.1: การวิเคราะห์เปรียบเทียบ "ระบบหล่อเทคอนกรีตในที่ทั้งหมด" vs "ระบบคานทับหลังสำเร็จรูป Q-CON" -->
+            <div class="card" style="border-left:4px solid #6366f1;">
+                <div class="card-title">
+                    <span><i class="fas fa-code-compare" style="color:#6366f1;"></i> การวิเคราะห์เปรียบเทียบ: ระบบหล่อเทคอนกรีต คสล. ในที่ทั้งหมด vs คานทับหลังสำเร็จรูป Q-CON</span>
+                </div>
+                <p style="font-size:0.86rem; color:#64748b; margin-bottom:12px;">
+                    หลักการคำนวณกรณีหล่อเทคอนกรีตในที่: เททับหลัง คสล. ตามความกว้างผนังวิ่งยาวจากเสาถึงเสา เพื่อแบ่งพื้นที่ผนังตามมาตรฐาน ส่วนเสาเอ็นจะหล่อเทเฉพาะตำแหน่งที่มีช่องเปิด โดยประตูเทประกบข้าง 2 ด้านจากพื้นถึงทับหลัง และหน้าต่างเทประกบข้าง 2 ด้านระหว่างทับหลังล่างถึงทับหลังบน
+                </p>
+                <div id="comparisonContainer"></div>
             </div>
 
             <!-- SECTION 3: Logistics -->
@@ -505,8 +559,8 @@
                     <div>
                         <label>ประเภทรถบรรทุก:</label>
                         <select id="truckTypeSelect" onchange="calcLogistics()">
-                            <option value="6wheel">รถ 6 ล้อ (บรรทุก ~6 พาเลท)</option>
-                            <option value="trailer">รถเทรลเลอร์ (บรรทุก ~20-22 พาเลท)</option>
+                            <option value="6wheel">รถ 6 ล้อ</option>
+                            <option value="trailer">รถเทรลเลอร์</option>
                         </select>
                     </div>
                 </div>
@@ -628,23 +682,33 @@
 <script>
 const API_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx__KFYYMytjkwbSYr2gbGpfdVynBVeb81OqSMmb8vHEkyEv0xnbzpOwdoeNahPOCo/exec';
 
-// ฐานข้อมูลรหัสสินค้าบล็อกมวลเบา Q-CON แยกตามเกรด G2 และ G4
+// ฐานข้อมูลรหัสสินค้าบล็อกมวลเบา Q-CON (แก้ไข SKU 7.5 G2 เป็น 8858933723327)
 const BLOCK_SKU_DATA = {
     'G2': {
-        '7.5': '8858847700018',
+        '7.5': '8858933723327',
+        '9': 'ยังไม่มี',
         '10': '8858847700025',
         '12.5': '8858847700032',
         '15': '8858847700049',
         '17.5': '8858847700056',
-        '20': '8858847700063'
+        '20': '8858847700063',
+        '7.5_groove_40x60': 'ยังไม่มี',
+        '9_groove_40x60': 'ยังไม่มี',
+        '7.5_groove_60x60': 'ยังไม่มี',
+        '9_groove_60x60': 'ยังไม่มี'
     },
     'G4': {
         '7.5': '8858847701077',
+        '9': 'ยังไม่มี',
         '10': '8858847701091',
         '12.5': '8858847701114',
         '15': '8858848701120',
         '17.5': '8858850701125',
-        '20': '8858852701123'
+        '20': '8858852701123',
+        '7.5_groove_40x60': 'ยังไม่มี',
+        '9_groove_40x60': 'ยังไม่มี',
+        '7.5_groove_60x60': 'ยังไม่มี',
+        '9_groove_60x60': 'ยังไม่มี'
     }
 };
 
@@ -652,12 +716,16 @@ const MORTAR_SKU = '8858847700124';
 const PLASTER_SKU = '8858847700131';
 const STRAP_SKU = '8858847700223';
 
-// ฐานข้อมูลรหัสสินค้าคานทับหลังสำเร็จรูป Q-CON
+// ฐานข้อมูลรหัสสินค้าคานทับหลังสำเร็จรูป Q-CON (เพิ่มขนาดหนา 9 ซม.)
 const LINTEL_SKU_DATA = {
     '7.5': {
         1.2: '8858847700407', 1.5: '8858847700452', 1.8: '8858847700506', 2.1: '8858847700551',
         2.4: '8858847700605', 2.7: '8858847700650', 3.0: '8858847700704', 3.3: '8858847700759',
         3.6: '8858847700803', 4.0: '8858847720924'
+    },
+    '9': {
+        1.2: 'ยังไม่มี', 1.5: 'ยังไม่มี', 1.8: 'ยังไม่มี', 2.1: 'ยังไม่มี',
+        2.4: 'ยังไม่มี', 2.7: 'ยังไม่มี', 3.0: 'ยังไม่มี', 3.3: 'ยังไม่มี', 3.6: 'ยังไม่มี'
     },
     '10': {
         1.2: '8858847700414', 1.5: '8858847700469', 1.8: '8858847700513', 2.1: '8858847700568',
@@ -688,39 +756,68 @@ const LINTEL_SKU_DATA = {
 
 const LINTEL_CRITERIA = {
     external: [
-        { h: 2.50, widths: { '7.5': 2.9, '10': 4.7, '12.5': 6.4, '15': 8.0, '17.5': 9.2, '20': 9.2 } },
-        { h: 2.75, widths: { '7.5': 2.6, '10': 4.5, '12.5': 5.8, '15': 7.7, '17.5': 9.2, '20': 9.2 } },
-        { h: 3.00, widths: { '7.5': 2.4, '10': 4.3, '12.5': 5.3, '15': 6.6, '17.5': 8.5, '20': 9.2 } },
-        { h: 3.25, widths: { '7.5': 2.1, '10': 3.7, '12.5': 5.0, '15': 6.1, '17.5': 7.7, '20': 9.2 } },
-        { h: 3.50, widths: { '7.5': 1.4, '10': 3.4, '12.5': 4.3, '15': 5.7, '17.5': 6.8, '20': 9.2 } },
-        { h: 3.75, widths: { '7.5': null, '10': 2.9, '12.5': 3.8, '15': 5.1, '17.5': 6.0, '20': 9.2 } },
-        { h: 4.00, widths: { '7.5': null, '10': 2.3, '12.5': 3.0, '15': 4.4, '17.5': 5.1, '20': 8.5 } },
-        { h: 4.50, widths: { '7.5': null, '10': 1.1, '12.5': 2.0, '15': 3.2, '17.5': 4.7, '20': 7.7 } },
-        { h: 5.00, widths: { '7.5': null, '10': null, '12.5': 1.4, '15': 2.6, '17.5': 4.3, '20': 6.4 } },
-        { h: 5.50, widths: { '7.5': null, '10': null, '12.5': null, '15': 2.0, '17.5': 3.4, '20': 5.1 } },
-        { h: 6.00, widths: { '7.5': null, '10': null, '12.5': null, '15': 1.2, '17.5': 2.6, '20': 4.3 } }
+        { h: 2.50, widths: { '7.5': 2.9, '9': 4.7, '10': 4.7, '12.5': 6.4, '15': 8.0, '17.5': 9.2, '20': 9.2 } },
+        { h: 2.75, widths: { '7.5': 2.6, '9': 4.5, '10': 4.5, '12.5': 5.8, '15': 7.7, '17.5': 9.2, '20': 9.2 } },
+        { h: 3.00, widths: { '7.5': 2.4, '9': 4.3, '10': 4.3, '12.5': 5.3, '15': 6.6, '17.5': 8.5, '20': 9.2 } },
+        { h: 3.25, widths: { '7.5': 2.1, '9': 3.7, '10': 3.7, '12.5': 5.0, '15': 6.1, '17.5': 7.7, '20': 9.2 } },
+        { h: 3.50, widths: { '7.5': 1.4, '9': 3.4, '10': 3.4, '12.5': 4.3, '15': 5.7, '17.5': 6.8, '20': 9.2 } },
+        { h: 3.75, widths: { '7.5': null, '9': 2.9, '10': 2.9, '12.5': 3.8, '15': 5.1, '17.5': 6.0, '20': 9.2 } },
+        { h: 4.00, widths: { '7.5': null, '9': 2.3, '10': 2.3, '12.5': 3.0, '15': 4.4, '17.5': 5.1, '20': 8.5 } },
+        { h: 4.50, widths: { '7.5': null, '9': 1.1, '10': 1.1, '12.5': 2.0, '15': 3.2, '17.5': 4.7, '20': 7.7 } },
+        { h: 5.00, widths: { '7.5': null, '9': null, '10': null, '12.5': 1.4, '15': 2.6, '17.5': 4.3, '20': 6.4 } },
+        { h: 5.50, widths: { '7.5': null, '9': null, '10': null, '12.5': null, '15': 2.0, '17.5': 3.4, '20': 5.1 } },
+        { h: 6.00, widths: { '7.5': null, '9': null, '10': null, '12.5': null, '15': 1.2, '17.5': 2.6, '20': 4.3 } }
     ],
     internal: [
-        { h: 2.50, widths: { '7.5': 4.2, '10': 6.3, '12.5': 8.0, '15': 10.0, '17.5': 10.8, '20': 10.8 } },
-        { h: 2.75, widths: { '7.5': 3.7, '10': 6.0, '12.5': 7.2, '15': 9.6, '17.5': 10.8, '20': 10.8 } },
-        { h: 3.00, widths: { '7.5': 3.4, '10': 5.7, '12.5': 6.6, '15': 8.2, '17.5': 10.0, '20': 10.8 } },
-        { h: 3.25, widths: { '7.5': 3.0, '10': 4.9, '12.5': 6.2, '15': 7.6, '17.5': 9.0, '20': 10.8 } },
-        { h: 3.50, widths: { '7.5': 2.0, '10': 4.5, '12.5': 5.4, '15': 7.1, '17.5': 8.0, '20': 10.8 } },
-        { h: 3.75, widths: { '7.5': null, '10': 3.8, '12.5': 4.8, '15': 6.4, '17.5': 7.0, '20': 10.8 } },
-        { h: 4.00, widths: { '7.5': null, '10': 3.0, '12.5': 3.8, '15': 5.5, '17.5': 6.0, '20': 10.0 } },
-        { h: 4.50, widths: { '7.5': null, '10': 1.5, '12.5': 2.5, '15': 4.0, '17.5': 5.5, '20': 9.0 } },
-        { h: 5.00, widths: { '7.5': null, '10': null, '12.5': 1.8, '15': 3.2, '17.5': 5.0, '20': 7.5 } },
-        { h: 5.50, widths: { '7.5': null, '10': null, '12.5': null, '15': 2.5, '17.5': 4.0, '20': 6.0 } },
-        { h: 6.00, widths: { '7.5': null, '10': null, '12.5': null, '15': 1.5, '17.5': 3.0, '20': 5.0 } }
+        { h: 2.50, widths: { '7.5': 4.2, '9': 6.3, '10': 6.3, '12.5': 8.0, '15': 10.0, '17.5': 10.8, '20': 10.8 } },
+        { h: 2.75, widths: { '7.5': 3.7, '9': 6.0, '10': 6.0, '12.5': 7.2, '15': 9.6, '17.5': 10.8, '20': 10.8 } },
+        { h: 3.00, widths: { '7.5': 3.4, '9': 5.7, '10': 5.7, '12.5': 6.6, '15': 8.2, '17.5': 10.0, '20': 10.8 } },
+        { h: 3.25, widths: { '7.5': 3.0, '9': 4.9, '10': 4.9, '12.5': 6.2, '15': 7.6, '17.5': 9.0, '20': 10.8 } },
+        { h: 3.50, widths: { '7.5': 2.0, '9': 4.5, '10': 4.5, '12.5': 5.4, '15': 7.1, '17.5': 8.0, '20': 10.8 } },
+        { h: 3.75, widths: { '7.5': null, '9': 3.8, '10': 3.8, '12.5': 4.8, '15': 6.4, '17.5': 7.0, '20': 10.8 } },
+        { h: 4.00, widths: { '7.5': null, '9': 3.0, '10': 3.0, '12.5': 3.8, '15': 5.5, '17.5': 6.0, '20': 10.0 } },
+        { h: 4.50, widths: { '7.5': null, '9': 1.5, '10': 1.5, '12.5': 2.5, '15': 4.0, '17.5': 5.5, '20': 9.0 } },
+        { h: 5.00, widths: { '7.5': null, '9': null, '10': null, '12.5': 1.8, '15': 3.2, '17.5': 5.0, '20': 7.5 } },
+        { h: 5.50, widths: { '7.5': null, '9': null, '10': null, '12.5': null, '15': 2.5, '17.5': 4.0, '20': 6.0 } },
+        { h: 6.00, widths: { '7.5': null, '9': null, '10': null, '12.5': null, '15': 1.5, '17.5': 3.0, '20': 5.0 } }
     ]
 };
 
 const SIZES_7_5 = [1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.3, 3.6, 4.0];
-const SIZES_10_UP = [1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.3, 3.6];
-const PALLET_QTY = { '7.5': 200, '10': 150, '12.5': 120, '15': 100, '17.5': 80, '20': 70 };
+const SIZES_9_UP = [1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.3, 3.6];
+
+const PALLET_QTY = {
+    '7.5': 200,
+    '9': 150,
+    '10': 150,
+    '12.5': 120,
+    '15': 100,
+    '17.5': 80,
+    '20': 70,
+    '7.5_groove_40x60': 120,
+    '9_groove_40x60': 96,
+    '7.5_groove_60x60': 80,
+    '9_groove_60x60': 64
+};
+
+// ข้อมูลจำเพาะของบล็อกแต่ละประเภท
+const PRODUCT_SPECS = {
+    '7.5': { name: 'บล็อก Q-CON หนา 7.5 ซม. (20x60 ซม.)', pcs_per_sqm: 8.33, std_thick: '7.5', pallet: 200, truck6: 6, trailer: 20 },
+    '9': { name: 'บล็อก Q-CON หนา 9 ซม. (20x60 ซม.)', pcs_per_sqm: 8.33, std_thick: '9', pallet: 150, truck6: 6, trailer: 20 },
+    '10': { name: 'บล็อก Q-CON หนา 10 ซม. (20x60 ซม.)', pcs_per_sqm: 8.33, std_thick: '10', pallet: 150, truck6: 6, trailer: 20 },
+    '12.5': { name: 'บล็อก Q-CON หนา 12.5 ซม. (20x60 ซม.)', pcs_per_sqm: 8.33, std_thick: '12.5', pallet: 120, truck6: 6, trailer: 20 },
+    '15': { name: 'บล็อก Q-CON หนา 15 ซม. (20x60 ซม.)', pcs_per_sqm: 8.33, std_thick: '15', pallet: 100, truck6: 6, trailer: 20 },
+    '17.5': { name: 'บล็อก Q-CON หนา 17.5 ซม. (20x60 ซม.)', pcs_per_sqm: 8.33, std_thick: '17.5', pallet: 80, truck6: 6, trailer: 20 },
+    '20': { name: 'บล็อก Q-CON หนา 20 ซม. (20x60 ซม.)', pcs_per_sqm: 8.33, std_thick: '20', pallet: 70, truck6: 6, trailer: 20 },
+    '7.5_groove_40x60': { name: 'บล็อกกรู๊ฟ Q-CON หนา 7.5 ซม. (40x60 ซม.)', pcs_per_sqm: 4.17, std_thick: '7.5', pallet: 120, truck6: 5, trailer: 18 },
+    '9_groove_40x60': { name: 'บล็อกกรู๊ฟ Q-CON หนา 9 ซม. (40x60 ซม.)', pcs_per_sqm: 4.17, std_thick: '9', pallet: 96, truck6: 5, trailer: 18 },
+    '7.5_groove_60x60': { name: 'บล็อกกรู๊ฟ Q-CON หนา 7.5 ซม. (60x60 ซม.)', pcs_per_sqm: 2.78, std_thick: '7.5', pallet: 80, truck6: 6, trailer: 20 },
+    '9_groove_60x60': { name: 'บล็อกกรู๊ฟ Q-CON หนา 9 ซม. (60x60 ซม.)', pcs_per_sqm: 2.78, std_thick: '9', pallet: 64, truck6: 6, trailer: 20 }
+};
 
 const LINTEL_LOGISTICS_DATA = {
     '7.5': { 1.2:{pallet:50,truck6:300,trailer:2000}, 1.5:{pallet:50,truck6:300,trailer:1500}, 1.8:{pallet:50,truck6:300,trailer:1250}, 2.1:{pallet:50,truck6:250,trailer:1000}, 2.4:{pallet:50,truck6:250,trailer:950}, 2.7:{pallet:50,truck6:200,trailer:800}, 3.0:{pallet:30,truck6:150,trailer:720}, 3.3:{pallet:30,truck6:150,trailer:540}, 3.6:{pallet:30,truck6:150,trailer:540}, 4.0:{pallet:30,truck6:150,trailer:540} },
+    '9': { 1.2:{pallet:50,truck6:300,trailer:1500}, 1.5:{pallet:50,truck6:300,trailer:1100}, 1.8:{pallet:50,truck6:250,trailer:900}, 2.1:{pallet:50,truck6:200,trailer:750}, 2.4:{pallet:50,truck6:200,trailer:700}, 2.7:{pallet:50,truck6:150,trailer:600}, 3.0:{pallet:30,truck6:150,trailer:540}, 3.3:{pallet:30,truck6:120,trailer:510}, 3.6:{pallet:30,truck6:120,trailer:450} },
     '10': { 1.2:{pallet:50,truck6:300,trailer:1500}, 1.5:{pallet:50,truck6:300,trailer:1100}, 1.8:{pallet:50,truck6:250,trailer:900}, 2.1:{pallet:50,truck6:200,trailer:750}, 2.4:{pallet:50,truck6:200,trailer:700}, 2.7:{pallet:50,truck6:150,trailer:600}, 3.0:{pallet:30,truck6:150,trailer:540}, 3.3:{pallet:30,truck6:120,trailer:510}, 3.6:{pallet:30,truck6:120,trailer:450} },
     '12.5': { 1.2:{pallet:40,truck6:240,trailer:1120}, 1.5:{pallet:40,truck6:240,trailer:880}, 1.8:{pallet:40,truck6:200,trailer:720}, 2.1:{pallet:40,truck6:160,trailer:640}, 2.4:{pallet:40,truck6:160,trailer:560}, 2.7:{pallet:40,truck6:120,trailer:480}, 3.0:{pallet:30,truck6:120,trailer:420}, 3.3:{pallet:30,truck6:120,trailer:390}, 3.6:{pallet:30,truck6:90,trailer:360} },
     '15': { 1.2:{pallet:30,truck6:180,trailer:900}, 1.5:{pallet:30,truck6:180,trailer:750}, 1.8:{pallet:30,truck6:180,trailer:600}, 2.1:{pallet:30,truck6:120,trailer:540}, 2.4:{pallet:30,truck6:120,trailer:450}, 2.7:{pallet:30,truck6:90,trailer:420}, 3.0:{pallet:30,truck6:80,trailer:360}, 3.3:{pallet:30,truck6:80,trailer:330}, 3.6:{pallet:30,truck6:80,trailer:300} },
@@ -733,8 +830,9 @@ let currentCalcId = '';
 let activeMethod = 2;
 let wallCount = 0;
 let totalBlocksCount = 0;
-let thicknessSummaryGlobal = {};
+let productSummaryGlobal = {};
 let globalDetailedLintelList = [];
+let globalCipLintelLength = 0;
 
 // ================= SECTION 1 BLOCK GRADE TOGGLE =================
 function onSection1GradeChanged(newGrade) {
@@ -744,7 +842,7 @@ function onSection1GradeChanged(newGrade) {
     }
     const wastePercent = parseFloat(document.getElementById('wasteSelect').value) || 0;
     const wasteMul = 1 + (wastePercent / 100);
-    renderBrickBreakdownTable(thicknessSummaryGlobal, wasteMul, newGrade);
+    renderBrickBreakdownTable(productSummaryGlobal, wasteMul, newGrade);
     calcLogistics();
 }
 
@@ -763,13 +861,15 @@ function resetForm() {
     });
 
     document.getElementById('plasterOption').value = 'both_1';
+    document.getElementById('skimOption').value = 'none';
     document.getElementById('wasteSelect').value = '5';
     document.getElementById('section1BlockGradeSelect').value = 'G4';
     document.getElementById('truckBlockGrade').value = 'g4';
 
     totalBlocksCount = 0;
-    thicknessSummaryGlobal = {};
+    productSummaryGlobal = {};
     globalDetailedLintelList = [];
+    globalCipLintelLength = 0;
 
     const m1Container = document.getElementById('m1RowsContainer');
     if (m1Container) m1Container.innerHTML = '';
@@ -787,9 +887,13 @@ function resetForm() {
     document.getElementById('statGross').innerHTML = '0.00<span style="font-size:0.8rem; color:#94a3b8;"> ตร.ม.</span>';
     document.getElementById('statGrossExt').textContent = '0.00';
     document.getElementById('statGrossInt').textContent = '0.00';
+    document.getElementById('statGrossBath').textContent = '0.00';
+    document.getElementById('statGrossBathExt').textContent = '0.00';
+    document.getElementById('statGrossBathInt').textContent = '0.00';
     document.getElementById('statOpenings').innerHTML = '0.00<span style="font-size:0.8rem; color:#94a3b8;"> ตร.ม.</span>';
     document.getElementById('statNet').innerHTML = '0.00<span style="font-size:0.8rem; color:#94a3b8;"> ตร.ม.</span>';
     document.getElementById('statLintelPieces').innerHTML = '0<span style="font-size:0.8rem; color:#94a3b8;"> ท่อน</span>';
+    document.getElementById('statLintelTotalLength').textContent = '0.00';
 
     const resBox = document.getElementById('resultContainer');
     if (resBox) resBox.classList.remove('show');
@@ -797,12 +901,16 @@ function resetForm() {
     document.getElementById('outMortar').textContent = '0';
     document.getElementById('outPlaster').textContent = '0';
     document.getElementById('outPlasterSub').textContent = 'ถุง (50 กก.)';
+    document.getElementById('outSkim').textContent = '0';
+    document.getElementById('outSkimSub').textContent = 'ถุง (20 กก.)';
     document.getElementById('outStrap').textContent = '0';
     document.getElementById('lintelTableContainer').innerHTML = '';
+    document.getElementById('outTotalLintelLength').textContent = '0.00';
     
     const cipAlert = document.getElementById('castInPlaceNotice');
     if (cipAlert) { cipAlert.style.display = 'none'; cipAlert.innerHTML = ''; }
     
+    document.getElementById('comparisonContainer').innerHTML = '';
     document.getElementById('truckDetailOutput').innerHTML = '';
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1010,17 +1118,17 @@ async function performAddUser() {
     }
 }
 
-// ================= METHOD 1: MULTIPLE WALL ROWS (WITH EXTERNAL / INTERNAL TYPE) =================
+// ================= METHOD 1: MULTIPLE WALL ROWS =================
 let m1RowCount = 0;
 
-function addMethod1Row(name = '', thick = '10', type = 'internal', area = '') {
+function addMethod1Row(name = '', productKey = '10', type = 'internal', area = '') {
     m1RowCount++;
     const container = document.getElementById('m1RowsContainer');
     const rowId = `m1Row_${m1RowCount}`;
     const defaultName = name || `บริเวณที่ ${m1RowCount}`;
 
     const html = `
-    <div class="opening-row" id="${rowId}" style="grid-template-columns: 1.8fr 1.3fr 1.3fr 1.3fr 40px; margin-bottom:10px; padding:10px 12px;">
+    <div class="opening-row" id="${rowId}" style="grid-template-columns: 1.6fr 1.3fr 1.6fr 1.1fr 40px; margin-bottom:10px; padding:10px 12px;">
         <div>
             <label style="font-size:0.75rem; color:#64748b; margin-bottom:2px;">ชื่อบริเวณ / อ้างอิง:</label>
             <input type="text" class="m1-name" value="${defaultName}" placeholder="เช่น ผนังห้องนอน 1">
@@ -1028,19 +1136,26 @@ function addMethod1Row(name = '', thick = '10', type = 'internal', area = '') {
         <div>
             <label style="font-size:0.75rem; color:#64748b; margin-bottom:2px;">ประเภทผนัง:</label>
             <select class="m1-type" onchange="calcMethod1TotalDisplay()">
-                <option value="external" ${type==='external'?'selected':''}>ผนังภายนอก</option>
-                <option value="internal" ${type==='internal'?'selected':''}>ผนังภายใน</option>
+                <option value="external" ${type==='external'?'selected':''}>ผนังภายนอกอาคาร</option>
+                <option value="internal" ${type==='internal'?'selected':''}>ผนังภายในอาคาร</option>
+                <option value="bath_ext" ${type==='bath_ext'?'selected':''}>ผนังภายนอกห้องน้ำ</option>
+                <option value="bath_int" ${type==='bath_int'?'selected':''}>ผนังภายในห้องน้ำ</option>
             </select>
         </div>
         <div>
-            <label style="font-size:0.75rem; color:#64748b; margin-bottom:2px;">ความหนาบล็อก Q-CON:</label>
+            <label style="font-size:0.75rem; color:#64748b; margin-bottom:2px;">รายการสินค้าบล็อก Q-CON:</label>
             <select class="m1-thick">
-                <option value="7.5" ${thick==='7.5'?'selected':''}>7.5 ซม.</option>
-                <option value="10" ${thick==='10'?'selected':''}>10 ซม.</option>
-                <option value="12.5" ${thick==='12.5'?'selected':''}>12.5 ซม.</option>
-                <option value="15" ${thick==='15'?'selected':''}>15 ซม.</option>
-                <option value="17.5" ${thick==='17.5'?'selected':''}>17.5 ซม.</option>
-                <option value="20" ${thick==='20'?'selected':''}>20 ซม.</option>
+                <option value="7.5" ${productKey==='7.5'?'selected':''}>บล็อก 7.5 ซม. (20x60)</option>
+                <option value="9" ${productKey==='9'?'selected':''}>บล็อก 9 ซม. (20x60)</option>
+                <option value="10" ${productKey==='10'?'selected':''}>บล็อก 10 ซม. (20x60)</option>
+                <option value="12.5" ${productKey==='12.5'?'selected':''}>บล็อก 12.5 ซม. (20x60)</option>
+                <option value="15" ${productKey==='15'?'selected':''}>บล็อก 15 ซม. (20x60)</option>
+                <option value="17.5" ${productKey==='17.5'?'selected':''}>บล็อก 17.5 ซม. (20x60)</option>
+                <option value="20" ${productKey==='20'?'selected':''}>บล็อก 20 ซม. (20x60)</option>
+                <option value="7.5_groove_40x60" ${productKey==='7.5_groove_40x60'?'selected':''}>บล็อกกรู๊ฟ 7.5 ซม. (40x60)</option>
+                <option value="9_groove_40x60" ${productKey==='9_groove_40x60'?'selected':''}>บล็อกกรู๊ฟ 9 ซม. (40x60)</option>
+                <option value="7.5_groove_60x60" ${productKey==='7.5_groove_60x60'?'selected':''}>บล็อกกรู๊ฟ 7.5 ซม. (60x60)</option>
+                <option value="9_groove_60x60" ${productKey==='9_groove_60x60'?'selected':''}>บล็อกกรู๊ฟ 9 ซม. (60x60)</option>
             </select>
         </div>
         <div>
@@ -1066,16 +1181,21 @@ function calcMethod1TotalDisplay() {
     let sumTotal = 0;
     let sumExt = 0;
     let sumInt = 0;
+    let sumBath = 0;
+
     document.querySelectorAll('#m1RowsContainer .opening-row').forEach(row => {
         const area = parseFloat(row.querySelector('.m1-area').value) || 0;
         const type = row.querySelector('.m1-type') ? row.querySelector('.m1-type').value : 'internal';
         sumTotal += area;
         if (type === 'external') sumExt += area;
-        else sumInt += area;
+        else if (type === 'internal') sumInt += area;
+        else if (type === 'bath_ext' || type === 'bath_int') sumBath += area;
     });
+
     document.getElementById('m1TotalAreaDisplay').textContent = sumTotal.toFixed(2);
     document.getElementById('m1ExtAreaDisplay').textContent = sumExt.toFixed(2);
     document.getElementById('m1IntAreaDisplay').textContent = sumInt.toFixed(2);
+    document.getElementById('m1BathAreaDisplay').textContent = sumBath.toFixed(2);
 }
 
 // ================= HISTORY & DELETE MANAGEMENT =================
@@ -1201,6 +1321,7 @@ async function loadCalculationToEdit(calcId) {
             document.getElementById('province').value = data.province || '';
             document.getElementById('wasteSelect').value = p.waste_percent || '5';
             document.getElementById('plasterOption').value = p.plaster_option || 'both_1';
+            document.getElementById('skimOption').value = p.skim_option || 'none';
             
             const savedGrade = p.block_grade || 'G4';
             document.getElementById('section1BlockGradeSelect').value = savedGrade;
@@ -1212,7 +1333,7 @@ async function loadCalculationToEdit(calcId) {
                 document.getElementById('m1RowsContainer').innerHTML = '';
                 m1RowCount = 0;
                 if (p.method1_items && p.method1_items.length > 0) {
-                    p.method1_items.forEach(it => addMethod1Row(it.name, it.thick, it.type || 'internal', it.area));
+                    p.method1_items.forEach(it => addMethod1Row(it.name, it.thick || it.productKey, it.type || 'internal', it.area));
                 } else if (p.flat_area) {
                     addMethod1Row('พื้นที่รวมเดิม', p.primary_thick || '10', 'internal', p.flat_area);
                 } else {
@@ -1271,19 +1392,30 @@ async function calculateAllMaterials(shouldAutoSave = true) {
     const wastePercent = parseFloat(document.getElementById('wasteSelect').value) || 0;
     const wasteMul = 1 + (wastePercent / 100);
     const plasterChoice = document.getElementById('plasterOption').value;
+    const skimChoice = document.getElementById('skimOption').value;
     const blockGrade = document.getElementById('section1BlockGradeSelect').value;
 
     let totalGrossArea = 0;
     let grossExternalArea = 0;
     let grossInternalArea = 0;
+    let grossBathExtArea = 0;
+    let grossBathIntArea = 0;
+
     let totalOpeningArea = 0;
     let totalNetArea = 0;
 
-    thicknessSummaryGlobal = {};
+    productSummaryGlobal = {};
     const detailedLintelList = [];
     const castInPlaceAlerts = [];
     const wallSnapshot = [];
     const method1ItemsSnapshot = [];
+
+    // สำหรับการเปรียบเทียบระบบเทคอนกรีตในที่ทั้งหมด
+    let cipCompareTotalLintelLen = 0; // ทับหลังวิ่งยาวเสาถึงเสา
+    let cipCompareTotalColumnLen = 0; // เสาเอ็นประกบข้างช่องเปิด
+    let cipCompareVolume = 0;         // ปริมาตรคอนกรีต ลบ.ม.
+
+    globalCipLintelLength = 0; // ความยาวทับหลังที่เกินเกณฑ์คานสำเร็จรูป
 
     if (activeMethod === 1) {
         const rows = document.querySelectorAll('#m1RowsContainer .opening-row');
@@ -1292,7 +1424,7 @@ async function calculateAllMaterials(shouldAutoSave = true) {
         let validCount = 0;
         rows.forEach(r => {
             const name = r.querySelector('.m1-name').value || 'บริเวณผนัง';
-            const thick = r.querySelector('.m1-thick').value;
+            const pKey = r.querySelector('.m1-thick').value;
             const type = r.querySelector('.m1-type') ? r.querySelector('.m1-type').value : 'internal';
             const area = parseFloat(r.querySelector('.m1-area').value) || 0;
 
@@ -1300,11 +1432,13 @@ async function calculateAllMaterials(shouldAutoSave = true) {
                 validCount++;
                 totalGrossArea += area;
                 if (type === 'external') grossExternalArea += area;
-                else grossInternalArea += area;
+                else if (type === 'internal') grossInternalArea += area;
+                else if (type === 'bath_ext') grossBathExtArea += area;
+                else if (type === 'bath_int') grossBathIntArea += area;
 
                 totalNetArea += area;
-                thicknessSummaryGlobal[thick] = (thicknessSummaryGlobal[thick] || 0) + area;
-                method1ItemsSnapshot.push({ name, thick, type, area });
+                productSummaryGlobal[pKey] = (productSummaryGlobal[pKey] || 0) + area;
+                method1ItemsSnapshot.push({ name, productKey: pKey, type, area });
             }
         });
 
@@ -1319,20 +1453,34 @@ async function calculateAllMaterials(shouldAutoSave = true) {
         wallCards.forEach((card, idx) => {
             const wId = idx + 1;
             const wallName = card.querySelector('.wall-name').value || `ผนังที่ ${wId}`;
-            const thick = card.querySelector('.wall-thick').value;
+            const pKey = card.querySelector('.wall-thick').value;
             const wallType = card.querySelector('.wall-type').value;
             const w = parseFloat(card.querySelector('.wall-width').value) || 0;
             const h = parseFloat(card.querySelector('.wall-height').value) || 0;
 
+            const spec = PRODUCT_SPECS[pKey] || PRODUCT_SPECS['10'];
+            const stdThick = spec.std_thick; // 7.5, 9, 10, etc.
+
             const gross = w * h;
             totalGrossArea += gross;
             if (wallType === 'external') grossExternalArea += gross;
-            else grossInternalArea += gross;
+            else if (wallType === 'internal') grossInternalArea += gross;
+            else if (wallType === 'bath_ext') grossBathExtArea += gross;
+            else if (wallType === 'bath_int') grossBathIntArea += gross;
 
             let wallOpeningArea = 0;
             const opRows = card.querySelectorAll('.opening-row');
             const hasOpenings = opRows.length > 0;
             const openingsData = [];
+
+            // คำนวณระบบเทคอนกรีตในที่เปรียบเทียบ:
+            // 1. ทับหลัง คสล. วิ่งยาวเสาถึงเสาตามความกว้างผนัง ถ้าผนังสูงเกินเกณฑ์หรือมีช่องเปิด
+            const wallCheck = checkWallStructuralCriteria(wallType, stdThick, w, h);
+            let wallNeedsCipBeam = false;
+            if (wallCheck.needed || hasOpenings) {
+                cipCompareTotalLintelLen += w;
+                wallNeedsCipBeam = true;
+            }
 
             opRows.forEach(row => {
                 const opTypeVal = row.querySelector('.op-type').value;
@@ -1344,60 +1492,74 @@ async function calculateAllMaterials(shouldAutoSave = true) {
                 wallOpeningArea += (opW * opH * opQty);
                 openingsData.push({ type: opTypeVal, w: opW, h: opH, qty: opQty });
 
-                if (thick === '7.5') {
+                // คำนวณเสาเอ็น คสล. สำหรับระบบเทในที่เปรียบเทียบ:
+                // ประตู: เทข้าง 2 ด้านจากพื้นถึงทับหลัง (ระดับทับหลังสมมติที่ opH = 2.0 ม.)
+                // หน้าต่าง: เทข้าง 2 ด้านจากทับหลังล่างถึงทับหลังบน (ความสูงเท่ากับ opH)
+                const colHeightPerSide = opH;
+                const colLenForOpening = 2 * colHeightPerSide * opQty;
+                cipCompareTotalColumnLen += colLenForOpening;
+
+                // คำนวณคานทับหลังสำเร็จรูป Q-CON
+                if (stdThick === '7.5') {
                     const colRes = getLintel7_5(h);
                     if (colRes.castInPlace) {
-                        castInPlaceAlerts.push(`${wallName} - เสาเอ็นประกบข้าง (${opTypeText}) สูง ${h} ม. > 4.0 ม. ต้องเท คสล. ในที่`);
+                        castInPlaceAlerts.push(`${wallName} - เสาเอ็นประกบข้าง (${opTypeText}) สูง ${h} ม. > 4.0 ม. ต้องเท คสล. ในที่ (ยาว ${h.toFixed(2)} ม. x ${2 * opQty} ท่อน = ${(h * 2 * opQty).toFixed(2)} ม.)`);
+                        globalCipLintelLength += (h * 2 * opQty);
                     } else {
                         const sku = (LINTEL_SKU_DATA['7.5'] && LINTEL_SKU_DATA['7.5'][colRes.length]) || '-';
-                        detailedLintelList.push({ wall: wallName, application: `เสาเอ็นประกบข้าง (${opTypeText})`, thick, length: colRes.length, qty: 2 * opQty, sku });
+                        detailedLintelList.push({ wall: wallName, application: `เสาเอ็นประกบข้าง (${opTypeText})`, thick: stdThick, length: colRes.length, qty: 2 * opQty, sku });
                     }
 
                     const beamRes = getLintel7_5(opW);
                     const pieces = (opTypeVal === 'door') ? 1 : 2;
                     if (beamRes.castInPlace) {
-                        castInPlaceAlerts.push(`${wallName} - ทับหลังพาดช่องเปิด (${opTypeText}) กว้าง ${opW} ม. > 4.0 ม. ต้องเท คสล. ในที่`);
+                        castInPlaceAlerts.push(`${wallName} - ทับหลังพาดช่องเปิด (${opTypeText}) กว้าง ${opW} ม. > 4.0 ม. ต้องเท คสล. ในที่ (ยาว ${opW.toFixed(2)} ม. x ${pieces * opQty} ท่อน = ${(opW * pieces * opQty).toFixed(2)} ม.)`);
+                        globalCipLintelLength += (opW * pieces * opQty);
                     } else {
                         const sku = (LINTEL_SKU_DATA['7.5'] && LINTEL_SKU_DATA['7.5'][beamRes.length]) || '-';
-                        detailedLintelList.push({ wall: wallName, application: `ทับหลังพาดช่องเปิด (${opTypeText})`, thick, length: beamRes.length, qty: pieces * opQty, sku });
+                        detailedLintelList.push({ wall: wallName, application: `ทับหลังพาดช่องเปิด (${opTypeText})`, thick: stdThick, length: beamRes.length, qty: pieces * opQty, sku });
                     }
                 } else {
-                    const lintelRes = getLintel10Up(opW);
+                    // หนา 9 ซม. หรือ 10 ซม. ขึ้นไป
+                    const lintelRes = getLintel9Up(opW);
                     if (lintelRes.castInPlace) {
-                        castInPlaceAlerts.push(`${wallName} - ทับหลังเหนือช่องเปิด (${opTypeText}) กว้าง ${opW} ม. > 3.0 ม. ต้องเทคอนกรีตในที่`);
+                        castInPlaceAlerts.push(`${wallName} - ทับหลังเหนือช่องเปิด (${opTypeText}) กว้าง ${opW} ม. > 3.0 ม. ต้องเท คสล. ในที่ (ยาว ${(opW + 0.4).toFixed(2)} ม. x ${opQty} ท่อน = ${((opW + 0.4) * opQty).toFixed(2)} ม.)`);
+                        globalCipLintelLength += ((opW + 0.4) * opQty);
                     } else {
-                        const sku = (LINTEL_SKU_DATA[thick] && LINTEL_SKU_DATA[thick][lintelRes.length]) || '-';
-                        detailedLintelList.push({ wall: wallName, application: `ทับหลังเหนือช่องเปิด (${opTypeText})`, thick, length: lintelRes.length, qty: 1 * opQty, sku });
+                        const sku = (LINTEL_SKU_DATA[stdThick] && LINTEL_SKU_DATA[stdThick][lintelRes.length]) || 'ยังไม่มี';
+                        detailedLintelList.push({ wall: wallName, application: `ทับหลังเหนือช่องเปิด (${opTypeText})`, thick: stdThick, length: lintelRes.length, qty: 1 * opQty, sku });
                     }
                 }
             });
 
             totalOpeningArea += wallOpeningArea;
             const net = Math.max(0, gross - wallOpeningArea);
-            thicknessSummaryGlobal[thick] = (thicknessSummaryGlobal[thick] || 0) + net;
+            productSummaryGlobal[pKey] = (productSummaryGlobal[pKey] || 0) + net;
 
-            wallSnapshot.push({ name: wallName, thick, type: wallType, width: w, height: h, openings: openingsData });
+            wallSnapshot.push({ name: wallName, productKey: pKey, type: wallType, width: w, height: h, openings: openingsData });
 
+            // ตรวจสอบเสาเอ็นแบ่งช่วงผนัง
             if (w > 0 && h > 0) {
-                const check = checkWallStructuralCriteria(wallType, thick, w, h);
-                if (check.needed && check.maxW > 0) {
-                    const stiffenerCount = Math.ceil(w / check.maxW) - 1;
+                if (wallCheck.needed && wallCheck.maxW > 0) {
+                    const stiffenerCount = Math.ceil(w / wallCheck.maxW) - 1;
                     if (stiffenerCount > 0) {
-                        if (parseFloat(thick) >= 10) {
-                            const colLintel = getColumnLintel10Up(h);
+                        if (parseFloat(stdThick) >= 9) {
+                            const colLintel = getColumnLintel9Up(h);
                             if (colLintel.castInPlace) {
-                                castInPlaceAlerts.push(`${wallName} - เสาเอ็นสำเร็จรูปแบ่งช่วงผนัง สูง ${h} ม. > 3.6 ม. ต้องเทคอนกรีต คสล. ในที่`);
+                                castInPlaceAlerts.push(`${wallName} - เสาเอ็นสำเร็จรูปแบ่งช่วงผนัง สูง ${h} ม. > 3.6 ม. ต้องเท คสล. ในที่ (ยาว ${h.toFixed(2)} ม. x ${stiffenerCount} ท่อน = ${(h * stiffenerCount).toFixed(2)} ม.)`);
+                                globalCipLintelLength += (h * stiffenerCount);
                             } else {
-                                const sku = (LINTEL_SKU_DATA[thick] && LINTEL_SKU_DATA[thick][colLintel.length]) || '-';
-                                detailedLintelList.push({ wall: wallName, application: `ตัวตั้ง (เสาเอ็นสำเร็จรูปแบ่งช่วงผนัง)`, thick, length: colLintel.length, qty: stiffenerCount, sku });
+                                const sku = (LINTEL_SKU_DATA[stdThick] && LINTEL_SKU_DATA[stdThick][colLintel.length]) || 'ยังไม่มี';
+                                detailedLintelList.push({ wall: wallName, application: `ตัวตั้ง (เสาเอ็นสำเร็จรูปแบ่งช่วงผนัง)`, thick: stdThick, length: colLintel.length, qty: stiffenerCount, sku });
                             }
                         } else if (!hasOpenings) {
                             const colLintel = getLintel7_5(h);
                             if (colLintel.castInPlace) {
-                                castInPlaceAlerts.push(`${wallName} - เสาเอ็นสำเร็จรูปแบ่งช่วงผนัง สูง ${h} ม. > 4.0 ม. ต้องเท คสล. ในที่`);
+                                castInPlaceAlerts.push(`${wallName} - เสาเอ็นสำเร็จรูปแบ่งช่วงผนัง สูง ${h} ม. > 4.0 ม. ต้องเท คสล. ในที่ (ยาว ${h.toFixed(2)} ม. x ${stiffenerCount} ท่อน = ${(h * stiffenerCount).toFixed(2)} ม.)`);
+                                globalCipLintelLength += (h * stiffenerCount);
                             } else {
                                 const sku = (LINTEL_SKU_DATA['7.5'] && LINTEL_SKU_DATA['7.5'][colLintel.length]) || '-';
-                                detailedLintelList.push({ wall: wallName, application: `ตัวตั้ง (เสาเอ็นสำเร็จรูปแบ่งช่วงผนัง)`, thick, length: colLintel.length, qty: stiffenerCount, sku });
+                                detailedLintelList.push({ wall: wallName, application: `ตัวตั้ง (เสาเอ็นสำเร็จรูปแบ่งช่วงผนัง)`, thick: stdThick, length: colLintel.length, qty: stiffenerCount, sku });
                             }
                         }
                     }
@@ -1407,31 +1569,57 @@ async function calculateAllMaterials(shouldAutoSave = true) {
         totalNetArea = Math.max(0, totalGrossArea - totalOpeningArea);
     }
 
+    const grossBathTotal = grossBathExtArea + grossBathIntArea;
+
     // อัปเดต Dashboard สรุปพื้นที่
     document.getElementById('statGross').innerHTML = `${totalGrossArea.toFixed(2)}<span style="font-size:0.8rem;"> ตร.ม.</span>`;
     document.getElementById('statGrossExt').textContent = grossExternalArea.toFixed(2);
     document.getElementById('statGrossInt').textContent = grossInternalArea.toFixed(2);
+    document.getElementById('statGrossBath').textContent = grossBathTotal.toFixed(2);
+    document.getElementById('statGrossBathExt').textContent = grossBathExtArea.toFixed(2);
+    document.getElementById('statGrossBathInt').textContent = grossBathIntArea.toFixed(2);
+
     document.getElementById('statOpenings').innerHTML = `${totalOpeningArea.toFixed(2)}<span style="font-size:0.8rem;"> ตร.ม.</span>`;
     document.getElementById('statNet').innerHTML = `${totalNetArea.toFixed(2)}<span style="font-size:0.8rem;"> ตร.ม.</span>`;
 
     let totalLintelPcs = detailedLintelList.reduce((acc, cur) => acc + cur.qty, 0);
+    let totalLintelLen = detailedLintelList.reduce((acc, cur) => acc + (cur.length * cur.qty), 0);
+
     document.getElementById('statLintelPieces').innerHTML = `${totalLintelPcs}<span style="font-size:0.8rem;"> ท่อน</span>`;
+    document.getElementById('statLintelTotalLength').textContent = totalLintelLen.toFixed(2);
+    document.getElementById('outTotalLintelLength').textContent = totalLintelLen.toFixed(2);
 
-    renderBrickBreakdownTable(thicknessSummaryGlobal, wasteMul, blockGrade);
+    renderBrickBreakdownTable(productSummaryGlobal, wasteMul, blockGrade);
 
+    // ปูนก่อ: คำนวณจากจำนวนบล็อกรวม
     const mortarBags = Math.ceil(((totalBlocksCount * 0.15) / 50) * wasteMul);
+
+    // ปูนฉาบทั่วไป:
     let plasterBags = 0;
     let plasterSub = 'ถุง (50 กก.)';
-
     if (plasterChoice === 'both_1') { plasterBags = Math.ceil(((totalNetArea * 2) / 2.3) * wasteMul); plasterSub = 'ถุง (ฉาบ 2 ด้าน หนา 1.0 ซม.)'; }
     else if (plasterChoice === 'both_125') { plasterBags = Math.ceil(((totalNetArea * 2) / 2.0) * wasteMul); plasterSub = 'ถุง (ฉาบ 2 ด้าน หนา 1.25 ซม.)'; }
     else if (plasterChoice === 'single_1') { plasterBags = Math.ceil((totalNetArea / 2.3) * wasteMul); plasterSub = 'ถุง (ฉาบด้านเดียว หนา 1.0 ซม.)'; }
+    else { plasterBags = 0; plasterSub = 'ไม่คิดงานฉาบ'; }
+
+    // ปูนสกิมโค้ท: 20 กก./ถุง, อัตรา 1.25 กก./ตร.ม./หนา 1 มม.
+    let skimBags = 0;
+    let skimSub = 'ถุง (20 กก.)';
+    if (skimChoice !== 'none') {
+        let sides = skimChoice.startsWith('both') ? 2 : 1;
+        let mm = parseInt(skimChoice.split('_')[1]) || 1;
+        let totalSkimKg = (totalNetArea * sides) * (1.25 * mm);
+        skimBags = Math.ceil((totalSkimKg / 20) * wasteMul);
+        skimSub = `ถุง (${sides === 2 ? 'ฉาบ 2 ด้าน' : 'ฉาบด้านเดียว'} หนา ${mm} มม.)`;
+    }
 
     const straps = Math.ceil(totalNetArea * 2 * wasteMul);
 
     document.getElementById('outMortar').textContent = mortarBags.toLocaleString();
     document.getElementById('outPlaster').textContent = plasterBags.toLocaleString();
     document.getElementById('outPlasterSub').textContent = plasterSub;
+    document.getElementById('outSkim').textContent = skimBags.toLocaleString();
+    document.getElementById('outSkimSub').textContent = skimSub;
     document.getElementById('outStrap').textContent = straps.toLocaleString();
 
     renderDetailedLintelTable(detailedLintelList);
@@ -1439,13 +1627,23 @@ async function calculateAllMaterials(shouldAutoSave = true) {
     const alertBox = document.getElementById('castInPlaceNotice');
     if (castInPlaceAlerts.length > 0) {
         alertBox.style.display = 'block';
-        alertBox.innerHTML = `<strong><i class="fas fa-exclamation-triangle"></i> รายการที่ต้องเทคอนกรีต คสล. ในที่:</strong><br>` + castInPlaceAlerts.map(a => `• ${a}`).join('<br>');
+        alertBox.innerHTML = `
+            <div style="font-weight:700; font-size:0.95rem; margin-bottom:6px;">
+                <i class="fas fa-exclamation-triangle"></i> ตำแหน่งผนังที่ต้องเทคอนกรีต คสล. ในที่เพิ่ม (กรณีเกินเกณฑ์มาตรฐานคานทับหลังสำเร็จรูป):
+            </div>
+            ${castInPlaceAlerts.map(a => `• ${a}`).join('<br>')}
+            <div style="margin-top:10px; padding-top:8px; border-top:1px dashed #f59e0b; font-weight:700; color:#b45309;">
+                ความยาวรวมทั้งหมดที่ต้องเทคอนกรีตในที่เพิ่มเติม: ${globalCipLintelLength.toFixed(2)} เมตร
+            </div>`;
     } else {
         alertBox.style.display = 'none';
+        alertBox.innerHTML = '';
     }
 
-    document.getElementById('resultContainer').classList.add('show');
+    // เรนเดอร์การเปรียบเทียบระบบเทคอนกรีต คสล. ในที่ทั้งหมด
+    renderComparisonSection(activeMethod, totalLintelLen, totalLintelPcs, cipCompareTotalLintelLen, cipCompareTotalColumnLen);
 
+    document.getElementById('resultContainer').classList.add('show');
     globalDetailedLintelList = detailedLintelList;
     calcLogistics();
 
@@ -1464,19 +1662,26 @@ async function calculateAllMaterials(shouldAutoSave = true) {
             total_gross_area: totalGrossArea,
             gross_external_area: grossExternalArea,
             gross_internal_area: grossInternalArea,
+            gross_bath_total_area: grossBathTotal,
             total_opening_area: totalOpeningArea,
             total_net_area: totalNetArea,
             total_blocks: totalBlocksCount,
             total_mortar_bags: mortarBags,
             total_plaster_bags: plasterBags,
+            total_skim_bags: skimBags,
             total_lintel_pcs: totalLintelPcs,
+            total_lintel_length: totalLintelLen,
+            total_cip_lintel_length: globalCipLintelLength,
             project_payload_json: {
                 calc_method: activeMethod,
                 block_grade: blockGrade,
                 waste_percent: wastePercent,
                 plaster_option: plasterChoice,
+                skim_option: skimChoice,
                 gross_external_area: grossExternalArea,
                 gross_internal_area: grossInternalArea,
+                gross_bath_ext_area: grossBathExtArea,
+                gross_bath_int_area: grossBathIntArea,
                 method1_items: method1ItemsSnapshot,
                 walls: wallSnapshot
             }
@@ -1498,14 +1703,66 @@ async function calculateAllMaterials(shouldAutoSave = true) {
     }
 }
 
-function renderBrickBreakdownTable(thickMap, wasteMul, blockGrade) {
+// เรนเดอร์การเปรียบเทียบระบบเทคอนกรีตในที่ทั้งหมด
+function renderComparisonSection(method, qconLen, qconPcs, cipLintelLen, cipColLen) {
+    const container = document.getElementById('comparisonContainer');
+    if (method === 1) {
+        container.innerHTML = `
+            <div style="background:#fff; border:1px solid #e2e8f0; padding:14px; border-radius:8px; color:#64748b; font-size:0.9rem;">
+                <i class="fas fa-info-circle"></i> การคำนวณเปรียบเทียบเชิงลึกระบบเทคอนกรีตในที่จะแสดงผลเมื่อใช้งาน <strong>วิธีที่ 2 (ป้อนข้อมูลรายผนัง + ช่องเปิด)</strong> เนื่องจากต้องใช้ข้อมูลความกว้างของผนังและขนาดช่องเปิดแต่ละตำแหน่ง
+            </div>`;
+        return;
+    }
+
+    const totalCipLen = cipLintelLen + cipColLen;
+    // สมมติหน้าตัดมาตรฐานเสาเอ็น-ทับหลัง คสล. เฉลี่ย 0.10 x 0.10 ม. (0.01 ตร.ม.)
+    const estConcreteVol = totalCipLen * 0.01;
+    const estFormworkArea = totalCipLen * 0.20; // ไม้แบบ 2 ด้าน เฉลี่ย 0.20 ตร.ม./เมตรความยาว
+
+    let html = `
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
+        <div style="background:#fff; border:1.5px solid #fed7aa; border-radius:10px; padding:16px;">
+            <div style="font-weight:700; color:var(--primary); font-size:1.02rem; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-cube"></i> ระบบคานทับหลังสำเร็จรูป Q-CON
+            </div>
+            <ul style="list-style:none; padding:0; font-size:0.88rem; color:#475569; line-height:1.8;">
+                <li>• จำนวนคานทับหลังสำเร็จรูปที่ใช้: <strong>${qconPcs}</strong> ท่อน</li>
+                <li>• ความยาวคานทับหลังสำเร็จรูปรวม: <strong>${qconLen.toFixed(2)}</strong> เมตร</li>
+                <li>• ความยาวตำแหน่งที่ต้องเท คสล. เพิ่ม: <strong>${globalCipLintelLength.toFixed(2)}</strong> เมตร</li>
+                <li style="color:#16a34a; font-weight:600; margin-top:6px;">✓ ติดตั้งแห้ง รวดเร็ว ไม่ต้องรอคอนกรีตเซ็ตตัว</li>
+                <li style="color:#16a34a; font-weight:600;">✓ ป้องกันการแตกร้าวจากการยืดหดตัวของคอนกรีต</li>
+            </ul>
+        </div>
+
+        <div style="background:#fff; border:1.5px solid #cbd5e1; border-radius:10px; padding:16px;">
+            <div style="font-weight:700; color:#334155; font-size:1.02rem; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-hammer"></i> ระบบหล่อเทคอนกรีต คสล. ในที่ทั้งหมด
+            </div>
+            <ul style="list-style:none; padding:0; font-size:0.88rem; color:#475569; line-height:1.8;">
+                <li>• ทับหลัง คสล. วิ่งยาวเสาถึงเสา: <strong>${cipLintelLen.toFixed(2)}</strong> เมตร</li>
+                <li>• เสาเอ็น คสล. ข้างช่องเปิด: <strong>${cipColLen.toFixed(2)}</strong> เมตร</li>
+                <li>• รวมความยาวงานหล่อ คสล. ทั้งหมด: <strong style="color:#dc2626;">${totalCipLen.toFixed(2)}</strong> เมตร</li>
+                <li>• ปริมาตรคอนกรีตหล่อในที่ประมาณการ: <strong>~${estConcreteVol.toFixed(3)}</strong> ลบ.ม.</li>
+                <li>• พื้นที่ไม้แบบประมาณการ: <strong>~${estFormworkArea.toFixed(2)}</strong> ตร.ม.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div style="background:#eef2ff; border:1px solid #c7d2fe; border-radius:8px; padding:12px 16px; margin-top:14px; font-size:0.86rem; color:#3730a3;">
+        <strong><i class="fas fa-chart-line"></i> บทวิเคราะห์เปรียบเทียบ:</strong> หากใช้ระบบคานทับหลังสำเร็จรูป Q-CON จะช่วยลดปริมาณงานหล่อคอนกรีตเปียกในไซต์งานได้มากกว่า <strong>${totalCipLen > 0 ? ((1 - (globalCipLintelLength / totalCipLen)) * 100).toFixed(0) : 100}%</strong> และลดขั้นตอนการเข้าแบบ-ผูกเหล็ก ช่วยให้งานก่อสร้างเสร็จเร็วกว่าระบบดั้งเดิม
+    </div>`;
+
+    container.innerHTML = html;
+}
+
+function renderBrickBreakdownTable(prodMap, wasteMul, blockGrade) {
     const container = document.getElementById('brickBreakdownTable');
     let html = `
     <table class="custom-table">
         <thead>
             <tr>
                 <th>รหัสสินค้า (SKU)</th>
-                <th>รายการบล็อก Q-CON</th>
+                <th>รายการบล็อก / ขนาด</th>
                 <th style="text-align:right;">พื้นที่สุทธิ (ตร.ม.)</th>
                 <th style="text-align:right;">จำนวนจริง (ก้อน)</th>
                 <th style="text-align:right;">จำนวนรวมเผื่อเศษ (ก้อน)</th>
@@ -1514,20 +1771,21 @@ function renderBrickBreakdownTable(thickMap, wasteMul, blockGrade) {
         <tbody>`;
 
     totalBlocksCount = 0;
-    const thicknesses = Object.keys(thickMap).sort((a,b) => parseFloat(a) - parseFloat(b));
+    const pKeys = Object.keys(prodMap);
 
-    thicknesses.forEach(th => {
-        const area = thickMap[th];
-        const exactBlocks = Math.ceil(area * 8.33);
-        const orderBlocks = Math.ceil(area * 8.33 * wasteMul);
+    pKeys.forEach(pk => {
+        const area = prodMap[pk];
+        const spec = PRODUCT_SPECS[pk] || PRODUCT_SPECS['10'];
+        const exactBlocks = Math.ceil(area * spec.pcs_per_sqm);
+        const orderBlocks = Math.ceil(area * spec.pcs_per_sqm * wasteMul);
         totalBlocksCount += orderBlocks;
 
-        const sku = (BLOCK_SKU_DATA[blockGrade] && BLOCK_SKU_DATA[blockGrade][th]) || '-';
+        const sku = (BLOCK_SKU_DATA[blockGrade] && BLOCK_SKU_DATA[blockGrade][pk]) || '-';
 
         html += `
         <tr>
             <td><span class="sku-tag">${sku}</span></td>
-            <td><strong>บล็อก Q-CON หนา ${th} ซม.</strong> (20x60 ซม.) เกรดบล็อก: ${blockGrade}</td>
+            <td><strong>${spec.name}</strong> (เกรด ${blockGrade})</td>
             <td style="text-align:right;">${area.toFixed(2)}</td>
             <td style="text-align:right;">${exactBlocks.toLocaleString()}</td>
             <td style="text-align:right; font-weight:700; color:var(--primary); font-size:1.05rem;">${orderBlocks.toLocaleString()}</td>
@@ -1558,13 +1816,14 @@ function renderDetailedLintelTable(lintelList) {
                 <th>ตำแหน่งผนัง</th>
                 <th>วัตถุประสงค์การใช้งาน</th>
                 <th>ขนาดคานทับหลังสำเร็จรูป Q-CON</th>
-                <th style="text-align:center;">จำนวนที่ต้องใช้จริง (ไม่เผื่อ)</th>
-                <th>หน่วย</th>
+                <th style="text-align:center;">จำนวนที่ต้องใช้ (ท่อน)</th>
+                <th style="text-align:right;">ความยาวรวม (เมตร)</th>
             </tr>
         </thead>
         <tbody>`;
 
     lintelList.forEach(item => {
+        const itemTotalLen = item.length * item.qty;
         html += `
         <tr>
             <td><span class="sku-tag">${item.sku || '-'}</span></td>
@@ -1572,7 +1831,7 @@ function renderDetailedLintelTable(lintelList) {
             <td>${item.application}</td>
             <td>คานทับหลัง Q-CON หนา ${item.thick} ซม. x <strong>ยาว ${item.length.toFixed(1)} ม.</strong></td>
             <td style="text-align:center; font-weight:700; color:var(--primary);">${item.qty}</td>
-            <td>ท่อน</td>
+            <td style="text-align:right; font-weight:600; color:#0284c7;">${itemTotalLen.toFixed(2)}</td>
         </tr>`;
     });
 
@@ -1588,26 +1847,42 @@ function calcLogistics() {
 
     let blockPallets = 0;
     const wastePercent = parseFloat(document.getElementById('wasteSelect').value) || 0;
-    for (let th in thicknessSummaryGlobal) {
-        const area = thicknessSummaryGlobal[th];
-        const blocks = Math.ceil(area * 8.33 * (1 + wastePercent / 100));
-        const perPallet = PALLET_QTY[th] || 100;
-        blockPallets += Math.ceil(blocks / perPallet);
-    }
-    if (blockPallets === 0 && totalBlocksCount > 0) blockPallets = Math.ceil(totalBlocksCount / 100);
+    let blockLoadRatio = 0;
 
-    const blockMaxCapacity = is6Wheel ? 6 : (grade === 'g2' ? 22 : 20);
-    const blockTrips = blockPallets > 0 ? Math.ceil(blockPallets / blockMaxCapacity) : 0;
-    const blockLoadRatio = blockPallets / blockMaxCapacity;
+    for (let pk in productSummaryGlobal) {
+        const area = productSummaryGlobal[pk];
+        const spec = PRODUCT_SPECS[pk] || PRODUCT_SPECS['10'];
+        const blocks = Math.ceil(area * spec.pcs_per_sqm * (1 + wastePercent / 100));
+        const perPallet = spec.pallet;
+        const pallets = Math.ceil(blocks / perPallet);
+        blockPallets += pallets;
+
+        const maxCap = is6Wheel ? spec.truck6 : spec.trailer;
+        blockLoadRatio += (pallets / maxCap);
+    }
+
+    if (blockPallets === 0 && totalBlocksCount > 0) {
+        blockPallets = Math.ceil(totalBlocksCount / 100);
+        blockLoadRatio = blockPallets / (is6Wheel ? 6 : 20);
+    }
+
+    const blockTrips = Math.ceil(blockLoadRatio);
 
     const mortarBags = parseInt((document.getElementById('outMortar').textContent || '0').replace(/,/g, '')) || 0;
     const plasterBags = parseInt((document.getElementById('outPlaster').textContent || '0').replace(/,/g, '')) || 0;
-    const totalCementBags = mortarBags + plasterBags;
-
-    const cementPallets = totalCementBags > 0 ? Math.ceil(totalCementBags / 40) : 0;
-    const cementMaxCapacity = is6Wheel ? 4 : 16;
-    const cementTrips = cementPallets > 0 ? Math.ceil(cementPallets / cementMaxCapacity) : 0;
-    const cementLoadRatio = cementPallets / cementMaxCapacity;
+    const skimBags = parseInt((document.getElementById('outSkim').textContent || '0').replace(/,/g, '')) || 0;
+    
+    // ปูนก่อและปูนฉาบ 50 กก. (40 ถุง/พาเลท)
+    const cement50Bags = mortarBags + plasterBags;
+    const cement50Pallets = cement50Bags > 0 ? Math.ceil(cement50Bags / 40) : 0;
+    
+    // ปูนสกิมโค้ท 20 กก. (50 ถุง/พาเลท)
+    const skimPallets = skimBags > 0 ? Math.ceil(skimBags / 50) : 0;
+    
+    const totalMortarPallets = cement50Pallets + skimPallets;
+    const cementMaxCap = is6Wheel ? 4 : 16;
+    const cementLoadRatio = totalMortarPallets / cementMaxCap;
+    const cementTrips = Math.ceil(cementLoadRatio);
 
     let lintelPallets = 0;
     let lintelLoadRatio = 0;
@@ -1651,17 +1926,20 @@ function calcLogistics() {
             </thead>
             <tbody>
                 <tr>
-                    <td><strong>1. อิฐมวลเบา Q-CON (${grade.toUpperCase()})</strong></td>
+                    <td><strong>1. อิฐมวลเบา Q-CON / บล็อกกรู๊ฟ (${grade.toUpperCase()})</strong></td>
                     <td style="text-align:right;">${totalBlocksCount.toLocaleString()} ก้อน</td>
                     <td style="text-align:right;"><strong>${blockPallets}</strong> พาเลท</td>
-                    <td style="text-align:center;">${blockMaxCapacity} พาเลท/คัน</td>
+                    <td style="text-align:center;">ตามประเภทสินค้า</td>
                     <td style="text-align:right; font-weight:600; color:var(--primary);">${blockTrips} คัน</td>
                 </tr>
                 <tr>
-                    <td><strong>2. ปูนก่อและปูนฉาบ Q-CON</strong> (40 ถุง/พาเลท)</td>
-                    <td style="text-align:right;">${totalCementBags.toLocaleString()} ถุง<br><small style="color:#64748b;">(ก่อ ${mortarBags} + ฉาบ ${plasterBags})</small></td>
-                    <td style="text-align:right;"><strong>${cementPallets}</strong> พาเลท</td>
-                    <td style="text-align:center;">${cementMaxCapacity} พาเลท/คัน (${is6Wheel ? '160' : '640'} ถุง)</td>
+                    <td><strong>2. ปูนก่อ ปูนฉาบ และปูนสกิมโค้ท Q-CON</strong></td>
+                    <td style="text-align:right;">
+                        50 กก.: ${cement50Bags.toLocaleString()} ถุง<br>
+                        20 กก.: ${skimBags.toLocaleString()} ถุง
+                    </td>
+                    <td style="text-align:right;"><strong>${totalMortarPallets}</strong> พาเลท</td>
+                    <td style="text-align:center;">${cementMaxCap} พาเลท/คัน</td>
                     <td style="text-align:right; font-weight:600; color:var(--primary);">${cementTrips} คัน</td>
                 </tr>
                 <tr>
@@ -1680,7 +1958,7 @@ function calcLogistics() {
                     <i class="fas fa-boxes" style="color:var(--primary);"></i> สรุปภาระการขนส่งรวมทั้งโครงการ (Combined Logistics)
                 </div>
                 <div style="font-size:0.86rem; color:#64748b; margin-top:3px;">
-                    พาเลทรวม: <strong>${blockPallets + cementPallets + lintelPallets}</strong> พาเลท | สัดส่วนการบรรทุกรวม: <strong>${totalCombinedLoadRatio.toFixed(2)}</strong> คัน
+                    พาเลทรวม: <strong>${blockPallets + totalMortarPallets + lintelPallets}</strong> พาเลท | สัดส่วนการบรรทุกรวม: <strong>${totalCombinedLoadRatio.toFixed(2)}</strong> คัน
                 </div>
             </div>
             <div style="text-align:right;">
@@ -1720,14 +1998,19 @@ function addWallWithData(wId, data) {
                 <input type="text" class="wall-name" value="${data ? data.name : 'ผนัง ' + wId}">
             </div>
             <div>
-                <label>ความหนาบล็อก:</label>
+                <label>รายการสินค้าบล็อก Q-CON:</label>
                 <select class="wall-thick" onchange="updateWallStatus(${wId})">
-                    <option value="7.5" ${data && data.thick==='7.5'?'selected':''}>7.5 ซม.</option>
-                    <option value="10" ${!data || data.thick==='10'?'selected':''}>10 ซม.</option>
-                    <option value="12.5" ${data && data.thick==='12.5'?'selected':''}>12.5 ซม.</option>
-                    <option value="15" ${data && data.thick==='15'?'selected':''}>15 ซม.</option>
-                    <option value="17.5" ${data && data.thick==='17.5'?'selected':''}>17.5 ซม.</option>
-                    <option value="20" ${data && data.thick==='20'?'selected':''}>20 ซม.</option>
+                    <option value="7.5" ${!data || data.productKey==='7.5'?'selected':''}>บล็อก 7.5 ซม. (20x60)</option>
+                    <option value="9" ${data && data.productKey==='9'?'selected':''}>บล็อก 9 ซม. (20x60)</option>
+                    <option value="10" ${data && (data.productKey==='10'||data.thick==='10')?'selected':''}>บล็อก 10 ซม. (20x60)</option>
+                    <option value="12.5" ${data && (data.productKey==='12.5'||data.thick==='12.5')?'selected':''}>บล็อก 12.5 ซม. (20x60)</option>
+                    <option value="15" ${data && (data.productKey==='15'||data.thick==='15')?'selected':''}>บล็อก 15 ซม. (20x60)</option>
+                    <option value="17.5" ${data && (data.productKey==='17.5'||data.thick==='17.5')?'selected':''}>บล็อก 17.5 ซม. (20x60)</option>
+                    <option value="20" ${data && (data.productKey==='20'||data.thick==='20')?'selected':''}>บล็อก 20 ซม. (20x60)</option>
+                    <option value="7.5_groove_40x60" ${data && data.productKey==='7.5_groove_40x60'?'selected':''}>บล็อกกรู๊ฟ 7.5 ซม. (40x60)</option>
+                    <option value="9_groove_40x60" ${data && data.productKey==='9_groove_40x60'?'selected':''}>บล็อกกรู๊ฟ 9 ซม. (40x60)</option>
+                    <option value="7.5_groove_60x60" ${data && data.productKey==='7.5_groove_60x60'?'selected':''}>บล็อกกรู๊ฟ 7.5 ซม. (60x60)</option>
+                    <option value="9_groove_60x60" ${data && data.productKey==='9_groove_60x60'?'selected':''}>บล็อกกรู๊ฟ 9 ซม. (60x60)</option>
                 </select>
             </div>
             <div>
@@ -1735,6 +2018,8 @@ function addWallWithData(wId, data) {
                 <select class="wall-type" onchange="updateWallStatus(${wId})">
                     <option value="internal" ${!data || data.type==='internal'?'selected':''}>ผนังภายในอาคาร</option>
                     <option value="external" ${data && data.type==='external'?'selected':''}>ผนังภายนอกอาคาร</option>
+                    <option value="bath_ext" ${data && data.type==='bath_ext'?'selected':''}>ผนังภายนอกห้องน้ำ</option>
+                    <option value="bath_int" ${data && data.type==='bath_int'?'selected':''}>ผนังภายในห้องน้ำ</option>
                 </select>
             </div>
             <div>
@@ -1818,8 +2103,13 @@ function calcOpeningRow(rowId, wallId) {
     updateWallStatus(wallId);
 }
 
+// เช็กเกณฑ์มาตรฐานโดยไม่ต้องมีเสาเอ็นหรือทับหลัง
 function checkWallStructuralCriteria(wallType, thickness, width, height) {
-    const table = LINTEL_CRITERIA[wallType] || LINTEL_CRITERIA.internal;
+    // ผนังภายนอก หรือ ผนังภายนอกห้องน้ำ -> ใช้เกณฑ์ภายนอก
+    // ผนังภายใน หรือ ผนังภายในห้องน้ำ -> ใช้เกณฑ์ภายใน
+    const isExt = (wallType === 'external' || wallType === 'bath_ext');
+    const table = isExt ? LINTEL_CRITERIA.external : LINTEL_CRITERIA.internal;
+
     if (height <= 0 || width <= 0) return { needed: false, note: 'กรอกขนาดผนังเพื่อตรวจสอบ' };
 
     let matchedRow = table.find(r => r.h >= height);
@@ -1839,8 +2129,11 @@ function updateWallStatus(wallId) {
 
     const w = parseFloat(card.querySelector('.wall-width').value) || 0;
     const h = parseFloat(card.querySelector('.wall-height').value) || 0;
-    const thick = card.querySelector('.wall-thick').value;
+    const pKey = card.querySelector('.wall-thick').value;
     const wallType = card.querySelector('.wall-type').value;
+
+    const spec = PRODUCT_SPECS[pKey] || PRODUCT_SPECS['10'];
+    const stdThick = spec.std_thick;
 
     const statusBox = card.querySelector('.wall-lintel-status');
     const statusText = card.querySelector('.status-text');
@@ -1859,12 +2152,12 @@ function updateWallStatus(wallId) {
     const net = Math.max(0, gross - openingArea);
 
     if (w > 0 && h > 0) {
-        const check = checkWallStructuralCriteria(wallType, thick, w, h);
+        const check = checkWallStructuralCriteria(wallType, stdThick, w, h);
         let info = `<strong>พื้นที่สุทธิ: ${net.toFixed(2)} ตร.ม.</strong> (รวม ${gross.toFixed(2)} - ช่องเปิด ${openingArea.toFixed(2)})<br>`;
         if (check.needed) {
             statusBox.className = 'wall-lintel-status status-danger';
             info += `<i class="fas fa-exclamation-triangle"></i> <strong>เตือนโครงสร้าง:</strong> ${check.note}`;
-            if (thick === '7.5' && opCount > 0) {
+            if (stdThick === '7.5' && opCount > 0) {
                 info += `<br><span style="color:#16a34a;"><i class="fas fa-check-circle"></i> ผนังนี้มีช่องเปิดแล้ว จึงยกเว้นการคิดคานทับหลังตัวตั้งแบ่งผนังซ้ำซ้อน</span>`;
             }
         } else {
@@ -1884,7 +2177,7 @@ function getLintel7_5(len) {
     return { length: 4.0, castInPlace: false };
 }
 
-function getLintel10Up(opWidth) {
+function getLintel9Up(opWidth) {
     if (opWidth <= 0.90) return { length: 1.2, castInPlace: false };
     if (opWidth <= 1.10) return { length: 1.5, castInPlace: false };
     if (opWidth <= 1.40) return { length: 1.8, castInPlace: false };
@@ -1897,9 +2190,9 @@ function getLintel10Up(opWidth) {
     return { length: null, castInPlace: true };
 }
 
-function getColumnLintel10Up(height) {
+function getColumnLintel9Up(height) {
     if (height > 3.60) return { length: null, castInPlace: true };
-    for (let s of SIZES_10_UP) if (s >= height) return { length: s, castInPlace: false };
+    for (let s of SIZES_9_UP) if (s >= height) return { length: s, castInPlace: false };
     return { length: 3.6, castInPlace: false };
 }
 
@@ -1917,73 +2210,83 @@ function exportToExcel() {
     const grossTotal = document.getElementById('statGross').innerText || '0.00 ตร.ม.';
     const grossExt = document.getElementById('statGrossExt').innerText || '0.00';
     const grossInt = document.getElementById('statGrossInt').innerText || '0.00';
+    const grossBath = document.getElementById('statGrossBath').innerText || '0.00';
     const netTotal = document.getElementById('statNet').innerText || '0.00 ตร.ม.';
 
     const wb = XLSX.utils.book_new();
-
     const rows = [];
     rows.push(['ใบประมาณการวัสดุและคานทับหลังสำเร็จรูป Q-CON']);
     rows.push(['วันที่', docDate, 'เลขอ้างอิงการคำนวณ', currentCalcId || '-']);
     rows.push(['ชื่อโครงการ', projName, 'ร้านค้าตัวแทนจำหน่าย', store]);
     rows.push(['สถานที่ก่อสร้าง', `${district} จ.${province}`, 'เกรดบล็อกมวลเบาที่สั่งซื้อ', grade]);
     rows.push(['ส่วนเผื่อเศษวัสดุ', `${wastePercent}%`, 'ตัวเลือกปูนฉาบ', document.getElementById('plasterOption').options[document.getElementById('plasterOption').selectedIndex].text]);
+    rows.push(['ตัวเลือกปูนสกิมโค้ท', document.getElementById('skimOption').options[document.getElementById('skimOption').selectedIndex].text]);
     rows.push([]);
 
     rows.push(['สรุปพื้นที่ผนังโครงการ']);
-    rows.push(['พื้นที่ผนังรวม (Gross Area)', grossTotal, 'พื้นที่ผนังภายนอก', `${grossExt} ตร.ม.`, 'พื้นที่ผนังภายใน', `${grossInt} ตร.ม.`]);
+    rows.push(['พื้นที่ผนังรวม (Gross Area)', grossTotal]);
+    rows.push(['• พื้นที่ผนังภายนอกอาคาร', `${grossExt} ตร.ม.`]);
+    rows.push(['• พื้นที่ผนังภายในอาคาร', `${grossInt} ตร.ม.`]);
+    rows.push(['• พื้นที่ผนังห้องน้ำ (ภายนอก+ภายใน)', `${grossBath} ตร.ม.`]);
     rows.push(['พื้นที่ก่อสุทธิ (Net Area)', netTotal]);
     rows.push([]);
 
     rows.push(['1. สรุปรายการวัสดุหลักที่ต้องสั่งซื้อ']);
     rows.push(['รหัสสินค้า (SKU)', 'รายการสินค้า', 'พื้นที่สุทธิ (ตร.ม.)', 'จำนวนจริง (ก้อน/ถุง/ชิ้น)', 'จำนวนที่ต้องสั่งซื้อ (รวมเผื่อเศษ)']);
 
-    const thicknesses = Object.keys(thicknessSummaryGlobal).sort((a,b) => parseFloat(a) - parseFloat(b));
-    thicknesses.forEach(th => {
-        const area = thicknessSummaryGlobal[th];
-        const exactBlocks = Math.ceil(area * 8.33);
-        const orderBlocks = Math.ceil(area * 8.33 * wasteMul);
-        const sku = (BLOCK_SKU_DATA[grade] && BLOCK_SKU_DATA[grade][th]) || '-';
-        rows.push([sku, `บล็อก Q-CON หนา ${th} ซม. (20x60 ซม.) เกรด: ${grade}`, area.toFixed(2), exactBlocks, orderBlocks]);
+    const pKeys = Object.keys(productSummaryGlobal);
+    pKeys.forEach(pk => {
+        const area = productSummaryGlobal[pk];
+        const spec = PRODUCT_SPECS[pk] || PRODUCT_SPECS['10'];
+        const exactBlocks = Math.ceil(area * spec.pcs_per_sqm);
+        const orderBlocks = Math.ceil(area * spec.pcs_per_sqm * wasteMul);
+        const sku = (BLOCK_SKU_DATA[grade] && BLOCK_SKU_DATA[grade][pk]) || '-';
+        rows.push([sku, `${spec.name} เกรด: ${grade}`, area.toFixed(2), exactBlocks, orderBlocks]);
     });
 
     const mortarBags = parseInt((document.getElementById('outMortar').textContent || '0').replace(/,/g, '')) || 0;
     const plasterBags = parseInt((document.getElementById('outPlaster').textContent || '0').replace(/,/g, '')) || 0;
+    const skimBags = parseInt((document.getElementById('outSkim').textContent || '0').replace(/,/g, '')) || 0;
     const straps = parseInt((document.getElementById('outStrap').textContent || '0').replace(/,/g, '')) || 0;
 
     rows.push([MORTAR_SKU, 'ปูนก่อ Q-CON (ถุง 50 กก.)', '-', '-', mortarBags]);
     rows.push([PLASTER_SKU, 'ปูนฉาบ Q-CON (ถุง 50 กก.)', '-', '-', plasterBags]);
+    if (skimBags > 0) {
+        rows.push(['ยังไม่มี', 'ปูนสกิมโค้ท Q-CON (ถุง 20 กก.)', '-', '-', skimBags]);
+    }
     rows.push([STRAP_SKU, 'Metal Strap (ชิ้น)', '-', '-', straps]);
     rows.push([]);
 
     rows.push(['2. สรุปรายการสินค้าคานทับหลังสำเร็จรูป Q-CON ที่ต้องสั่งซื้อ (ไม่คิดเปอร์เซ็นต์เผื่อ)']);
-    rows.push(['รหัสสินค้า (SKU)', 'ตำแหน่งผนัง', 'วัตถุประสงค์การใช้งาน', 'ขนาดสินค้า', 'จำนวนที่ต้องใช้', 'หน่วย']);
+    rows.push(['รหัสสินค้า (SKU)', 'ตำแหน่งผนัง', 'วัตถุประสงค์การใช้งาน', 'ขนาดสินค้า', 'จำนวนที่ต้องใช้', 'ความยาวรวม (ม.)', 'หน่วย']);
 
+    let totalLen = 0;
     if (globalDetailedLintelList.length > 0) {
         globalDetailedLintelList.forEach(item => {
+            const itemLen = item.length * item.qty;
+            totalLen += itemLen;
             rows.push([
                 item.sku || '-',
                 item.wall,
                 item.application,
                 `คานทับหลัง Q-CON หนา ${item.thick} ซม. x ยาว ${item.length.toFixed(1)} ม.`,
                 item.qty,
+                itemLen.toFixed(2),
                 'ท่อน'
             ]);
         });
+        rows.push(['รวมความยาวคานทับหลังสำเร็จรูปทั้งหมด', '', '', '', '', totalLen.toFixed(2), 'เมตร']);
     } else {
-        rows.push(['-', 'ไม่มีรายการที่ต้องใช้คานทับหลังสำเร็จรูป', '-', '-', 0, 'ท่อน']);
+        rows.push(['-', 'ไม่มีรายการที่ต้องใช้คานทับหลังสำเร็จรูป', '-', '-', 0, 0, 'ท่อน']);
+    }
+
+    if (globalCipLintelLength > 0) {
+        rows.push([]);
+        rows.push(['ความยาวที่ผนังต้องเทคอนกรีต คสล. ในที่เพิ่มเติม (เกินมาตรฐานคานสำเร็จรูป)', '', '', '', '', globalCipLintelLength.toFixed(2), 'เมตร']);
     }
 
     const ws = XLSX.utils.aoa_to_sheet(rows);
-
-    ws['!cols'] = [
-        { wch: 18 },
-        { wch: 38 },
-        { wch: 22 },
-        { wch: 24 },
-        { wch: 28 },
-        { wch: 10 }
-    ];
-
+    ws['!cols'] = [{ wch: 18 }, { wch: 40 }, { wch: 22 }, { wch: 24 }, { wch: 20 }, { wch: 16 }, { wch: 10 }];
     XLSX.utils.book_append_sheet(wb, ws, 'รายการวัสดุ Q-CON');
     XLSX.writeFile(wb, `ใบสั่งซื้อวัสดุ_${projName}.xlsx`);
 }
